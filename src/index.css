@@ -1,0 +1,83 @@
+@import url('https://fonts.googleapis.com/css2?family=Mali:ital,wght@0,200;0,300;0,400;0,500;0,600;0,700;1,200;1,300;1,400;1,500;1,600;1,700&display=swap');
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: 'Mali', 'Comic Sans MS', 'Segoe UI', sans-serif;
+}
+
+body {
+  margin: 0;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+:root {
+  /* Color Palette */
+  --primary: #deb47d;
+  --primary-light: #fde7c9;
+  --primary-dark: #c18c56;
+  --secondary: #fbc3cb;
+  --secondary-light: #fde2e6;
+  --secondary-dark: #f9879e;
+
+  --background: #ffffff;
+
+  --success: #d5cfe6;
+  --danger: #f36864;
+  --warning: #f6ebd7;
+  --info: #c7dbe3;
+  --cancel: #808080;
+
+  --text: #d6b17e;
+  --text-muted: #bc9595;
+  --text-contrast: #ffffff;
+
+  --home: #ff6a88;
+  --diary: #f59e0b;
+  --scheduler: #8b5cf6;
+  --statistic: #3b82f6;
+  --configs: #64748b;
+
+  /* Font Sizes */
+  /* 8px */
+  --font-3xs: 0.5rem;
+  /* 10px */
+  --font-2xs: 0.625rem;
+  /* 12px */
+  --font-xs: 0.75rem;
+  /* 14px */
+  --font-sm: 0.875rem;
+  /* 16px */
+  --font-md: 1rem;
+  /* 18px */
+  --font-lg: 1.125rem;
+  /* 20px */
+  --font-xl: 1.25rem;
+  /* 24px */
+  --font-2xl: 1.5rem;
+  /* 30px */
+  --font-3xl: 1.875rem;
+  /* 36px */
+  --font-4xl: 2.25rem;
+  /* 48px */
+  --font-5xl: 3rem;
+
+  /* Font Weights */
+  --font-thin: 100;
+  --font-extralight: 200;
+  --font-light: 300;
+  --font-normal: 400;
+  --font-medium: 500;
+  --font-semibold: 600;
+  --font-bold: 700;
+  --font-extrabold: 800;
+  --font-black: 900;
+
+  /** Global size variables **/
+  --navigation-width: 310px;
+  --navigation-height: 110px;
+
+  --sidebar-width: 300px;
+}

@@ -1,0 +1,6 @@
+const Home = () => {
+  const test = 'Home Page';
+  return <h1>{test}</h1>;
+};
+
+export default Home;
