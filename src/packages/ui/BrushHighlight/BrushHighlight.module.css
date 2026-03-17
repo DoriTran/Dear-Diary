@@ -1,0 +1,78 @@
+.brushes {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  background-color: var(--brush-color);
+  border-radius: calc(var(--brush-size) / 2);
+  z-index: 0;
+  user-select: none;
+  cursor: grab;
+  box-shadow: -5px 5px 10px 1px rgba(0, 0, 0, 0.15);
+}
+
+.content {
+  padding-left: 5px;
+  min-width: 75px;
+  max-width: 200px;
+  height: 100%;
+  vertical-align: middle;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.startBrushTop {
+  position: absolute;
+  z-index: -1;
+  transform: rotate(25deg);
+  top: calc(var(--brush-size) * -0.15);
+  left: 5px;
+  width: calc(var(--brush-size) * 1.5);
+  height: calc(var(--brush-size));
+  border-radius: calc(var(--brush-size) / 2);
+  background-color: var(--brush-color);
+}
+
+.startBrushBottom {
+  position: absolute;
+  z-index: -1;
+  transform: rotate(-15deg);
+  bottom: calc(var(--brush-size) * -0.1);
+  left: -5px;
+  width: calc(var(--brush-size) * 1.5);
+  height: calc(var(--brush-size) * 0.75);
+  border-radius: calc(var(--brush-size) / 2);
+  border-top-left-radius: calc(var(--brush-size) * 1.2);
+  background-color: var(--brush-color);
+}
+
+.middleBrush {
+  position: absolute;
+  z-index: -1;
+  transform: rotate(-15deg);
+  width: calc(var(--brush-size) * 1.5);
+  height: var(--brush-size);
+  border-radius: calc(var(--brush-size) / 2);
+  background-color: var(--brush-color);
+}
+
+.middleBrushTop {
+  top: calc(var(--brush-size) * -0.1);
+}
+
+.middleBrushBottom {
+  bottom: calc(var(--brush-size) * -0.1);
+}
+
+.endBrush {
+  position: absolute;
+  z-index: -1;
+  transform: rotate(-15deg);
+  bottom: calc(var(--brush-size) * -0.1);
+  right: -10px;
+  width: calc(var(--brush-size) * 1.6);
+  height: calc(var(--brush-size) * 1.1);
+  border-radius: calc(var(--brush-size) / 2);
+  border-bottom-right-radius: var(--brush-size);
+  background-color: var(--brush-color);
+}

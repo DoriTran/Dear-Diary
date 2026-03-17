@@ -1,15 +1,15 @@
-import js from '@eslint/js'
-import globals from 'globals'
-import tseslint from 'typescript-eslint'
-import react from 'eslint-plugin-react'
-import reactHooks from 'eslint-plugin-react-hooks'
-import reactRefresh from 'eslint-plugin-react-refresh'
-import importPlugin from 'eslint-plugin-import'
-import jsxA11y from 'eslint-plugin-jsx-a11y'
-import perfectionist from 'eslint-plugin-perfectionist'
-import prettierPlugin from 'eslint-plugin-prettier'
-import prettier from 'eslint-config-prettier'
-import { defineConfig, globalIgnores } from 'eslint/config'
+import js from '@eslint/js';
+import globals from 'globals';
+import tseslint from 'typescript-eslint';
+import react from 'eslint-plugin-react';
+import reactHooks from 'eslint-plugin-react-hooks';
+import reactRefresh from 'eslint-plugin-react-refresh';
+import importPlugin from 'eslint-plugin-import';
+import jsxA11y from 'eslint-plugin-jsx-a11y';
+import perfectionist from 'eslint-plugin-perfectionist';
+import prettierPlugin from 'eslint-plugin-prettier';
+import prettier from 'eslint-config-prettier';
+import { defineConfig, globalIgnores } from 'eslint/config';
 
 const eslintConfig = defineConfig([
   globalIgnores([
@@ -112,6 +112,8 @@ const eslintConfig = defineConfig([
       'react-hooks/exhaustive-deps': 'off',
 
       // TypeScript rules
+      '@typescript-eslint/no-explicit-any': 'off',
+      '@typescript-eslint/no-unsafe-argument': 'off',
       '@typescript-eslint/consistent-type-imports': 'error',
       '@typescript-eslint/no-confusing-void-expression': 'off',
       '@typescript-eslint/no-unused-vars': [
@@ -120,6 +122,6 @@ const eslintConfig = defineConfig([
       ],
     },
   },
-])
+]);
 
-export default eslintConfig
+export default eslintConfig;
