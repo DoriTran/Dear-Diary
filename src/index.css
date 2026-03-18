@@ -35,10 +35,9 @@ body {
   --text-contrast: #ffffff;
 
   --home: #ff6a88;
-  --diary: #f59e0b;
-  --scheduler: #8b5cf6;
-  --statistic: #3b82f6;
-  --configs: #64748b;
+  --diary: #8b5cf6;
+  --scheduler: #f59e0b;
+  --settings: #64748b;
 
   /* Font Sizes */
   /* 8px */
