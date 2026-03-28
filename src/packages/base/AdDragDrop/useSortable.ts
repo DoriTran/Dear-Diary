@@ -32,13 +32,13 @@ export interface UseSortableOptions<T extends { id: string | number } = any> {
   sortInGroup?: string;
   sortableGroup?: string;
   setSortableData?: Dispatch<SetStateAction<T[]>>;
-  onSortIndexChange?: (_arg: {
+  onSortIndexChange?: (arg: {
     previous: number;
     current: number;
     item: HTMLElement | null;
     data: any;
   }) => void;
-  onSortable?: (_arg: { original: T[] | null; final: T[] | null }) => void;
+  onSortable?: (arg: { original: T[] | null; final: T[] | null }) => void;
   extraScrollOffset?: {
     scrollLeft: number;
     scrollTop: number;

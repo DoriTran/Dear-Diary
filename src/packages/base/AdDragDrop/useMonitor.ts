@@ -7,7 +7,7 @@ import { useEffect } from 'react';
  */
 
 type MonitorOptions = Parameters<typeof monitorForElements>[0];
-type ExtractArg<T> = T extends (_arg: infer A) => unknown ? A : never;
+type ExtractArg<T> = T extends (arg: infer A) => unknown ? A : never;
 type WithData<T extends { source: { data: unknown } }> = T & {
   data: T['source']['data'];
 };
@@ -20,14 +20,14 @@ type TargetChangeArg = ExtractArg<MonitorOptions['onDropTargetChange']>;
 type PreviewArg = ExtractArg<MonitorOptions['onGenerateDragPreview']>;
 
 export interface UseMonitorOptions {
-  canMonitor?: boolean | ((_arg: WithData<CanMonitorArg>) => boolean);
+  canMonitor?: boolean | ((arg: WithData<CanMonitorArg>) => boolean);
 
-  onDragStart?: (_arg: WithData<DragStartArg>) => void;
-  onDrag?: (_arg: WithData<DragArg>) => void;
-  onDrop?: (_arg: WithData<DropArg>) => void;
+  onDragStart?: (arg: WithData<DragStartArg>) => void;
+  onDrag?: (arg: WithData<DragArg>) => void;
+  onDrop?: (arg: WithData<DropArg>) => void;
 
-  onTargetChange?: (_arg: WithData<TargetChangeArg>) => void;
-  onGenerateOverlay?: (_arg: WithData<PreviewArg>) => void;
+  onTargetChange?: (arg: WithData<TargetChangeArg>) => void;
+  onGenerateOverlay?: (arg: WithData<PreviewArg>) => void;
 }
 
 const useMonitor = (

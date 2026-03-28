@@ -35,19 +35,19 @@ export interface UseDroppingOptions extends Record<string, unknown> {
 
   data?:
     | Record<string, unknown>
-    | ((_arg: GetDataArgs) => Record<string, unknown>);
+    | ((arg: GetDataArgs) => Record<string, unknown>);
 
-  canDrop?: boolean | ((_arg: CanDropArgs & { data: any }) => boolean);
+  canDrop?: boolean | ((arg: CanDropArgs & { data: any }) => boolean);
 
-  onCatch?: (_arg: DropArgs & { data: any }) => void;
+  onCatch?: (arg: DropArgs & { data: any }) => void;
 
-  onDragEnter?: (_arg: DragEnterArgs & { data: any }) => void;
+  onDragEnter?: (arg: DragEnterArgs & { data: any }) => void;
 
-  onDragLeave?: (_arg: DragLeaveArgs & { data: any }) => void;
+  onDragLeave?: (arg: DragLeaveArgs & { data: any }) => void;
 
-  cursorEffect?: string | ((_arg: DropEffectArgs & { data: any }) => string);
+  cursorEffect?: string | ((arg: DropEffectArgs & { data: any }) => string);
 
-  sticky?: boolean | ((_arg: StickyArgs & { data: any }) => boolean);
+  sticky?: boolean | ((arg: StickyArgs & { data: any }) => boolean);
 }
 
 export interface UseDroppingResult {
@@ -142,7 +142,7 @@ export default function useDropping(
 
       /* ---------------------------- DROP EFFECT ---------------------------- */
 
-      getDropEffect: (_args: DropEffectArgs): 'copy' => 'copy',
+      getDropEffect: (args: DropEffectArgs): 'copy' => 'copy',
 
       /* ------------------------------- STICKY ------------------------------ */
 

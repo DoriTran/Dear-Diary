@@ -4,12 +4,12 @@ type Primitive = string | number | boolean;
 export function assignIdsData<
   T extends Record<PropertyKey, unknown>,
   K extends keyof T,
->(_array: T[], _idKey: K): (T & { id: T[K] })[];
+>(array: T[], idKey: K): (T & { id: T[K] })[];
 
 // For primitive arrays (no idKey)
 export function assignIdsData<T extends Primitive>(
-  _array: T[],
-  _idKey?: undefined,
+  array: T[],
+  idKey?: undefined,
 ): { id: T; data: T }[];
 
 export function assignIdsData(

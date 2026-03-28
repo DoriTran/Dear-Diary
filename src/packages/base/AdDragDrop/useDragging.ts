@@ -26,16 +26,16 @@ export interface UseDraggingOptions {
 
   data?:
     | Record<string, unknown>
-    | ((_args: GetFeedbackArgs) => Record<string, unknown>);
+    | ((args: GetFeedbackArgs) => Record<string, unknown>);
 
-  canDrag?: boolean | ((_args: GetFeedbackArgs) => boolean);
+  canDrag?: boolean | ((args: GetFeedbackArgs) => boolean);
 
-  onDragStart?: (_args: DragStartArgs & { data: unknown }) => void;
-  onDrag?: (_args: DragArgs & { data: unknown }) => void;
-  onDrop?: (_args: DragDropArgs & { data: unknown }) => void;
-  onTargetChange?: (_args: DragDropArgs & { data: unknown }) => void;
+  onDragStart?: (args: DragStartArgs & { data: unknown }) => void;
+  onDrag?: (args: DragArgs & { data: unknown }) => void;
+  onDrop?: (args: DragDropArgs & { data: unknown }) => void;
+  onTargetChange?: (args: DragDropArgs & { data: unknown }) => void;
 
-  onGenerateOverlay?: (_args: DragPreviewArgs & { data: unknown }) => void;
+  onGenerateOverlay?: (args: DragPreviewArgs & { data: unknown }) => void;
 
   native?: boolean;
   overlay?: boolean;

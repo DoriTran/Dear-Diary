@@ -89,7 +89,7 @@ const eslintConfig = defineConfig([
       'no-undef': 'error',
       'no-unused-vars': [
         'warn',
-        { argsIgnorePattern: '^_', varsIgnorePattern: '^_' },
+        { argsIgnorePattern: '^_', varsIgnorePattern: '^_', args: 'none' },
       ],
       'perfectionist/sort-imports': [
         'error',
@@ -118,7 +118,7 @@ const eslintConfig = defineConfig([
       '@typescript-eslint/no-confusing-void-expression': 'off',
       '@typescript-eslint/no-unused-vars': [
         'error',
-        { argsIgnorePattern: '^_' },
+        { argsIgnorePattern: '^_', varsIgnorePattern: '^_', args: 'none' },
       ],
     },
   },

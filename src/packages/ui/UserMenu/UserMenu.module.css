@@ -1,0 +1,13 @@
+.row {
+  position: fixed;
+  top: 0px;
+  right: 0px;
+  z-index: 1;
+
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 12px;
+
+  padding: 16px;
+}

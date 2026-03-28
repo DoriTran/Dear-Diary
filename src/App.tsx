@@ -1,7 +1,7 @@
 import { BrowserRouter, Navigate, Route, Routes } from 'react-router-dom';
 
 import { Outlet } from '@/packages/ui';
-import { Diary, Home, Scheduler, Settings } from '@/pages';
+import { Diary, Home, Settings, Workspace } from '@/pages';
 
 const App = () => {
   return (
@@ -11,7 +11,7 @@ const App = () => {
           <Route index element={<Navigate to="/diary" />} />
           <Route path="home" element={<Home />} />
           <Route path="diary" element={<Diary />} />
-          <Route path="scheduler" element={<Scheduler />} />
+          <Route path="workspace" element={<Workspace />} />
           <Route path="settings" element={<Settings />} />
           <Route path="*" element={<Navigate to="/home" replace />} />
         </Route>
