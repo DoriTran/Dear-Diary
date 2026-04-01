@@ -2,294 +2,521 @@ import { uuid } from 'uuidv4';
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 
-import type { DiaryStore, Group, Chatbox, Message } from './type';
+import type {
+  DiaryStore,
+  DiaryRootItem,
+  Group,
+  Chatbox,
+  Message,
+} from './type';
 
-import { idbStorage, getNewOrder, nowIso } from '../helper';
+import { idbStorage, nowIso } from '../helper';
+import { diaryInitialState } from './constants';
 
 type Actions = {
   // CRUD
-  createGroup: (data: Partial<Group>) => void;
+  createGroup: (data: Partial<Group>) => string;
   updateGroup: (id: string, data: Partial<Group>) => void;
   deleteGroup: (id: string) => void;
 
-  createChatbox: (data: Partial<Chatbox>) => void;
+  createChatbox: (data: Partial<Chatbox>) => string;
   updateChatbox: (id: string, data: Partial<Chatbox>) => void;
   deleteChatbox: (id: string) => void;
 
-  createMessage: (data: Partial<Message>) => void;
+  createMessage: (data: Partial<Message>) => string;
   updateMessage: (id: string, data: Partial<Message>) => void;
   deleteMessage: (id: string) => void;
+
+  // ORDER
+  updateRootOrder: (ids: string[]) => void;
+  updateGroupChatOrder: (groupId: string, chatboxIds: string[]) => void;
+  updateChatboxMessageOrder: (chatboxId: string, messageIds: string[]) => void;
 
   // QUERY
   getGroups: () => Group[];
   getChatboxesByGroup: (groupId: string) => Chatbox[];
   getMessagesByChatbox: (chatboxId: string) => Message[];
-
-  // MOVE
-  moveGroup: (
-    id: string,
-    targetId?: string,
-    position?: 'before' | 'after',
-  ) => void;
-
-  moveChatbox: (
-    chatboxId: string,
-    targetChatboxId?: string,
-    position?: 'before' | 'after',
-  ) => void;
-
-  moveMessage: (
-    messageId: string,
-    targetMessageId?: string,
-    position?: 'before' | 'after',
-  ) => void;
+  getRootItems: () => DiaryRootItem[];
 };
+
+const ensureUnique = <T>(items: T[]) => Array.from(new Set(items));
 
 export const useDiaryStore = create<DiaryStore & Actions>()(
   persist(
     (set, get) => ({
-      groups: {},
-      chatboxes: {},
-      messages: {},
+      ...diaryInitialState,
 
       // ===== GROUP =====
       createGroup: (data) => {
-        const { groups } = get();
-        const list = Object.values(groups).sort((a, b) => a.order - b.order);
-        const prev = list[list.length - 1]?.order;
-        const order = getNewOrder(prev, undefined);
-        const id = uuid();
-        const g: Group = {
+        const id = data.id ?? `gr:${uuid()}`;
+        const createdAt = nowIso();
+
+        const group: Group = {
           id,
           title: data.title ?? '',
           description: data.description ?? '',
           color: data.color ?? '',
-          order,
-          createdAt: nowIso(),
+          createdAt,
           updatedAt: '',
         };
-        set((s) => ({
-          groups: { ...s.groups, [id]: g },
+
+        set((state) => ({
+          groups: {
+            ...state.groups,
+            [id]: group,
+          },
+          orders: {
+            ...state.orders,
+            rootOrders: [...state.orders.rootOrders, id],
+            groupChatboxOrders: {
+              ...state.orders.groupChatboxOrders,
+              [id]: state.orders.groupChatboxOrders[id] ?? [],
+            },
+          },
         }));
+
+        return id;
       },
 
       updateGroup: (id, data) =>
-        set((s) => ({
-          groups: {
-            ...s.groups,
-            [id]: { ...s.groups[id], ...data, updatedAt: nowIso() },
-          },
-        })),
+        set((state) => {
+          const current = state.groups[id];
+          if (!current) return state;
+
+          return {
+            groups: {
+              ...state.groups,
+              [id]: {
+                ...current,
+                ...data,
+                id,
+                updatedAt: nowIso(),
+              },
+            },
+          };
+        }),
 
       deleteGroup: (id) =>
-        set((s) => {
-          const { [id]: _, ...rest } = s.groups;
-          return { groups: rest };
+        set((state) => {
+          const current = state.groups[id];
+          if (!current) return state;
+
+          const { [id]: _removedGroup, ...restGroups } = state.groups;
+          const { [id]: groupChildren = [], ...restGroupOrders } =
+            state.orders.groupChatboxOrders;
+
+          const updatedChatboxes = { ...state.chatboxes };
+
+          for (const chatboxId of groupChildren) {
+            const chatbox = updatedChatboxes[chatboxId];
+            if (chatbox) {
+              updatedChatboxes[chatboxId] = {
+                ...chatbox,
+                groupId: '',
+                updatedAt: nowIso(),
+              };
+            }
+          }
+
+          return {
+            groups: restGroups,
+            chatboxes: updatedChatboxes,
+            orders: {
+              ...state.orders,
+              rootOrders: state.orders.rootOrders
+                .filter((itemId) => itemId !== id)
+                .concat(
+                  groupChildren.filter(
+                    (chatboxId) => !!updatedChatboxes[chatboxId],
+                  ),
+                ),
+              groupChatboxOrders: restGroupOrders,
+            },
+          };
         }),
 
       // ===== CHATBOX =====
       createChatbox: (data) => {
-        const { chatboxes } = get();
+        const id = data.id ?? `cb:${uuid()}`;
         const groupId = data.groupId ?? '';
-        const list = Object.values(chatboxes)
-          .filter((c) => c.groupId === groupId)
-          .sort((a, b) => a.order - b.order);
-        const prev = list[list.length - 1]?.order;
-        const order = getNewOrder(prev, undefined);
-        const id = uuid();
-        const c: Chatbox = {
+        const createdAt = nowIso();
+
+        const chatbox: Chatbox = {
           id,
           groupId,
           title: data.title ?? '',
           description: data.description ?? '',
           icon: data.icon ?? '',
           color: data.color ?? '',
-          order,
-          createdAt: nowIso(),
+          createdAt,
           updatedAt: '',
         };
-        set((s) => ({
-          chatboxes: { ...s.chatboxes, [id]: c },
-        }));
+
+        set((state) => {
+          const nextOrders = {
+            ...state.orders,
+            rootOrders: [...state.orders.rootOrders],
+            groupChatboxOrders: { ...state.orders.groupChatboxOrders },
+            chatboxMessageOrders: { ...state.orders.chatboxMessageOrders },
+          };
+
+          if (groupId) {
+            nextOrders.groupChatboxOrders[groupId] = [
+              ...(nextOrders.groupChatboxOrders[groupId] ?? []),
+              id,
+            ];
+          } else {
+            nextOrders.rootOrders.push(id);
+          }
+
+          nextOrders.chatboxMessageOrders[id] =
+            nextOrders.chatboxMessageOrders[id] ?? [];
+
+          return {
+            chatboxes: {
+              ...state.chatboxes,
+              [id]: chatbox,
+            },
+            orders: nextOrders,
+          };
+        });
+
+        return id;
       },
 
       updateChatbox: (id, data) =>
-        set((s) => ({
-          chatboxes: {
-            ...s.chatboxes,
-            [id]: { ...s.chatboxes[id], ...data, updatedAt: nowIso() },
-          },
-        })),
+        set((state) => {
+          const current = state.chatboxes[id];
+          if (!current) return state;
+
+          const nextGroupId =
+            data.groupId !== undefined ? data.groupId : current.groupId;
+
+          if (nextGroupId === current.groupId) {
+            return {
+              chatboxes: {
+                ...state.chatboxes,
+                [id]: {
+                  ...current,
+                  ...data,
+                  id,
+                  updatedAt: nowIso(),
+                },
+              },
+            };
+          }
+
+          const nextOrders = {
+            ...state.orders,
+            rootOrders: [...state.orders.rootOrders],
+            groupChatboxOrders: { ...state.orders.groupChatboxOrders },
+          };
+
+          if (current.groupId) {
+            nextOrders.groupChatboxOrders[current.groupId] = (
+              nextOrders.groupChatboxOrders[current.groupId] ?? []
+            ).filter((chatboxId) => chatboxId !== id);
+          } else {
+            nextOrders.rootOrders = nextOrders.rootOrders.filter(
+              (itemId) => itemId !== id,
+            );
+          }
+
+          if (nextGroupId) {
+            nextOrders.groupChatboxOrders[nextGroupId] = [
+              ...(nextOrders.groupChatboxOrders[nextGroupId] ?? []),
+              id,
+            ];
+          } else {
+            nextOrders.rootOrders.push(id);
+          }
+
+          return {
+            chatboxes: {
+              ...state.chatboxes,
+              [id]: {
+                ...current,
+                ...data,
+                id,
+                groupId: nextGroupId,
+                updatedAt: nowIso(),
+              },
+            },
+            orders: nextOrders,
+          };
+        }),
 
       deleteChatbox: (id) =>
-        set((s) => {
-          const { [id]: _, ...rest } = s.chatboxes;
-          return { chatboxes: rest };
+        set((state) => {
+          const current = state.chatboxes[id];
+          if (!current) return state;
+
+          const { [id]: _removedChatbox, ...restChatboxes } = state.chatboxes;
+          const { [id]: messageOrder = [], ...restChatboxMessageOrders } =
+            state.orders.chatboxMessageOrders;
+
+          const nextMessages = { ...state.messages };
+          for (const messageId of messageOrder) {
+            delete nextMessages[messageId];
+          }
+
+          const nextOrders = {
+            ...state.orders,
+            rootOrders: state.orders.rootOrders.filter(
+              (itemId) => itemId !== id,
+            ),
+            groupChatboxOrders: { ...state.orders.groupChatboxOrders },
+            chatboxMessageOrders: restChatboxMessageOrders,
+          };
+
+          if (current.groupId) {
+            nextOrders.groupChatboxOrders[current.groupId] = (
+              nextOrders.groupChatboxOrders[current.groupId] ?? []
+            ).filter((chatboxId) => chatboxId !== id);
+          }
+
+          return {
+            chatboxes: restChatboxes,
+            messages: nextMessages,
+            orders: nextOrders,
+          };
         }),
 
       // ===== MESSAGE =====
       createMessage: (data) => {
-        const { messages } = get();
+        const id = data.id ?? `ms:${uuid()}`;
         const chatboxId = data.chatboxId ?? '';
-        const list = Object.values(messages)
-          .filter((m) => m.chatboxId === chatboxId)
-          .sort((a, b) => a.order - b.order);
-        const prev = list[list.length - 1]?.order;
-        const order = getNewOrder(prev, undefined);
-        const id = uuid();
-        const m: Message = {
+        const createdAt = nowIso();
+
+        const message: Message = {
           id,
           chatboxId,
-          order,
           content: data.content ?? [],
           tagIds: data.tagIds ?? [],
-          createdAt: nowIso(),
+          createdAt,
           updatedAt: '',
         };
-        set((s) => ({
-          messages: { ...s.messages, [id]: m },
+
+        set((state) => ({
+          messages: {
+            ...state.messages,
+            [id]: message,
+          },
+          orders: {
+            ...state.orders,
+            chatboxMessageOrders: {
+              ...state.orders.chatboxMessageOrders,
+              [chatboxId]: [
+                ...(state.orders.chatboxMessageOrders[chatboxId] ?? []),
+                id,
+              ],
+            },
+          },
         }));
+
+        return id;
       },
 
       updateMessage: (id, data) =>
-        set((s) => ({
-          messages: {
-            ...s.messages,
-            [id]: { ...s.messages[id], ...data, updatedAt: nowIso() },
+        set((state) => {
+          const current = state.messages[id];
+          if (!current) return state;
+
+          const nextChatboxId =
+            data.chatboxId !== undefined ? data.chatboxId : current.chatboxId;
+
+          if (nextChatboxId === current.chatboxId) {
+            return {
+              messages: {
+                ...state.messages,
+                [id]: {
+                  ...current,
+                  ...data,
+                  id,
+                  updatedAt: nowIso(),
+                },
+              },
+            };
+          }
+
+          const nextOrders = {
+            ...state.orders,
+            chatboxMessageOrders: { ...state.orders.chatboxMessageOrders },
+          };
+
+          nextOrders.chatboxMessageOrders[current.chatboxId] = (
+            nextOrders.chatboxMessageOrders[current.chatboxId] ?? []
+          ).filter((messageId) => messageId !== id);
+
+          nextOrders.chatboxMessageOrders[nextChatboxId] = [
+            ...(nextOrders.chatboxMessageOrders[nextChatboxId] ?? []),
+            id,
+          ];
+
+          return {
+            messages: {
+              ...state.messages,
+              [id]: {
+                ...current,
+                ...data,
+                id,
+                chatboxId: nextChatboxId,
+                updatedAt: nowIso(),
+              },
+            },
+            orders: nextOrders,
+          };
+        }),
+
+      deleteMessage: (id) =>
+        set((state) => {
+          const current = state.messages[id];
+          if (!current) return state;
+
+          const { [id]: _removedMessage, ...restMessages } = state.messages;
+
+          return {
+            messages: restMessages,
+            orders: {
+              ...state.orders,
+              chatboxMessageOrders: {
+                ...state.orders.chatboxMessageOrders,
+                [current.chatboxId]: (
+                  state.orders.chatboxMessageOrders[current.chatboxId] ?? []
+                ).filter((messageId) => messageId !== id),
+              },
+            },
+          };
+        }),
+
+      // ===== ORDER =====
+      updateRootOrder: (ids) =>
+        set((state) => ({
+          orders: {
+            ...state.orders,
+            rootOrders: ensureUnique(ids).filter(
+              (id) =>
+                !!state.groups[id] ||
+                (!!state.chatboxes[id] && !state.chatboxes[id].groupId),
+            ),
           },
         })),
 
-      deleteMessage: (id) =>
-        set((s) => {
-          const { [id]: _, ...rest } = s.messages;
-          return { messages: rest };
+      updateGroupChatOrder: (groupId, chatboxIds) =>
+        set((state) => {
+          if (!state.groups[groupId]) return state;
+
+          return {
+            orders: {
+              ...state.orders,
+              groupChatboxOrders: {
+                ...state.orders.groupChatboxOrders,
+                [groupId]: ensureUnique(chatboxIds).filter(
+                  (id) =>
+                    !!state.chatboxes[id] &&
+                    state.chatboxes[id].groupId === groupId,
+                ),
+              },
+            },
+          };
+        }),
+
+      updateChatboxMessageOrder: (chatboxId, messageIds) =>
+        set((state) => {
+          if (!state.chatboxes[chatboxId]) return state;
+
+          return {
+            orders: {
+              ...state.orders,
+              chatboxMessageOrders: {
+                ...state.orders.chatboxMessageOrders,
+                [chatboxId]: ensureUnique(messageIds).filter(
+                  (id) =>
+                    !!state.messages[id] &&
+                    state.messages[id].chatboxId === chatboxId,
+                ),
+              },
+            },
+          };
         }),
 
       // ===== QUERY =====
       getGroups: () => {
-        const { groups } = get();
-        return Object.values(groups).sort((a, b) => a.order - b.order);
+        const { groups, orders } = get();
+        return orders.rootOrders
+          .filter((id) => id.startsWith('gr:'))
+          .map((id) => groups[id])
+          .filter(Boolean);
       },
 
       getChatboxesByGroup: (groupId) => {
-        const { chatboxes } = get();
-        return Object.values(chatboxes)
-          .filter((c) => c.groupId === groupId)
-          .sort((a, b) => a.order - b.order);
+        const { chatboxes, orders } = get();
+
+        if (!groupId) {
+          return orders.rootOrders
+            .filter((id) => id.startsWith('cb:'))
+            .map((id) => chatboxes[id])
+            .filter(
+              (chatbox): chatbox is Chatbox => !!chatbox && !chatbox.groupId,
+            );
+        }
+
+        return (orders.groupChatboxOrders[groupId] ?? [])
+          .map((id) => chatboxes[id])
+          .filter(Boolean);
       },
 
       getMessagesByChatbox: (chatboxId) => {
-        const { messages } = get();
-        return Object.values(messages)
-          .filter((m) => m.chatboxId === chatboxId)
-          .sort((a, b) => a.order - b.order);
+        const { messages, orders } = get();
+        return (orders.chatboxMessageOrders[chatboxId] ?? [])
+          .map((id) => messages[id])
+          .filter(Boolean);
       },
 
-      // ===== MOVE GROUP =====
-      moveGroup: (id, targetId, position = 'after') => {
-        const { groups } = get();
-        const item = groups[id];
-        if (!item || id === targetId) return;
+      getRootItems: () => {
+        const { groups, chatboxes, orders } = get();
 
-        const list = Object.values(groups)
-          .filter((g) => g.id !== id)
-          .sort((a, b) => a.order - b.order);
+        return orders.rootOrders
+          .map((id): DiaryRootItem | null => {
+            if (id.startsWith('gr:')) {
+              const group = groups[id];
+              if (!group) return null;
 
-        let prev: number | undefined;
-        let next: number | undefined;
+              const childChatboxes = (orders.groupChatboxOrders[id] ?? [])
+                .map((chatboxId) => chatboxes[chatboxId])
+                .filter(Boolean);
 
-        if (!targetId) {
-          // move to end
-          prev = list[list.length - 1]?.order;
-          next = undefined;
-        } else {
-          const index = list.findIndex((g) => g.id === targetId);
-          if (index === -1) return;
+              return {
+                type: 'group',
+                data: group,
+                chatboxes: childChatboxes,
+              };
+            }
 
-          if (position === 'before') {
-            prev = list[index - 1]?.order;
-            next = list[index]?.order;
-          } else {
-            prev = list[index]?.order;
-            next = list[index + 1]?.order;
-          }
-        }
+            if (id.startsWith('cb:')) {
+              const chatbox = chatboxes[id];
+              if (!chatbox || chatbox.groupId) return null;
 
-        const newOrder = getNewOrder(prev, next);
+              return {
+                type: 'chatbox',
+                data: chatbox,
+              };
+            }
 
-        set((s) => ({
-          groups: {
-            ...s.groups,
-            [id]: { ...item, order: newOrder },
-          },
-        }));
-      },
-
-      // ===== MOVE CHATBOX =====
-      moveChatbox: (id, targetId, position = 'after') => {
-        const { chatboxes } = get();
-        const item = chatboxes[id];
-        if (!item) return;
-
-        const list = Object.values(chatboxes)
-          .filter((c) => c.groupId === item.groupId && c.id !== id)
-          .sort((a, b) => a.order - b.order);
-
-        let prev: number | undefined;
-        let next: number | undefined;
-
-        if (!targetId) {
-          // move to end
-          prev = list[list.length - 1]?.order;
-          next = undefined;
-        } else {
-          const index = list.findIndex((c) => c.id === targetId);
-          if (index === -1) return;
-
-          if (position === 'before') {
-            prev = list[index - 1]?.order;
-            next = list[index]?.order;
-          } else {
-            prev = list[index]?.order;
-            next = list[index + 1]?.order;
-          }
-        }
-
-        const newOrder = getNewOrder(prev, next);
-
-        set((s) => ({
-          chatboxes: {
-            ...s.chatboxes,
-            [id]: { ...item, order: newOrder },
-          },
-        }));
-      },
-
-      // ===== MOVE MESSAGE =====
-      moveMessage: (id, targetId, position = 'after') => {
-        const { messages } = get();
-        const item = messages[id];
-        if (!item) return;
-
-        const target = targetId ? messages[targetId] : null;
-
-        const prev = position === 'after' ? target?.order : undefined;
-
-        const next = position === 'before' ? target?.order : undefined;
-
-        const newOrder = getNewOrder(prev, next);
-
-        set((s) => ({
-          messages: {
-            ...s.messages,
-            [id]: { ...item, order: newOrder },
-          },
-        }));
+            return null;
+          })
+          .filter(Boolean) as DiaryRootItem[];
       },
     }),
     {
       name: 'dear-diary',
       storage: idbStorage,
+      partialize: (state) => ({
+        groups: state.groups,
+        chatboxes: state.chatboxes,
+        messages: state.messages,
+        orders: state.orders,
+      }),
     },
   ),
 );

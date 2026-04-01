@@ -1,7 +1,31 @@
+/**
+ * Store type
+ */
 export type DiaryStore = {
   groups: Record<string, Group>;
   chatboxes: Record<string, Chatbox>;
   messages: Record<string, Message>;
+  orders: Order;
+};
+
+export type DiaryRootItem =
+  | {
+      type: 'chatbox';
+      data: Chatbox;
+    }
+  | {
+      type: 'group';
+      data: Group;
+      chatboxes: Chatbox[];
+    };
+
+/**
+ * Schema type
+ */
+export type Order = {
+  rootOrders: string[];
+  groupChatboxOrders: Record<string, string[]>;
+  chatboxMessageOrders: Record<string, string[]>;
 };
 
 export type Group = {
@@ -9,7 +33,6 @@ export type Group = {
   title: string;
   description: string;
   color: string;
-  order: number;
   createdAt: string;
   updatedAt: string;
 };
@@ -21,7 +44,6 @@ export type Chatbox = {
   description: string;
   icon: string;
   color: string;
-  order: number;
   createdAt: string;
   updatedAt: string;
 };
@@ -29,7 +51,6 @@ export type Chatbox = {
 export type Message = {
   id: string;
   chatboxId: string;
-  order: number;
   content: MessageBlock[];
   tagIds: string[];
   createdAt: string;
