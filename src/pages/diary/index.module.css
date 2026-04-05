@@ -1,0 +1,6 @@
+.rootPage {
+  display: flex;
+  flex-direction: row;
+  height: 100vh;
+  padding-left: var(--navigation-width);
+}

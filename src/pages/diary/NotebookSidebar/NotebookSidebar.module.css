@@ -4,7 +4,7 @@
   top: var(--sidebar-position-top);
   left: 0;
   width: var(--sidebar-width);
-  height: calc(100vh - var(--sidebar-position-top) - 25px);
+  height: calc(100vh - var(--sidebar-position-top) - 18px);
   background-color: var(--background);
   background-color: var(--background);
   border-top-right-radius: 25px;
