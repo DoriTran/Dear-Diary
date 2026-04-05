@@ -1,6 +1,12 @@
+import styles from './index.module.css';
+import NotebookSidebar from './NotebookSidebar/NotebookSidebar';
+
 const Diary = () => {
-  const test = 'Diary Page';
-  return <h1>{test}</h1>;
+  return (
+    <div className={styles.rootPage}>
+      <NotebookSidebar />
+    </div>
+  );
 };
 
 export default Diary;

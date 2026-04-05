@@ -1,0 +1,67 @@
+.root {
+  width: 100%;
+  height: 60px;
+  background-color: var(--primary-dark);
+  border-top-right-radius: 25px;
+  box-shadow: 0 4px 4px 0 rgba(0, 0, 0, 0.25);
+  position: relative;
+}
+
+.clipWrapper {
+  position: absolute;
+  top: -55%;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+
+  display: flex;
+  justify-content: space-between;
+  padding-right: 20px;
+  padding-left: 15px;
+
+  z-index: 2;
+}
+
+.inputWrapper {
+  position: relative;
+  z-index: 1;
+
+  height: 100%;
+  display: flex;
+  align-items: center;
+
+  padding-left: 15px;
+  padding-right: 20px;
+}
+
+.input {
+  width: 100%;
+  height: 36px;
+  padding: 0 12px;
+  text-align: center;
+
+  background: transparent;
+  border: 3px dashed var(--primary);
+  border-radius: 5px;
+
+  color: var(--text);
+  font: inherit;
+
+  outline: none;
+  appearance: none;
+}
+
+.input::placeholder {
+  color: var(--text);
+  opacity: 0.8;
+}
+
+.input:focus,
+.input:not(:placeholder-shown) {
+  color: var(--primary-light);
+}
+
+.input:focus {
+  box-shadow: 0 0 0 2px color-mix(in srgb, var(--primary) 35%, transparent);
+}

@@ -2,9 +2,8 @@ import type { FC } from 'react';
 
 import { useLocation, useNavigate } from 'react-router-dom';
 
-import Bookmark from '@/packages/ui/Bookmark/Bookmark';
-import Logo from '@/packages/ui/Logo/Logo';
-
+import Bookmark from '../Bookmark/Bookmark';
+import Logo from '../Logo/Logo';
 import {
   navigationIcons,
   navigationPages,

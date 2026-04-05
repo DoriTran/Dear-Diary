@@ -3,7 +3,7 @@ import type { ButtonHTMLAttributes, FC, ReactNode } from 'react';
 import { faChevronDown } from '@fortawesome/free-solid-svg-icons';
 import clsx from 'clsx';
 
-import { Icon, type IconProps } from '@/packages/base';
+import { AdIcon, type AdIconProps } from '@/packages/base';
 
 import styles from './RoundMenu.module.css';
 
@@ -11,11 +11,11 @@ export interface RoundMenuProps extends Omit<
   ButtonHTMLAttributes<HTMLButtonElement>,
   'children'
 > {
-  icon: IconProps['icon'];
-  iconSize?: IconProps['size'];
+  icon: AdIconProps['icon'];
+  iconSize?: AdIconProps['size'];
   /** Small overlapping circle with a down caret at ~4 o'clock */
   showCaret?: boolean;
-  caretSize?: IconProps['size'];
+  caretSize?: AdIconProps['size'];
   children?: ReactNode;
 }
 
@@ -32,12 +32,12 @@ const RoundMenu: FC<RoundMenuProps> = ({
   return (
     <button type={type} className={clsx(styles.root, className)} {...rest}>
       <span className={styles.inner}>
-        <Icon icon={icon} size={iconSize} color="var(--primary-dark)" />
+        <AdIcon icon={icon} size={iconSize} color="var(--primary-dark)" />
         {children}
       </span>
       {showCaret && (
         <span className={styles.caretBadge} aria-hidden>
-          <Icon
+          <AdIcon
             icon={faChevronDown}
             size={caretSize}
             color="var(--primary-dark)"

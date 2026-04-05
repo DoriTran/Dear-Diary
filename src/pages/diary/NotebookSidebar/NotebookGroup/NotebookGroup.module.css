@@ -1,0 +1,35 @@
+.root {
+  position: relative;
+  margin-top: 16px;
+  padding: 22px 4px 10px 0px;
+  border: 2px dashed rgba(193, 140, 86, 0.65);
+  border-radius: 6px;
+  box-sizing: border-box;
+  box-shadow: 0 4px 4px 0 rgba(0, 0, 0, 0.25);
+  --grouped-item-margin-left: 9px;
+}
+
+.header {
+  position: absolute;
+  top: 0;
+  left: 20px;
+  transform: translateY(-50%);
+  z-index: 1;
+}
+
+.brush {
+  cursor: default;
+}
+
+.titleText {
+  font-size: var(--font-md);
+  font-weight: var(--font-semibold);
+  color: var(--primary-dark);
+}
+
+.body {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding-top: 6px;
+}
