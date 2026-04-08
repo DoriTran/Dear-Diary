@@ -52,7 +52,6 @@
   display: block;
   width: 100%;
   height: auto;
-  vertical-align: bottom;
   pointer-events: none;
   filter: drop-shadow(0 4px 6px rgba(0, 0, 0, 0.12));
 }

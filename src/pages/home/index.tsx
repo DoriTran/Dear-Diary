@@ -126,7 +126,7 @@ export default function Home() {
         gap: 16,
       }}
     >
-      <NotchedCard />
+      <NotchedCard notchedOnly />
       <NotchedCard selected />
       <NotchedCard>
         {'Sample label or note title — children render inside the NotchedCard.'}

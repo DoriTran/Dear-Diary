@@ -3,4 +3,5 @@
   flex-direction: row;
   height: 100vh;
   padding-left: var(--navigation-width);
+  gap: 12px;
 }
