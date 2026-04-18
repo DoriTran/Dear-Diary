@@ -39,16 +39,16 @@ const ChatboxItem = ({
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
     >
-      <button
-        type="button"
+      <span
         className={clsx(styles.configBtn, isHovered && styles.configBtnHovered)}
+        aria-hidden
       >
         <AdIcon
           icon={faGripLinesVertical}
           size="20px"
           color="var(--primary-dark)"
         />
-      </button>
+      </span>
       <span className={styles.iconWrap} aria-hidden>
         <AdIcon icon={icon} size="20px" color="var(--primary-dark)" />
       </span>

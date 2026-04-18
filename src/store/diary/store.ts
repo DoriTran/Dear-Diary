@@ -1,4 +1,4 @@
-import { uuid } from 'uuidv4';
+import { v4 as uuidv4 } from 'uuid';
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 
@@ -11,7 +11,7 @@ import type {
 } from './type';
 
 import { idbStorage, nowIso } from '../helper';
-import { diaryInitialState } from './constants';
+import { diaryDummyState } from './constants';
 
 type Actions = {
   // CRUD
@@ -44,11 +44,11 @@ const ensureUnique = <T>(items: T[]) => Array.from(new Set(items));
 export const useDiaryStore = create<DiaryStore & Actions>()(
   persist(
     (set, get) => ({
-      ...diaryInitialState,
+      ...diaryDummyState,
 
       // ===== GROUP =====
       createGroup: (data) => {
-        const id = data.id ?? `gr:${uuid()}`;
+        const id = data.id ?? `gr:${uuidv4()}`;
         const createdAt = nowIso();
 
         const group: Group = {
@@ -137,7 +137,7 @@ export const useDiaryStore = create<DiaryStore & Actions>()(
 
       // ===== CHATBOX =====
       createChatbox: (data) => {
-        const id = data.id ?? `cb:${uuid()}`;
+        const id = data.id ?? `cb:${uuidv4()}`;
         const groupId = data.groupId ?? '';
         const createdAt = nowIso();
 
@@ -284,7 +284,7 @@ export const useDiaryStore = create<DiaryStore & Actions>()(
 
       // ===== MESSAGE =====
       createMessage: (data) => {
-        const id = data.id ?? `ms:${uuid()}`;
+        const id = data.id ?? `ms:${uuidv4()}`;
         const chatboxId = data.chatboxId ?? '';
         const createdAt = nowIso();
 

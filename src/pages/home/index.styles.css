@@ -11,8 +11,11 @@ body {
   display: flex;
   flex-direction: row;
   gap: 2rem;
+  height: 100vh;
   max-height: 100vh;
   overflow: auto;
+  width: 100vw;
+  justify-content: center;
 }
 
 .list {
