@@ -1,5 +1,4 @@
-export { default as AdDragDrop } from './AdDragDrop/AdDragDrop';
-export { default as useMonitor } from './AdDragDrop/useMonitor';
+export { AdDragDrop, useMonitor, useScrollOffset } from './AdDragDrop';
 export {
   default as AdIcon,
   type IconProps as AdIconProps,

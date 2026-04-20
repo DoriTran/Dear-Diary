@@ -1,113 +1,94 @@
-import type { FC, Dispatch, SetStateAction } from 'react';
-
-import { useRef, useState } from 'react';
+import { type FC, useState } from 'react';
 
 import './index.styles.css';
+import { AdDragDrop } from '@/packages/base';
 
-import AdDragDrop from '@/packages/base/AdDragDrop/AdDragDrop';
-import useScrollOffset from '@/packages/base/AdDragDrop/useScrollOffset';
-
-interface Item {
+/** Item nested under a group — includes `groupId` matching the parent group. */
+export interface GroupItem {
   id: string;
-  value: number;
+  groupId: string;
 }
 
-interface Group {
-  id: 'first' | 'second' | 'third';
-  value: string;
+/** Standalone row in the container (not inside a group). */
+export interface RootItem {
+  id: string;
 }
 
-const ItemCard: FC<{ group: string; item: Item }> = ({ group, item }) => {
+export type ContainerRow =
+  | { type: 'group'; id: string; items: GroupItem[] }
+  | ({ type: 'item' } & RootItem);
+
+const ItemBox: FC<{ label: string }> = ({ label }) => {
   return (
-    <AdDragDrop
-      sortInGroup="group"
-      data={{ id: item.id, value: item.value, group }}
-      from={`item ${item.id}`}
-    >
-      <div className="item" style={{ height: item.value }}>
-        <div className="drag-handle" data-handle>
-          ⠿
-        </div>
-        {item.id}
+    <AdDragDrop draggable>
+      <div className="item">
+        <span className="item-label">{label}</span>
       </div>
     </AdDragDrop>
   );
 };
 
-const List: FC<{
-  title: string;
-  items: Item[];
-  setItems: Dispatch<SetStateAction<Item[]>>;
-}> = ({ title, items, setItems }) => {
+const GroupBlock: FC<{ name: string; items: GroupItem[] }> = ({
+  name,
+  items,
+}) => {
   return (
-    <AdDragDrop
-      autoScroll
-      sortInGroup="container"
-      sortableGroup="group"
-      data={{ id: title, value: title }}
-      setSortableData={setItems}
-      from={`group ${title}`}
-    >
-      <div className="list" style={{ maxHeight: '700px', overflow: 'auto' }}>
-        <h3 className="list-title">{title}</h3>
-        {items.map((item) => (
-          <ItemCard key={item.id} group={title} item={item} />
-        ))}
+    <AdDragDrop draggable droppable>
+      <div className="group">
+        <div data-handle className="group-label">
+          || {name}
+        </div>
+        <div className="group-inner">
+          {items.map((item) => (
+            <ItemBox key={item.id} label={item.id} />
+          ))}
+        </div>
       </div>
     </AdDragDrop>
   );
 };
 
 const Home: FC = () => {
-  const [first, setFirst] = useState<Item[]>([
-    { id: 'C', value: 300 },
-    { id: 'A', value: 100 },
-    { id: 'B', value: 200 },
+  const [rows, _setRows] = useState<ContainerRow[]>([
+    {
+      type: 'group',
+      id: 'Group-1',
+      items: [
+        { id: 'item-1', groupId: 'group-1' },
+        { id: 'item-2', groupId: 'group-1' },
+      ],
+    },
+    { type: 'item', id: 'item-3' },
+    { type: 'item', id: 'item-4' },
+    {
+      type: 'group',
+      id: 'Group-2',
+      items: [
+        { id: 'item-5', groupId: 'group-2' },
+        { id: 'item-6', groupId: 'group-2' },
+        { id: 'item-7', groupId: 'group-2' },
+      ],
+    },
+    { type: 'item', id: 'item-8' },
   ]);
-
-  const [second, setSecond] = useState<Item[]>([{ id: 'D', value: 100 }]);
-
-  const [third, setThird] = useState<Item[]>([{ id: 'E', value: 100 }]);
-
-  const maped: Record<
-    Group['id'],
-    { items: Item[]; setItems: Dispatch<SetStateAction<Item[]>> }
-  > = {
-    first: { items: first, setItems: setFirst },
-    second: { items: second, setItems: setSecond },
-    third: { items: third, setItems: setThird },
-  };
-
-  const [groups, setGroups] = useState<Group[]>([
-    { id: 'first', value: 'first' },
-    { id: 'second', value: 'second' },
-    { id: 'third', value: 'third' },
-  ]);
-
-  const containerRef = useRef<HTMLDivElement | null>(null);
-  const extraOffset = useScrollOffset(containerRef);
 
   return (
-    <>
-      <AdDragDrop
-        autoScroll
-        extraScrollOffset={extraOffset}
-        sortableGroup="container"
-        setSortableData={setGroups}
-        from="container"
-      >
-        <div ref={containerRef} className="container">
-          {groups.map((group) => (
-            <List
-              key={group.id}
-              title={group.value}
-              items={maped[group.id].items}
-              setItems={maped[group.id].setItems}
-            />
-          ))}
+    <div className="stacked-root">
+      <AdDragDrop droppable>
+        <div className="stacked-container">
+          <span className="container-label">Container</span>
+          <div className="stacked-list">
+            {rows.map((row) =>
+              row.type === 'group' ? (
+                <GroupBlock key={row.id} name={row.id} items={row.items} />
+              ) : (
+                <ItemBox key={row.id} label={row.id} />
+              ),
+            )}
+          </div>
         </div>
       </AdDragDrop>
-    </>
+    </div>
   );
 };
 

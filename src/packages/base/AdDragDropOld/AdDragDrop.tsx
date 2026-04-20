@@ -19,6 +19,10 @@ import useDropping, {
   type UseDroppingOptions,
   type UseDroppingResult,
 } from './useDropping';
+import useSortable, {
+  type UseSortableOptions,
+  type UseSortableResult,
+} from './useSortable';
 
 export interface DragStyle {
   base?: CSSProperties;
@@ -35,11 +39,8 @@ export interface DragClassName {
 }
 
 export interface AdDragDropProps extends Partial<AutoScrollOptions> {
-  /** Enables drag registration; set with drag-related options. */
-  draggable?: boolean;
-
   /* dragging options */
-  dragData?: UseDraggingOptions['dragData'];
+  data?: UseDraggingOptions['data'];
   canDrag?: UseDraggingOptions['canDrag'];
   onDragStart?: UseDraggingOptions['onDragStart'];
   onDrag?: UseDraggingOptions['onDrag'];
@@ -48,9 +49,6 @@ export interface AdDragDropProps extends Partial<AutoScrollOptions> {
   onGenerateOverlay?: UseDraggingOptions['onGenerateOverlay'];
   dragDeps?: unknown[];
   drag?: Partial<UseDraggingOptions>;
-
-  /** Enables drop target registration; set with drop-related options. */
-  droppable?: boolean;
 
   /* dropping options */
   dropData?: UseDroppingOptions['data'];
@@ -64,13 +62,13 @@ export interface AdDragDropProps extends Partial<AutoScrollOptions> {
   drop?: Partial<UseDroppingOptions>;
 
   /* sortable options */
-  // sortInGroup?: UseSortableOptions['sortInGroup'];
-  // sortableGroup?: UseSortableOptions['sortableGroup'];
-  // setSortableData?: UseSortableOptions['setSortableData'];
-  // onSortIndexChange?: UseSortableOptions['onSortIndexChange'];
-  // onSortable?: UseSortableOptions['onSortable'];
-  // extraScrollOffset?: UseSortableOptions['extraScrollOffset'];
-  // motions?: UseSortableOptions['motions'];
+  sortInGroup?: UseSortableOptions['sortInGroup'];
+  sortableGroup?: UseSortableOptions['sortableGroup'];
+  setSortableData?: UseSortableOptions['setSortableData'];
+  onSortIndexChange?: UseSortableOptions['onSortIndexChange'];
+  onSortable?: UseSortableOptions['onSortable'];
+  extraScrollOffset?: UseSortableOptions['extraScrollOffset'];
+  motions?: UseSortableOptions['motions'];
 
   style?: DragStyle;
   className?: DragClassName | string;
@@ -83,8 +81,7 @@ export interface AdDragDropProps extends Partial<AutoScrollOptions> {
 
 const AdDragDrop: FC<AdDragDropProps> = (props) => {
   const {
-    draggable = false,
-    dragData,
+    data,
     canDrag,
     onDragStart,
     onDrag,
@@ -96,7 +93,6 @@ const AdDragDrop: FC<AdDragDropProps> = (props) => {
     overlay,
     drag,
 
-    droppable = false,
     dropData,
     canDrop,
     onCatch,
@@ -112,13 +108,13 @@ const AdDragDrop: FC<AdDragDropProps> = (props) => {
     horizontal,
     vertical,
 
-    // sortInGroup,
-    // motions = {},
-    // sortableGroup,
-    // setSortableData,
-    // onSortIndexChange,
-    // onSortable,
-    // extraScrollOffset = { scrollLeft: 0, scrollTop: 0 },
+    sortInGroup,
+    motions = {},
+    sortableGroup,
+    setSortableData,
+    onSortIndexChange,
+    onSortable,
+    extraScrollOffset = { scrollLeft: 0, scrollTop: 0 },
 
     style = {},
     className = '',
@@ -134,42 +130,38 @@ const AdDragDrop: FC<AdDragDropProps> = (props) => {
   const ref = useRef<HTMLElement | null>(null);
   const handle = useRef<HTMLElement | null>(null);
 
-  const {
-    draggable: isDraggable,
-    dragging,
-    container,
-    dragStyle,
-  }: UseDraggingResult = useDragging(
-    {
-      ref,
-      handle,
-      dragData,
-      canDrag,
-      onDragStart,
-      onDrag,
-      onDrop,
-      onTargetChange,
-      onGenerateOverlay,
-      native,
-      overlay: !!overlay,
-      ...drag,
-      draggable,
-    },
-    dragDeps,
-  );
+  const { draggable, dragging, container, dragStyle }: UseDraggingResult =
+    useDragging(
+      {
+        ref,
+        handle,
+        ...(data && { data }),
+        ...(canDrag && { canDrag }),
+        ...(onDragStart && { onDragStart }),
+        ...(onDrag && { onDrag }),
+        ...(onDrop && { onDrop }),
+        ...(onTargetChange && { onTargetChange }),
+        ...(onGenerateOverlay && { onGenerateOverlay }),
+        ...(native && { native }),
+        ...(overlay && { overlay: true }),
+        ...(sortInGroup && { sortable: sortInGroup }),
+        ...(drag ?? {}),
+      },
+      dragDeps,
+    );
 
-  const { droppable: isDroppable, hovering }: UseDroppingResult = useDropping(
+  const { droppable, hovering }: UseDroppingResult = useDropping(
     {
       ref,
-      data: dropData,
-      canDrop,
-      onCatch,
-      onDragEnter,
-      onDragLeave,
-      cursorEffect,
-      sticky,
-      ...drop,
-      droppable,
+      ...(dropData && { data: dropData }),
+      ...(canDrop && { canDrop }),
+      ...(onCatch && { onCatch }),
+      ...(onDragEnter && { onDragEnter }),
+      ...(onDragLeave && { onDragLeave }),
+      ...(cursorEffect && { cursorEffect }),
+      ...(sticky && { sticky }),
+      ...(sortableGroup && { sortableGroup }),
+      ...(drop ?? {}),
     },
     dropDeps,
   );
@@ -177,19 +169,27 @@ const AdDragDrop: FC<AdDragDropProps> = (props) => {
   useAutoScroll(
     {
       ref,
-      autoScroll: (autoScroll || horizontal || vertical) && isDroppable,
+      autoScroll: (autoScroll || horizontal || vertical) && droppable,
       autoScrollWindow,
       allowedAxis: horizontal ? 'horizontal' : vertical ? 'vertical' : 'all',
     },
     // dependency array is handled inside hook
   );
 
+  const { motioned, hidden }: UseSortableResult = useSortable({
+    ref,
+    sortInGroup,
+    sortableGroup,
+    setSortableData,
+    onSortIndexChange,
+    onSortable,
+    extraScrollOffset,
+    children,
+    motions,
+  });
+
   useEffect(() => {
-    if (!ref.current || !draggable) return;
-    console.log(
-      'useEffect',
-      ref.current.querySelector<HTMLElement>('[data-handle]'),
-    );
+    if (!ref.current) return;
     handle.current = ref.current.querySelector<HTMLElement>('[data-handle]');
   });
 
@@ -205,6 +205,14 @@ const AdDragDrop: FC<AdDragDropProps> = (props) => {
     return children;
   }
 
+  if (sortInGroup && typeof children.type !== 'string') {
+    console.warn(
+      `[AdDragDrop] The component "${
+        (children as { type?: { name?: string } }).type?.name || 'Unknown'
+      }" may not animate properly because it does not forward its ref.`,
+    );
+  }
+
   const classNames =
     typeof className === 'string'
       ? {
@@ -214,9 +222,8 @@ const AdDragDrop: FC<AdDragDropProps> = (props) => {
         }
       : className;
 
-  // const renderedChild: ReactElement =
-  //   sortInGroup && motioned ? motioned : children;
-  const renderedChild: ReactElement = children;
+  const renderedChild: ReactElement =
+    sortInGroup && motioned ? motioned : children;
 
   return (
     <>
@@ -226,9 +233,13 @@ const AdDragDrop: FC<AdDragDropProps> = (props) => {
           ...(children.props as { style?: CSSProperties }).style,
           ...(dragging && style.base),
           ...(hovering && style.hover),
-          ...(isDraggable && {
+          ...(draggable && {
             opacity: !showOrigin && dragging ? 0 : 1,
             cursor: dragging ? 'grabbing' : 'grab',
+          }),
+          ...(sortInGroup && {
+            ...(hidden && { display: 'none', width: 0, height: 0 }),
+            transition: 'width 0.3s ease-in-out, height 0.3s ease-in-out',
           }),
         } as CSSProperties,
         className: clsx(
@@ -236,6 +247,8 @@ const AdDragDrop: FC<AdDragDropProps> = (props) => {
           dragging && classNames?.base,
           hovering && classNames?.hover,
         ),
+        ...(sortInGroup && { 'data-sortable': sortInGroup }),
+        ...(sortableGroup && { 'data-sortable-group': sortableGroup }),
       } as any)}
 
       {container &&

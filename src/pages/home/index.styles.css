@@ -88,3 +88,77 @@ body {
   font-weight: bold;
   box-shadow: 0 0 10px rgba(255, 180, 200, 0.5);
 }
+
+/* Stacked home: container → groups + root items (wireframe layout) */
+.stacked-root {
+  width: 100%;
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  padding: 2rem 1rem;
+  box-sizing: border-box;
+}
+
+.stacked-container {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  width: min(420px, 100%);
+  padding: 1.25rem;
+  background: #fff;
+  border-radius: 12px;
+  border: 1px solid rgba(255, 105, 180, 0.35);
+  box-shadow: 0 2px 8px rgba(255, 153, 204, 0.3);
+}
+
+.container-label {
+  position: absolute;
+  top: 0.5rem;
+  left: 0.75rem;
+  font-size: 0.7rem;
+  font-weight: 600;
+  color: rgba(255, 105, 180, 0.95);
+  letter-spacing: 0.02em;
+  pointer-events: none;
+}
+
+.stacked-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  margin-top: 1.5rem;
+}
+
+.group {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  padding: 1rem 0.75rem 0.75rem;
+  background: #fff;
+  border-radius: 10px;
+  border: 1px solid rgba(255, 105, 180, 0.45);
+}
+
+.group-label {
+  position: absolute;
+  top: 0.4rem;
+  left: 0.65rem;
+  font-size: 0.65rem;
+  font-weight: 600;
+  color: rgba(255, 105, 180, 0.95);
+}
+
+.group-inner {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  margin-top: 0.75rem;
+}
+
+.item-label {
+  flex: 1;
+  text-align: center;
+  font-size: 0.9rem;
+  color: #5c3d4a;
+}

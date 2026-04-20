@@ -1,5 +1,5 @@
 import { dropTargetForElements } from '@atlaskit/pragmatic-drag-and-drop/element/adapter';
-import { useEffect, useState, type RefObject } from 'react';
+import { useEffect, useMemo, useState, type RefObject } from 'react';
 
 import type {
   CanDrop as CanDropFn,
@@ -12,7 +12,6 @@ import type {
 
 const dropKeys = [
   'ref',
-  'droppable',
   'data',
   'getData',
   'canDrop',
@@ -33,9 +32,6 @@ type StickyArgs = Parameters<NonNullable<DropTargetOptions['getIsSticky']>>[0];
 
 export interface UseDroppingOptions extends Record<string, unknown> {
   ref: RefObject<HTMLElement | null>;
-
-  /** When false, drop target behavior is not registered. */
-  droppable?: boolean;
 
   data?:
     | Record<string, unknown>
@@ -65,10 +61,16 @@ export default function useDropping(
 ): UseDroppingResult {
   const [hovering, setHovering] = useState(false);
 
+  const isDroppable = useMemo(() => {
+    const { ref, ...otherDrops } = drops;
+    void ref;
+    return Object.keys(otherDrops).length !== 0;
+  }, [drops]);
+
   useEffect(() => {
     const el = drops.ref?.current ?? null;
 
-    if (!el || !drops.droppable) return;
+    if (!el || !isDroppable) return;
 
     const otherDrops: Record<string, unknown> = Object.fromEntries(
       Object.entries(drops).filter(
@@ -156,10 +158,10 @@ export default function useDropping(
 
       ...otherDrops,
     });
-  }, [drops, hovering, ...dependencies]);
+  }, [drops, isDroppable, hovering, ...dependencies]);
 
   return {
-    droppable: Boolean(drops.droppable),
+    droppable: isDroppable,
     hovering,
   };
 }

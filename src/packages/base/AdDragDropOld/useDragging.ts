@@ -2,7 +2,7 @@ import { draggable } from '@atlaskit/pragmatic-drag-and-drop/element/adapter';
 import { disableNativeDragPreview } from '@atlaskit/pragmatic-drag-and-drop/element/disable-native-drag-preview';
 import { preserveOffsetOnSource } from '@atlaskit/pragmatic-drag-and-drop/element/preserve-offset-on-source';
 import { setCustomNativeDragPreview } from '@atlaskit/pragmatic-drag-and-drop/element/set-custom-native-drag-preview';
-import { useEffect, useState, type RefObject } from 'react';
+import { useEffect, useMemo, useState, type RefObject } from 'react';
 
 import type {
   DragArgs,
@@ -24,10 +24,7 @@ export interface UseDraggingOptions {
   ref: RefObject<HTMLElement | null>;
   handle?: RefObject<HTMLElement | null>;
 
-  /** When false, drag behavior is not registered. */
-  draggable?: boolean;
-
-  dragData?:
+  data?:
     | Record<string, unknown>
     | ((args: GetFeedbackArgs) => Record<string, unknown>);
 
@@ -75,27 +72,37 @@ export default function useDragging(
 
   useMonitor(
     {
-      canMonitor: ({ source }) => source.element === drags.ref.current,
+      canMonitor: ({ data }) => {
+        const id = (drags.data as { id?: string })?.id;
+        return data.id === id || `${String(data.id)}-clone` === id;
+      },
+
       onDrag: () => setDragging(true),
       onDrop: () => setDragging(false),
     },
-    [drags.ref],
+    [drags.data],
   );
+
+  const isDraggable = useMemo(() => {
+    const { handle, ...others } = drags;
+    void handle;
+    return Object.keys(others).length !== 0;
+  }, [drags]);
 
   useEffect(() => {
     const el = drags.ref.current;
     const handle = drags.handle?.current ?? undefined;
 
-    if (!el || !drags.draggable) return;
+    if (!el || !isDraggable) return;
 
     return draggable({
       element: el,
       dragHandle: handle,
 
       getInitialData: (args: any) =>
-        typeof drags.dragData === 'function'
-          ? drags.dragData(args)
-          : (drags.dragData ?? {}),
+        typeof drags.data === 'function'
+          ? drags.data(args)
+          : (drags.data ?? {}),
 
       canDrag: (args: any) => {
         if (drags.canDrag === undefined) return true;
@@ -233,10 +240,10 @@ export default function useDragging(
         });
       },
     });
-  }, [drags, offset, container, ...dependencies]);
+  }, [drags, isDraggable, offset, container, ...dependencies]);
 
   return {
-    draggable: Boolean(drags.draggable),
+    draggable: isDraggable,
     dragging,
     container,
     dragStyle: {
