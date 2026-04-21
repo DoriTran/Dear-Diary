@@ -1,6 +1,7 @@
 import { dropTargetForElements } from '@atlaskit/pragmatic-drag-and-drop/element/adapter';
-import { useEffect, useState, type RefObject } from 'react';
+import { useEffect, useMemo, useState, type RefObject } from 'react';
 
+import type { LogDebugEvent } from './logEvents';
 import type {
   CanDrop as CanDropFn,
   DropArgs,
@@ -9,6 +10,8 @@ import type {
   DropTargetOptions,
   GetDataArgs,
 } from './type';
+
+import { logEvents } from './logEvents';
 
 const dropKeys = [
   'ref',
@@ -20,7 +23,9 @@ const dropKeys = [
   'onDragEnter',
   'onDragLeave',
   'cursorEffect',
+  'stopDropPropagation',
   'sticky',
+  'logEvents',
 ] as const;
 
 type DropKey = (typeof dropKeys)[number];
@@ -51,7 +56,22 @@ export interface UseDroppingOptions extends Record<string, unknown> {
 
   cursorEffect?: string | ((arg: DropEffectArgs & { data: any }) => string);
 
+  /**
+   * When enabled, only the top-most dropTarget will handle a drop.
+   * This is useful for nested drop targets where you want "inner wins".
+   */
+  stopDropPropagation?: boolean;
+
   sticky?: boolean | ((arg: StickyArgs & { data: any }) => boolean);
+
+  /**
+   * Which events to log (debugging only).
+   * Drop-target events are different from drag-source monitor events:
+   * - `dragEnter` logs when a draggable enters this target
+   * - `dragLeave` logs when a draggable leaves this target
+   * - `catch` logs when this target receives a drop (`onDrop`)
+   */
+  logEvents?: readonly LogDebugEvent[];
 }
 
 export interface UseDroppingResult {
@@ -64,6 +84,16 @@ export default function useDropping(
   dependencies: unknown[] = [],
 ): UseDroppingResult {
   const [hovering, setHovering] = useState(false);
+
+  const log = useMemo(
+    () => new Set<LogDebugEvent>(drops.logEvents ?? []),
+    [drops.logEvents],
+  );
+  const logEvent: (
+    enabled: ReadonlySet<LogDebugEvent>,
+    event: LogDebugEvent,
+    payload: unknown,
+  ) => void = logEvents;
 
   useEffect(() => {
     const el = drops.ref?.current ?? null;
@@ -102,7 +132,23 @@ export default function useDropping(
       /* -------------------------------- DROP ------------------------------- */
 
       onDrop: ({ source, location, self }: DropArgs) => {
+        if (el.querySelector('[data-stop-drop-propagation]') !== null) {
+          const topMostElement = location.current?.dropTargets?.[0]?.element;
+
+          if (topMostElement !== el) {
+            setHovering(false);
+            return;
+          }
+        }
+
         drops.onCatch?.({
+          data: source.data,
+          source,
+          location,
+          self,
+        });
+
+        logEvent(log, 'catch', {
           data: source.data,
           source,
           location,
@@ -122,6 +168,13 @@ export default function useDropping(
           self,
         });
 
+        logEvent(log, 'dragEnter', {
+          data: source.data,
+          source,
+          location,
+          self,
+        });
+
         setHovering(true);
       },
 
@@ -129,6 +182,13 @@ export default function useDropping(
 
       onDragLeave: ({ source, location, self }: DragLeaveArgs) => {
         drops.onDragLeave?.({
+          data: source.data,
+          source,
+          location,
+          self,
+        });
+
+        logEvent(log, 'dragLeave', {
           data: source.data,
           source,
           location,
@@ -156,7 +216,7 @@ export default function useDropping(
 
       ...otherDrops,
     });
-  }, [drops, hovering, ...dependencies]);
+  }, [drops, hovering, log, ...dependencies]);
 
   return {
     droppable: Boolean(drops.droppable),

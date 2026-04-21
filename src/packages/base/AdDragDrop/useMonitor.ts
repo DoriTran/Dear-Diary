@@ -20,6 +20,9 @@ type TargetChangeArg = ExtractArg<MonitorOptions['onDropTargetChange']>;
 type PreviewArg = ExtractArg<MonitorOptions['onGenerateDragPreview']>;
 
 export interface UseMonitorOptions {
+  /** When false, no monitor is registered. Defaults to true. */
+  enabled?: boolean;
+
   canMonitor?: boolean | ((arg: WithData<CanMonitorArg>) => boolean);
 
   onDragStart?: (arg: WithData<DragStartArg>) => void;
@@ -35,6 +38,7 @@ const useMonitor = (
   monitorDeps: unknown[] = [],
 ): void => {
   const {
+    enabled = true,
     canMonitor,
     onDragStart,
     onDrag,
@@ -44,6 +48,8 @@ const useMonitor = (
   } = options;
 
   useEffect(() => {
+    if (!enabled) return;
+
     return monitorForElements({
       canMonitor: ({ initial, source }) => {
         if (canMonitor === undefined) return true;
@@ -64,6 +70,7 @@ const useMonitor = (
         onGenerateOverlay?.({ ...arg, data: arg.source.data }),
     });
   }, [
+    enabled,
     canMonitor,
     onDragStart,
     onDrag,

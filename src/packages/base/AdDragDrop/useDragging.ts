@@ -2,8 +2,9 @@ import { draggable } from '@atlaskit/pragmatic-drag-and-drop/element/adapter';
 import { disableNativeDragPreview } from '@atlaskit/pragmatic-drag-and-drop/element/disable-native-drag-preview';
 import { preserveOffsetOnSource } from '@atlaskit/pragmatic-drag-and-drop/element/preserve-offset-on-source';
 import { setCustomNativeDragPreview } from '@atlaskit/pragmatic-drag-and-drop/element/set-custom-native-drag-preview';
-import { useEffect, useState, type RefObject } from 'react';
+import { useEffect, useMemo, useState, type RefObject } from 'react';
 
+import type { LogDebugEvent } from './logEvents';
 import type {
   DragArgs,
   DragDropArgs,
@@ -11,6 +12,7 @@ import type {
   DragStartArgs,
 } from './type';
 
+import { logEvents } from './logEvents';
 import useMonitor from './useMonitor';
 
 type GetFeedbackArgs = {
@@ -42,6 +44,12 @@ export interface UseDraggingOptions {
 
   native?: boolean;
   overlay?: boolean;
+
+  /**
+   * Which monitor events to log.
+   * Pass `[]` to turn logging off.
+   */
+  logEvents?: readonly LogDebugEvent[];
 }
 
 export interface UseDraggingResult {
@@ -73,13 +81,45 @@ export default function useDragging(
     top: 0,
   });
 
+  const log = useMemo(
+    () => new Set<LogDebugEvent>(drags.logEvents ?? []),
+    [drags.logEvents],
+  );
+
+  const logEnabled = log.size > 0;
+  const logEvent: (
+    enabled: ReadonlySet<LogDebugEvent>,
+    event: LogDebugEvent,
+    payload: unknown,
+  ) => void = logEvents;
+
   useMonitor(
     {
-      canMonitor: ({ source }) => source.element === drags.ref.current,
-      onDrag: () => setDragging(true),
-      onDrop: () => setDragging(false),
+      enabled: Boolean(drags.draggable) || logEnabled,
+      canMonitor: ({ source }) => {
+        const root = drags.ref.current;
+        if (!root) return false;
+        return source.element === root;
+      },
+      onDragStart: (arg) => {
+        logEvent(log, 'dragStart', arg);
+      },
+      onDrag: (arg) => {
+        setDragging(true);
+        logEvent(log, 'drag', arg);
+      },
+      onTargetChange: (arg) => {
+        logEvent(log, 'targetChange', arg);
+      },
+      onDrop: (arg) => {
+        setDragging(false);
+        logEvent(log, 'drop', arg);
+      },
+      onGenerateOverlay: (arg) => {
+        logEvent(log, 'preview', arg);
+      },
     },
-    [drags.ref],
+    [drags.ref, drags.draggable, logEnabled, log],
   );
 
   useEffect(() => {

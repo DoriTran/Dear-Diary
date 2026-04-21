@@ -20,7 +20,7 @@ export type ContainerRow =
 
 const ItemBox: FC<{ label: string }> = ({ label }) => {
   return (
-    <AdDragDrop draggable>
+    <AdDragDrop draggable logEvents={['dragStart']}>
       <div className="item">
         <span className="item-label">{label}</span>
       </div>
@@ -33,7 +33,13 @@ const GroupBlock: FC<{ name: string; items: GroupItem[] }> = ({
   items,
 }) => {
   return (
-    <AdDragDrop draggable droppable>
+    <AdDragDrop
+      dropData={{ id: name }}
+      draggable
+      droppable
+      logEvents={['catch']}
+      stopDropPropagation
+    >
       <div className="group">
         <div data-handle className="group-label">
           || {name}
@@ -74,7 +80,11 @@ const Home: FC = () => {
 
   return (
     <div className="stacked-root">
-      <AdDragDrop droppable>
+      <AdDragDrop
+        dropData={{ id: 'Container' }}
+        droppable
+        logEvents={['catch']}
+      >
         <div className="stacked-container">
           <span className="container-label">Container</span>
           <div className="stacked-list">

@@ -10,6 +10,7 @@ import {
 } from 'react';
 import { createPortal } from 'react-dom';
 
+import { ALL_LOG_DEBUG_EVENTS, type LogDebugEvent } from './logEvents';
 import useAutoScroll, { type AutoScrollOptions } from './useAutoScroll';
 import useDragging, {
   type UseDraggingOptions,
@@ -59,6 +60,7 @@ export interface AdDragDropProps extends Partial<AutoScrollOptions> {
   onDragEnter?: UseDroppingOptions['onDragEnter'];
   onDragLeave?: UseDroppingOptions['onDragLeave'];
   cursorEffect?: UseDroppingOptions['cursorEffect'];
+  stopDropPropagation?: UseDroppingOptions['stopDropPropagation'];
   sticky?: UseDroppingOptions['sticky'];
   dropDeps?: unknown[];
   drop?: Partial<UseDroppingOptions>;
@@ -71,6 +73,11 @@ export interface AdDragDropProps extends Partial<AutoScrollOptions> {
   // onSortable?: UseSortableOptions['onSortable'];
   // extraScrollOffset?: UseSortableOptions['extraScrollOffset'];
   // motions?: UseSortableOptions['motions'];
+  /**
+   * Which monitor events to log. Defaults to all (see `ALL_LOG_DEBUG_EVENTS`).
+   * Pass `[]` to turn logging off.
+   */
+  logEvents?: LogDebugEvent[];
 
   style?: DragStyle;
   className?: DragClassName | string;
@@ -103,6 +110,7 @@ const AdDragDrop: FC<AdDragDropProps> = (props) => {
     onDragEnter,
     onDragLeave,
     cursorEffect,
+    stopDropPropagation,
     sticky,
     dropDeps = [],
     drop,
@@ -119,6 +127,7 @@ const AdDragDrop: FC<AdDragDropProps> = (props) => {
     // onSortIndexChange,
     // onSortable,
     // extraScrollOffset = { scrollLeft: 0, scrollTop: 0 },
+    logEvents = ALL_LOG_DEBUG_EVENTS,
 
     style = {},
     className = '',
@@ -152,6 +161,7 @@ const AdDragDrop: FC<AdDragDropProps> = (props) => {
       onGenerateOverlay,
       native,
       overlay: !!overlay,
+      logEvents,
       ...drag,
       draggable,
     },
@@ -167,7 +177,9 @@ const AdDragDrop: FC<AdDragDropProps> = (props) => {
       onDragEnter,
       onDragLeave,
       cursorEffect,
+      stopDropPropagation,
       sticky,
+      logEvents,
       ...drop,
       droppable,
     },
@@ -186,10 +198,6 @@ const AdDragDrop: FC<AdDragDropProps> = (props) => {
 
   useEffect(() => {
     if (!ref.current || !draggable) return;
-    console.log(
-      'useEffect',
-      ref.current.querySelector<HTMLElement>('[data-handle]'),
-    );
     handle.current = ref.current.querySelector<HTMLElement>('[data-handle]');
   });
 
@@ -222,6 +230,7 @@ const AdDragDrop: FC<AdDragDropProps> = (props) => {
     <>
       {cloneElement(renderedChild, {
         ref,
+        'data-stop-drop-propagation': stopDropPropagation ? true : undefined,
         style: {
           ...(children.props as { style?: CSSProperties }).style,
           ...(dragging && style.base),
