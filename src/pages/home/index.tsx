@@ -18,9 +18,25 @@ export type ContainerRow =
   | { type: 'group'; id: string; items: GroupItem[] }
   | ({ type: 'item' } & RootItem);
 
-const ItemBox: FC<{ label: string }> = ({ label }) => {
+type DragItemBoxData = {
+  kind: 'itembox';
+  id: string;
+};
+
+const ItemBox: FC<{ id: string; label: string; free?: boolean }> = ({
+  id,
+  label,
+  free,
+}) => {
   return (
-    <AdDragDrop draggable logEvents={['dragStart']}>
+    <AdDragDrop
+      draggable
+      sortable
+      itemOf={free ? 'container' : 'group'}
+      validGroups={['container', 'group']}
+      dragData={{ kind: 'itembox', id } satisfies DragItemBoxData}
+      // logEvents={['dragStart']}
+    >
       <div className="item">
         <span className="item-label">{label}</span>
       </div>
@@ -28,16 +44,30 @@ const ItemBox: FC<{ label: string }> = ({ label }) => {
   );
 };
 
-const GroupBlock: FC<{ name: string; items: GroupItem[] }> = ({
-  name,
-  items,
-}) => {
+const GroupBlock: FC<{
+  name: string;
+  items: GroupItem[];
+  onCatchItemBox: (args: { itemId: string; groupId: string }) => void;
+}> = ({ name, items, onCatchItemBox }) => {
   return (
     <AdDragDrop
       dropData={{ id: name }}
       draggable
       droppable
-      logEvents={['catch']}
+      sortable
+      group="group"
+      itemOf="container"
+      onDragEnter={({ data }) => {
+        const maybe = data as Partial<DragItemBoxData> | undefined;
+        if (maybe?.kind !== 'itembox' || !maybe.id) return;
+        onCatchItemBox({ itemId: maybe.id, groupId: name });
+      }}
+      onCatch={({ data }) => {
+        const maybe = data as Partial<DragItemBoxData> | undefined;
+        if (maybe?.kind !== 'itembox' || !maybe.id) return;
+        onCatchItemBox({ itemId: maybe.id, groupId: name });
+      }}
+      // logEvents={['catch']}
       stopDropPropagation
     >
       <div className="group">
@@ -46,7 +76,7 @@ const GroupBlock: FC<{ name: string; items: GroupItem[] }> = ({
         </div>
         <div className="group-inner">
           {items.map((item) => (
-            <ItemBox key={item.id} label={item.id} />
+            <ItemBox key={item.id} id={item.id} label={item.id} />
           ))}
         </div>
       </div>
@@ -55,7 +85,7 @@ const GroupBlock: FC<{ name: string; items: GroupItem[] }> = ({
 };
 
 const Home: FC = () => {
-  const [rows, _setRows] = useState<ContainerRow[]>([
+  const [rows, setRows] = useState<ContainerRow[]>([
     {
       type: 'group',
       id: 'Group-1',
@@ -78,21 +108,80 @@ const Home: FC = () => {
     { type: 'item', id: 'item-8' },
   ]);
 
+  const moveItemBox = (
+    itemId: string,
+    target: { type: 'container' } | { type: 'group'; groupId: string },
+  ) => {
+    setRows((prev) => {
+      const existsInTarget =
+        target.type === 'container'
+          ? prev.some((r) => r.type === 'item' && r.id === itemId)
+          : prev.some(
+              (r) =>
+                r.type === 'group' &&
+                r.id === target.groupId &&
+                r.items.some((it) => it.id === itemId),
+            );
+
+      if (existsInTarget) return prev;
+
+      const stripped = prev
+        .filter((r) => !(r.type === 'item' && r.id === itemId))
+        .map((r) =>
+          r.type === 'group'
+            ? { ...r, items: r.items.filter((it) => it.id !== itemId) }
+            : r,
+        );
+
+      if (target.type === 'container') {
+        return [...stripped, { type: 'item', id: itemId }];
+      }
+
+      return stripped.map((r) => {
+        if (r.type !== 'group' || r.id !== target.groupId) return r;
+        return {
+          ...r,
+          items: [...r.items, { id: itemId, groupId: target.groupId }],
+        };
+      });
+    });
+  };
+
   return (
     <div className="stacked-root">
       <AdDragDrop
         dropData={{ id: 'Container' }}
         droppable
-        logEvents={['catch']}
+        sortable
+        group="container"
+        hostPreview
+        onDragEnter={({ data }) => {
+          const maybe = data as Partial<DragItemBoxData> | undefined;
+          if (maybe?.kind !== 'itembox' || !maybe.id) return;
+          moveItemBox(maybe.id, { type: 'container' });
+        }}
+        onCatch={({ data }) => {
+          const maybe = data as Partial<DragItemBoxData> | undefined;
+          if (maybe?.kind !== 'itembox' || !maybe.id) return;
+          moveItemBox(maybe.id, { type: 'container' });
+        }}
+        // logEvents={['catch']}
       >
         <div className="stacked-container">
           <span className="container-label">Container</span>
           <div className="stacked-list">
             {rows.map((row) =>
               row.type === 'group' ? (
-                <GroupBlock key={row.id} name={row.id} items={row.items} />
+                <GroupBlock
+                  key={row.id}
+                  name={row.id}
+                  items={row.items}
+                  onCatchItemBox={({ itemId, groupId }) =>
+                    moveItemBox(itemId, { type: 'group', groupId })
+                  }
+                />
               ) : (
-                <ItemBox key={row.id} label={row.id} />
+                <ItemBox key={row.id} id={row.id} label={row.id} />
               ),
             )}
           </div>

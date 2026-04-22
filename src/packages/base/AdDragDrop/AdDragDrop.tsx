@@ -10,7 +10,7 @@ import {
 } from 'react';
 import { createPortal } from 'react-dom';
 
-import { ALL_LOG_DEBUG_EVENTS, type LogDebugEvent } from './logEvents';
+import { type LogDebugEvent } from './logEvents';
 import useAutoScroll, { type AutoScrollOptions } from './useAutoScroll';
 import useDragging, {
   type UseDraggingOptions,
@@ -20,6 +20,7 @@ import useDropping, {
   type UseDroppingOptions,
   type UseDroppingResult,
 } from './useDropping';
+import useSortable from './useSortable';
 
 export interface DragStyle {
   base?: CSSProperties;
@@ -36,10 +37,8 @@ export interface DragClassName {
 }
 
 export interface AdDragDropProps extends Partial<AutoScrollOptions> {
-  /** Enables drag registration; set with drag-related options. */
-  draggable?: boolean;
-
-  /* dragging options */
+  /* Dragging options */
+  draggable?: boolean; // Enables drag registration;
   dragData?: UseDraggingOptions['dragData'];
   canDrag?: UseDraggingOptions['canDrag'];
   onDragStart?: UseDraggingOptions['onDragStart'];
@@ -50,10 +49,8 @@ export interface AdDragDropProps extends Partial<AutoScrollOptions> {
   dragDeps?: unknown[];
   drag?: Partial<UseDraggingOptions>;
 
-  /** Enables drop target registration; set with drop-related options. */
-  droppable?: boolean;
-
-  /* dropping options */
+  /* Dropping options */
+  droppable?: boolean; // Enables drop target registration;
   dropData?: UseDroppingOptions['data'];
   canDrop?: UseDroppingOptions['canDrop'];
   onCatch?: UseDroppingOptions['onCatch'];
@@ -65,20 +62,20 @@ export interface AdDragDropProps extends Partial<AutoScrollOptions> {
   dropDeps?: unknown[];
   drop?: Partial<UseDroppingOptions>;
 
-  /* sortable options */
-  // sortInGroup?: UseSortableOptions['sortInGroup'];
-  // sortableGroup?: UseSortableOptions['sortableGroup'];
-  // setSortableData?: UseSortableOptions['setSortableData'];
-  // onSortIndexChange?: UseSortableOptions['onSortIndexChange'];
-  // onSortable?: UseSortableOptions['onSortable'];
-  // extraScrollOffset?: UseSortableOptions['extraScrollOffset'];
-  // motions?: UseSortableOptions['motions'];
-  /**
-   * Which monitor events to log. Defaults to all (see `ALL_LOG_DEBUG_EVENTS`).
-   * Pass `[]` to turn logging off.
-   */
+  /* Sortable options */
+  sortable?: boolean; // Enables sortable registration, Overwrite drag preview behavior.
+  hostPreview?: boolean; // Register this element as a sortable drag preview host (must be static element).
+  group?: string; // Group identifier string for sortable group.
+  itemOf?: string; // Group identifier string that the item CURRENTLY belongs to.
+  validGroups?: string[] | undefined; // Group ids the item may sort into. Use itemOf if not provided.
+  onGroupChange?: (args: any) => void; // Drag into a different group.
+  onSortableIndexChange?: (args: any) => void; // Sortable item index changed.
+  extraScrollOffset?: { left: number; top: number }; // Extra scroll offset for sortable items.
+
+  /* Log Debug Options */
   logEvents?: LogDebugEvent[];
 
+  /* Other Options */
   style?: DragStyle;
   className?: DragClassName | string;
   overlay?: ReactElement | null;
@@ -90,6 +87,7 @@ export interface AdDragDropProps extends Partial<AutoScrollOptions> {
 
 const AdDragDrop: FC<AdDragDropProps> = (props) => {
   const {
+    /* Dragging options */
     draggable = false,
     dragData,
     canDrag,
@@ -103,6 +101,7 @@ const AdDragDrop: FC<AdDragDropProps> = (props) => {
     overlay,
     drag,
 
+    /* Dropping options */
     droppable = false,
     dropData,
     canDrop,
@@ -115,20 +114,26 @@ const AdDragDrop: FC<AdDragDropProps> = (props) => {
     dropDeps = [],
     drop,
 
+    /* Sortable options */
+    sortable = false,
+    hostPreview = false,
+    group,
+    itemOf,
+    validGroups,
+    onGroupChange,
+    onSortableIndexChange,
+    extraScrollOffset = { left: 0, top: 0 },
+
+    /* Auto scroll options */
     autoScroll,
     autoScrollWindow,
-    horizontal,
-    vertical,
+    horizontal, // Whether to auto scroll horizontally.
+    vertical, // Whether to auto scroll vertically.
 
-    // sortInGroup,
-    // motions = {},
-    // sortableGroup,
-    // setSortableData,
-    // onSortIndexChange,
-    // onSortable,
-    // extraScrollOffset = { scrollLeft: 0, scrollTop: 0 },
-    logEvents = ALL_LOG_DEBUG_EVENTS,
+    /* Log Debug Options */
+    logEvents = [],
 
+    /* Other Options */
     style = {},
     className = '',
 
@@ -196,6 +201,19 @@ const AdDragDrop: FC<AdDragDropProps> = (props) => {
     // dependency array is handled inside hook
   );
 
+  const { motioned, sortableGroups } = useSortable({
+    ref,
+    sortable,
+    hostPreview,
+    group,
+    itemOf,
+    validGroups,
+    onGroupChange,
+    onSortableIndexChange,
+    extraScrollOffset,
+    children,
+  });
+
   useEffect(() => {
     if (!ref.current || !draggable) return;
     handle.current = ref.current.querySelector<HTMLElement>('[data-handle]');
@@ -222,15 +240,17 @@ const AdDragDrop: FC<AdDragDropProps> = (props) => {
         }
       : className;
 
-  // const renderedChild: ReactElement =
-  //   sortInGroup && motioned ? motioned : children;
-  const renderedChild: ReactElement = children;
+  const renderedChild: ReactElement =
+    sortable && motioned ? motioned : children;
 
   return (
     <>
       {cloneElement(renderedChild, {
         ref,
         'data-stop-drop-propagation': stopDropPropagation ? true : undefined,
+        'data-sortable-groups': sortable
+          ? sortableGroups || undefined
+          : undefined,
         style: {
           ...(children.props as { style?: CSSProperties }).style,
           ...(dragging && style.base),
@@ -248,6 +268,7 @@ const AdDragDrop: FC<AdDragDropProps> = (props) => {
       } as any)}
 
       {container &&
+        !sortable &&
         createPortal(
           overlay ||
             cloneElement(children, {

@@ -30,7 +30,7 @@ export interface UseMonitorOptions {
   onDrop?: (arg: WithData<DropArg>) => void;
 
   onTargetChange?: (arg: WithData<TargetChangeArg>) => void;
-  onGenerateOverlay?: (arg: WithData<PreviewArg>) => void;
+  onGenerateDragPreview?: (arg: WithData<PreviewArg>) => void;
 }
 
 const useMonitor = (
@@ -44,7 +44,7 @@ const useMonitor = (
     onDrag,
     onDrop,
     onTargetChange,
-    onGenerateOverlay,
+    onGenerateDragPreview,
   } = options;
 
   useEffect(() => {
@@ -67,7 +67,7 @@ const useMonitor = (
         onTargetChange?.({ ...arg, data: arg.source.data }),
 
       onGenerateDragPreview: (arg) =>
-        onGenerateOverlay?.({ ...arg, data: arg.source.data }),
+        onGenerateDragPreview?.({ ...arg, data: arg.source.data }),
     });
   }, [
     enabled,
@@ -76,7 +76,7 @@ const useMonitor = (
     onDrag,
     onDrop,
     onTargetChange,
-    onGenerateOverlay,
+    onGenerateDragPreview,
     ...monitorDeps,
   ]);
 };

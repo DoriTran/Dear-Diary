@@ -115,7 +115,7 @@ export default function useDragging(
         setDragging(false);
         logEvent(log, 'drop', arg);
       },
-      onGenerateOverlay: (arg) => {
+      onGenerateDragPreview: (arg) => {
         logEvent(log, 'preview', arg);
       },
     },

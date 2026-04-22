@@ -5,6 +5,11 @@ export interface ScrollOffset {
   scrollTop: number;
 }
 
+/**
+ * Get the scroll offset of an element.
+ * Use for useSortable sortable prop in AdDragDrop.
+ * Fill the extraScrollOffset prop in useSortable.
+ */
 export default function useScrollOffset(
   ref: RefObject<HTMLElement | null>,
 ): ScrollOffset {
