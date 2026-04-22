@@ -59,6 +59,13 @@ export interface UseSortableResult {
   sortableGroups: string;
 }
 
+type SortableRect = {
+  top: number;
+  left: number;
+  right: number;
+  bottom: number;
+};
+
 export default function useSortable({
   ref,
   sortable,
@@ -79,7 +86,7 @@ export default function useSortable({
 
   const sortableGroups = useMemo(() => {
     if (!validGroups || validGroups.length === 0) {
-      return itemOf ?? '';
+      return itemOf ?? undefined;
     } else {
       return validGroups.join(',');
     }
@@ -89,7 +96,7 @@ export default function useSortable({
   /**
    * Only monitor items with the same sortable id as the container
    */
-  const monitorAnyItemBelongsTo = (
+  const monitorGroupsHavingItemSorting = (
     element: HTMLElement,
     targetGroup?: string,
   ) => {
@@ -109,18 +116,13 @@ export default function useSortable({
   const getSortableElements = (): Element[] => {
     return (
       Array.from(
-        ref.current?.querySelectorAll(`[data-sortable-item-of='${itemOf}']`) ??
+        ref.current?.querySelectorAll(`[data-sortable-item-of='${group}']`) ??
           [],
       ) ?? []
     );
   };
 
-  const getCachedRects = (): Array<{
-    top: number;
-    left: number;
-    right: number;
-    bottom: number;
-  }> => {
+  const getCachedRects = (): SortableRect[] => {
     const elRef = ref.current;
     if (!elRef) return [];
 
@@ -211,162 +213,153 @@ export default function useSortable({
   // #endregion
 
   // #region Sortable Host Preview
-  const previewRef = useRef<HTMLElement | null>(null);
-  const [offset, setOffset] = useState({ x: 0, y: 0 });
-  const [container, setContainer] = useState<HTMLElement | null>(null);
-  const [previewClone, setPreviewClone] = useState<HTMLElement | null>(null);
+  const previewSourceRef = useRef<HTMLElement | null>(null);
+  const previewContainerRef = useRef<HTMLElement | null>(null);
   const previewCloneRef = useRef<HTMLElement | null>(null);
-  const [style, setStyle] = useState({
-    width: 0,
-    height: 0,
-    left: 0,
-    top: 0,
-  });
 
-  useLayoutEffect(() => {
-    if (!hostPreview) return;
+  const offsetRef = useRef({ x: 0, y: 0 });
+  const sizeRef = useRef({ width: 0, height: 0 });
 
-    let disposed = false;
+  const cleanupPreview = () => {
+    const clone = previewCloneRef.current;
+    const container = previewContainerRef.current;
 
-    if (!container || !previewRef.current) {
-      previewCloneRef.current = null;
-      queueMicrotask(() => {
-        if (!disposed) setPreviewClone(null);
-      });
-
-      return () => {
-        disposed = true;
-      };
+    if (clone && clone.parentNode) {
+      clone.parentNode.removeChild(clone);
     }
 
-    const cloned = previewRef.current.cloneNode(true) as HTMLElement;
+    if (container && container.parentNode) {
+      container.parentNode.removeChild(container);
+    }
 
-    cloned.style.position = 'fixed';
-    cloned.style.pointerEvents = 'none';
-    cloned.style.zIndex = '2147483647';
-    cloned.style.margin = '0';
+    previewCloneRef.current = null;
+    previewContainerRef.current = null;
+    previewSourceRef.current = null;
+  };
 
-    previewCloneRef.current = cloned;
-    queueMicrotask(() => {
-      if (!disposed) setPreviewClone(cloned);
+  const stripDragDropAttributes = (root: HTMLElement) => {
+    const targets = [
+      root,
+      ...Array.from(root.querySelectorAll<HTMLElement>('*')),
+    ];
+
+    targets.forEach((node) => {
+      node.removeAttribute('draggable');
+      node.removeAttribute('data-drop-target-for-element');
+      node.removeAttribute('data-dragging');
+      node.removeAttribute('data-sortable-item-of');
+      node.removeAttribute('data-sortable-groups');
+      node.removeAttribute('data-stop-drop-propagation');
     });
+  };
 
-    return () => {
-      disposed = true;
-      previewCloneRef.current = null;
-      queueMicrotask(() => setPreviewClone(null));
-    };
-  }, [container]);
-
-  useLayoutEffect(() => {
-    if (!hostPreview) return;
-
-    if (!container || !previewClone) return;
-
-    container.appendChild(previewClone);
-
-    return () => {
-      if (previewClone.parentNode === container) {
-        container.removeChild(previewClone);
-      }
-    };
-  }, [container, previewClone]);
-
-  useLayoutEffect(() => {
-    if (!hostPreview) return;
-
+  const updatePreviewPosition = (pageX: number, pageY: number) => {
     const node = previewCloneRef.current;
     if (!node) return;
 
-    node.style.width = `${style.width}px`;
-    node.style.height = `${style.height}px`;
-    node.style.left = `${style.left}px`;
-    node.style.top = `${style.top}px`;
-  }, [style]);
+    node.style.left = `${pageX - offsetRef.current.x}px`;
+    node.style.top = `${pageY - offsetRef.current.y}px`;
+  };
 
   useMonitor(
     {
       enabled: Boolean(sortable) && Boolean(hostPreview),
       canMonitor: ({ source }) =>
-        monitorAnyItemBelongsTo(source.element, group),
-      onDragStart: ({ source, location }: DragStartArgs) => {
-        previewRef.current = source.element;
+        monitorGroupsHavingItemSorting(source.element, group),
 
-        const { pageX, pageY } = location.initial.input;
-
-        setStyle((prev) => ({
-          ...prev,
-          left: pageX - offset.x,
-          top: pageY - offset.y,
-        }));
-
-        const overlayContainer = document.createElement('div');
-
-        overlayContainer.style.position = 'fixed';
-        overlayContainer.style.zIndex = '2147483647';
-        overlayContainer.style.pointerEvents = 'none';
-
-        document.body.appendChild(overlayContainer);
-
-        setContainer(overlayContainer);
-      },
       onGenerateDragPreview: ({ location, source }: DragPreviewArgs) => {
         const rect = source.element.getBoundingClientRect();
         const { input } = location.current;
 
-        setOffset({
-          x: input.clientX - rect.x,
-          y: input.clientY - rect.y,
-        });
+        previewSourceRef.current = source.element;
 
-        setStyle((prev) => ({
-          ...prev,
+        offsetRef.current = {
+          x: input.clientX - rect.left,
+          y: input.clientY - rect.top,
+        };
+
+        sizeRef.current = {
           width: rect.width,
           height: rect.height,
-        }));
+        };
       },
-      onDrag: ({ location }: DragArgs) => {
-        setStyle((prev) => ({
-          ...prev,
-          left: location.current.input.pageX - offset.x,
-          top: location.current.input.pageY - offset.y,
-        }));
-      },
-      onDrop: () => {
-        if (container) {
-          document.body.removeChild(container);
-        }
 
-        previewCloneRef.current = null;
-        setPreviewClone(null);
-        setContainer(null);
-        previewRef.current = null;
+      onDragStart: ({ source, location }: DragStartArgs) => {
+        cleanupPreview();
+
+        previewSourceRef.current = source.element;
+
+        const overlayContainer = document.createElement('div');
+        overlayContainer.style.position = 'fixed';
+        overlayContainer.style.left = '0';
+        overlayContainer.style.top = '0';
+        overlayContainer.style.width = '0';
+        overlayContainer.style.height = '0';
+        overlayContainer.style.pointerEvents = 'none';
+        overlayContainer.style.zIndex = '2147483647';
+
+        const cloned = source.element.cloneNode(true) as HTMLElement;
+        stripDragDropAttributes(cloned);
+
+        cloned.style.position = 'fixed';
+        cloned.style.pointerEvents = 'none';
+        cloned.style.margin = '0';
+        cloned.style.zIndex = '2147483647';
+        cloned.style.boxSizing = 'border-box';
+        cloned.style.width = `${sizeRef.current.width}px`;
+        cloned.style.height = `${sizeRef.current.height}px`;
+
+        overlayContainer.appendChild(cloned);
+        document.body.appendChild(overlayContainer);
+
+        previewContainerRef.current = overlayContainer;
+        previewCloneRef.current = cloned;
+
+        const { pageX, pageY } = location.initial.input;
+        updatePreviewPosition(pageX, pageY);
+      },
+
+      onDrag: ({ location }: DragArgs) => {
+        updatePreviewPosition(
+          location.current.input.pageX,
+          location.current.input.pageY,
+        );
+      },
+
+      onDrop: () => {
+        cleanupPreview();
       },
     },
     [sortable, hostPreview, group, itemOf, validGroups],
   );
-  // #endregion
+
+  useLayoutEffect(() => {
+    return () => {
+      cleanupPreview();
+    };
+  }, []);
 
   // #region Sortable Index Calculation
-  const cachedRects = useRef<DOMRect[]>([]);
+  const cachedRects = useRef<SortableRect[]>([]);
 
   useMonitor(
     {
       enabled: Boolean(sortable) && Boolean(group),
       canMonitor: ({ source }) =>
-        monitorAnyItemBelongsTo(source.element, group),
-      // onDragStart: ({ source, location }: DragStartArgs) => {
-      //   console.log('onDragStart', group);
-      // },
+        monitorGroupsHavingItemSorting(source.element, group),
+      onDragStart: () => {
+        cachedRects.current = getCachedRects();
+        console.log(group, cachedRects.current);
+      },
       // onDrag: ({ source, location }) => {
       //   console.log('onDrag', group);
       // },
       // onDrop: ({ source }) => {
       //   console.log('onDrop', group);
       // },
-      // onTargetChange: ({ source, location }) => {
-      //   console.log('onTargetChange', group);
-      // },
+      onTargetChange: (data) => {
+        console.log('onTargetChange', group, data);
+      },
       // onGenerateDragPreview: ({ source, location }) => {
       //   console.log('onGenerateDragPreview', group);
       // },

@@ -96,6 +96,8 @@ export default function useDropping(
   ) => void = logEvents;
 
   useEffect(() => {
+    console.log(drops);
+
     const el = drops.ref?.current ?? null;
 
     if (!el || !drops.droppable) return;
@@ -216,7 +218,7 @@ export default function useDropping(
 
       ...otherDrops,
     });
-  }, [drops, hovering, log, ...dependencies]);
+  }, [...Object.values(drops), ...dependencies]);
 
   return {
     droppable: Boolean(drops.droppable),

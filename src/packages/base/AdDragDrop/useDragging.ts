@@ -22,7 +22,7 @@ type GetFeedbackArgs = {
   [key: string]: any;
 };
 
-export interface UseDraggingOptions {
+export interface UseDraggingOptions extends Record<string, unknown> {
   ref: RefObject<HTMLElement | null>;
   handle?: RefObject<HTMLElement | null>;
 
@@ -66,7 +66,7 @@ export interface UseDraggingResult {
 }
 
 export default function useDragging(
-  drags: UseDraggingOptions,
+  drags: UseDraggingOptions = {} as UseDraggingOptions,
   dependencies: unknown[] = [],
 ): UseDraggingResult {
   const [dragging, setDragging] = useState(false);
@@ -273,7 +273,7 @@ export default function useDragging(
         });
       },
     });
-  }, [drags, offset, container, ...dependencies]);
+  }, [...Object.values(drags), offset, container, ...dependencies]);
 
   return {
     draggable: Boolean(drags.draggable),

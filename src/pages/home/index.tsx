@@ -35,7 +35,7 @@ const ItemBox: FC<{ id: string; label: string; free?: boolean }> = ({
       itemOf={free ? 'container' : 'group'}
       validGroups={['container', 'group']}
       dragData={{ kind: 'itembox', id } satisfies DragItemBoxData}
-      // logEvents={['dragStart']}
+      logEvents={['dragStart']}
     >
       <div className="item">
         <span className="item-label">{label}</span>
@@ -51,7 +51,6 @@ const GroupBlock: FC<{
 }> = ({ name, items, onCatchItemBox }) => {
   return (
     <AdDragDrop
-      dropData={{ id: name }}
       draggable
       droppable
       sortable
@@ -67,7 +66,8 @@ const GroupBlock: FC<{
         if (maybe?.kind !== 'itembox' || !maybe.id) return;
         onCatchItemBox({ itemId: maybe.id, groupId: name });
       }}
-      // logEvents={['catch']}
+      logEvents={['catch']}
+      dropData={{ id: name }}
       stopDropPropagation
     >
       <div className="group">
@@ -150,7 +150,6 @@ const Home: FC = () => {
   return (
     <div className="stacked-root">
       <AdDragDrop
-        dropData={{ id: 'Container' }}
         droppable
         sortable
         group="container"
@@ -165,7 +164,8 @@ const Home: FC = () => {
           if (maybe?.kind !== 'itembox' || !maybe.id) return;
           moveItemBox(maybe.id, { type: 'container' });
         }}
-        // logEvents={['catch']}
+        dropData={{ id: 'Container' }}
+        logEvents={['catch']}
       >
         <div className="stacked-container">
           <span className="container-label">Container</span>
@@ -181,7 +181,7 @@ const Home: FC = () => {
                   }
                 />
               ) : (
-                <ItemBox key={row.id} id={row.id} label={row.id} />
+                <ItemBox key={row.id} id={row.id} label={row.id} free />
               ),
             )}
           </div>

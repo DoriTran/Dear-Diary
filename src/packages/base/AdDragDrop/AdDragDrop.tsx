@@ -247,10 +247,10 @@ const AdDragDrop: FC<AdDragDropProps> = (props) => {
     <>
       {cloneElement(renderedChild, {
         ref,
+        'data-dragging': dragging ? true : undefined,
         'data-stop-drop-propagation': stopDropPropagation ? true : undefined,
-        'data-sortable-groups': sortable
-          ? sortableGroups || undefined
-          : undefined,
+        'data-sortable-item-of': sortable ? itemOf : undefined,
+        'data-sortable-groups': sortable ? sortableGroups : undefined,
         style: {
           ...(children.props as { style?: CSSProperties }).style,
           ...(dragging && style.base),
