@@ -110,6 +110,7 @@ const eslintConfig = defineConfig([
       'react/prop-types': 'off',
       'react/react-in-jsx-scope': 'off',
       'react-hooks/exhaustive-deps': 'off',
+      'react-hooks/immutability': 'off',
 
       // TypeScript rules
       '@typescript-eslint/no-explicit-any': 'off',

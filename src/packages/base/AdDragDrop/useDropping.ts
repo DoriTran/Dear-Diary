@@ -96,8 +96,6 @@ export default function useDropping(
   ) => void = logEvents;
 
   useEffect(() => {
-    console.log(drops);
-
     const el = drops.ref?.current ?? null;
 
     if (!el || !drops.droppable) return;

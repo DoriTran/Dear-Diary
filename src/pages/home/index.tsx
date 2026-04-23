@@ -3,6 +3,8 @@ import { type FC, useState } from 'react';
 import './index.styles.css';
 import { AdDragDrop } from '@/packages/base';
 
+import { mixed } from './data';
+
 /** Item nested under a group — includes `groupId` matching the parent group. */
 export interface GroupItem {
   id: string;
@@ -48,27 +50,26 @@ const GroupBlock: FC<{
   name: string;
   items: GroupItem[];
   onCatchItemBox: (args: { itemId: string; groupId: string }) => void;
-}> = ({ name, items, onCatchItemBox }) => {
+  onMoveItemBox: (args: {
+    groupId: string;
+    current: number;
+    previous: number;
+  }) => void;
+}> = ({ name, items, onCatchItemBox, onMoveItemBox }) => {
   return (
     <AdDragDrop
       draggable
       droppable
-      sortable
       group="group"
       itemOf="container"
-      onDragEnter={({ data }) => {
-        const maybe = data as Partial<DragItemBoxData> | undefined;
-        if (maybe?.kind !== 'itembox' || !maybe.id) return;
-        onCatchItemBox({ itemId: maybe.id, groupId: name });
-      }}
-      onCatch={({ data }) => {
-        const maybe = data as Partial<DragItemBoxData> | undefined;
-        if (maybe?.kind !== 'itembox' || !maybe.id) return;
-        onCatchItemBox({ itemId: maybe.id, groupId: name });
-      }}
       logEvents={['catch']}
       dropData={{ id: name }}
       stopDropPropagation
+      sortable
+      onSortableChange={({ current, previous }) => {
+        console.log('Group onSortableChange', current, '←→', previous);
+        onMoveItemBox({ groupId: name, current, previous });
+      }}
     >
       <div className="group">
         <div data-handle className="group-label">
@@ -85,30 +86,9 @@ const GroupBlock: FC<{
 };
 
 const Home: FC = () => {
-  const [rows, setRows] = useState<ContainerRow[]>([
-    {
-      type: 'group',
-      id: 'Group-1',
-      items: [
-        { id: 'item-1', groupId: 'group-1' },
-        { id: 'item-2', groupId: 'group-1' },
-      ],
-    },
-    { type: 'item', id: 'item-3' },
-    { type: 'item', id: 'item-4' },
-    {
-      type: 'group',
-      id: 'Group-2',
-      items: [
-        { id: 'item-5', groupId: 'group-2' },
-        { id: 'item-6', groupId: 'group-2' },
-        { id: 'item-7', groupId: 'group-2' },
-      ],
-    },
-    { type: 'item', id: 'item-8' },
-  ]);
+  const [rows, setRows] = useState<ContainerRow[]>(mixed);
 
-  const moveItemBox = (
+  const catchItemBox = (
     itemId: string,
     target: { type: 'container' } | { type: 'group'; groupId: string },
   ) => {
@@ -147,6 +127,48 @@ const Home: FC = () => {
     });
   };
 
+  const moveItemBox = (args: {
+    scope: { type: 'container' } | { type: 'group'; groupId: string };
+    current: number;
+    previous: number;
+  }) => {
+    const { scope, current, previous } = args;
+    if (current === previous) return;
+
+    setRows((prev) => {
+      if (scope.type === 'container') {
+        if (
+          previous < 0 ||
+          current < 0 ||
+          previous >= prev.length ||
+          current >= prev.length
+        ) {
+          return prev;
+        }
+
+        const next = prev.slice();
+        [next[previous], next[current]] = [next[current], next[previous]];
+        return next;
+      }
+
+      return prev.map((r) => {
+        if (r.type !== 'group' || r.id !== scope.groupId) return r;
+        if (
+          previous < 0 ||
+          current < 0 ||
+          previous >= r.items.length ||
+          current >= r.items.length
+        ) {
+          return r;
+        }
+
+        const items = r.items.slice();
+        [items[previous], items[current]] = [items[current], items[previous]];
+        return { ...r, items };
+      });
+    });
+  };
+
   return (
     <div className="stacked-root">
       <AdDragDrop
@@ -154,18 +176,12 @@ const Home: FC = () => {
         sortable
         group="container"
         hostPreview
-        onDragEnter={({ data }) => {
-          const maybe = data as Partial<DragItemBoxData> | undefined;
-          if (maybe?.kind !== 'itembox' || !maybe.id) return;
-          moveItemBox(maybe.id, { type: 'container' });
-        }}
-        onCatch={({ data }) => {
-          const maybe = data as Partial<DragItemBoxData> | undefined;
-          if (maybe?.kind !== 'itembox' || !maybe.id) return;
-          moveItemBox(maybe.id, { type: 'container' });
-        }}
         dropData={{ id: 'Container' }}
         logEvents={['catch']}
+        onSortableChange={({ current, previous }) => {
+          console.log('Container onSortableChange', current, '←→', previous);
+          moveItemBox({ scope: { type: 'container' }, current, previous });
+        }}
       >
         <div className="stacked-container">
           <span className="container-label">Container</span>
@@ -177,7 +193,14 @@ const Home: FC = () => {
                   name={row.id}
                   items={row.items}
                   onCatchItemBox={({ itemId, groupId }) =>
-                    moveItemBox(itemId, { type: 'group', groupId })
+                    catchItemBox(itemId, { type: 'group', groupId })
+                  }
+                  onMoveItemBox={({ groupId, current, previous }) =>
+                    moveItemBox({
+                      scope: { type: 'group', groupId },
+                      current,
+                      previous,
+                    })
                   }
                 />
               ) : (

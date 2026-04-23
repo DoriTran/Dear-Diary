@@ -10,6 +10,12 @@ import {
 } from 'react';
 import { createPortal } from 'react-dom';
 
+import type {
+  ExtraScrollOffset,
+  OnGroupChange,
+  OnSortableChange,
+} from './type';
+
 import { type LogDebugEvent } from './logEvents';
 import useAutoScroll, { type AutoScrollOptions } from './useAutoScroll';
 import useDragging, {
@@ -68,9 +74,9 @@ export interface AdDragDropProps extends Partial<AutoScrollOptions> {
   group?: string; // Group identifier string for sortable group.
   itemOf?: string; // Group identifier string that the item CURRENTLY belongs to.
   validGroups?: string[] | undefined; // Group ids the item may sort into. Use itemOf if not provided.
-  onGroupChange?: (args: any) => void; // Drag into a different group.
-  onSortableIndexChange?: (args: any) => void; // Sortable item index changed.
-  extraScrollOffset?: { left: number; top: number }; // Extra scroll offset for sortable items.
+  onGroupChange?: OnGroupChange; // Drag into a different group.
+  onSortableChange?: OnSortableChange; // Sortable item index changed.
+  extraScrollOffset?: ExtraScrollOffset; // Extra scroll offset for sortable items.
 
   /* Log Debug Options */
   logEvents?: LogDebugEvent[];
@@ -121,7 +127,7 @@ const AdDragDrop: FC<AdDragDropProps> = (props) => {
     itemOf,
     validGroups,
     onGroupChange,
-    onSortableIndexChange,
+    onSortableChange,
     extraScrollOffset = { left: 0, top: 0 },
 
     /* Auto scroll options */
@@ -209,7 +215,7 @@ const AdDragDrop: FC<AdDragDropProps> = (props) => {
     itemOf,
     validGroups,
     onGroupChange,
-    onSortableIndexChange,
+    onSortableChange,
     extraScrollOffset,
     children,
   });

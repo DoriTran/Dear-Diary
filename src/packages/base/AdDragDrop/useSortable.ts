@@ -8,14 +8,16 @@ import {
   useState,
   useRef,
   useLayoutEffect,
+  useEffect,
 } from 'react';
 
 import type {
   DragArgs,
-  DragDropArgs,
   DragPreviewArgs,
   DragStartArgs,
-  DropTargetChangeArgs,
+  ExtraScrollOffset,
+  OnGroupChange,
+  OnSortableChange,
 } from './type';
 
 import useMonitor from './useMonitor';
@@ -39,13 +41,13 @@ export interface UseSortableOptions<TData = unknown> {
   validGroups?: string[] | undefined;
 
   /** Drag into a different group. */
-  onGroupChange?: (args: any) => void;
+  onGroupChange?: OnGroupChange;
 
   /** Sortable item index changed. */
-  onSortableIndexChange?: (args: any) => void;
+  onSortableChange?: OnSortableChange;
 
   /** Extra scroll offset for sortable items. */
-  extraScrollOffset?: { left: number; top: number };
+  extraScrollOffset?: ExtraScrollOffset;
 
   children: ReactElement;
   motions?: Record<string, unknown>;
@@ -56,7 +58,7 @@ export interface UseSortableOptions<TData = unknown> {
 
 export interface UseSortableResult {
   motioned: ReactElement | null;
-  sortableGroups: string;
+  sortableGroups: string | undefined;
 }
 
 type SortableRect = {
@@ -74,7 +76,7 @@ export default function useSortable({
   itemOf,
   validGroups,
   onGroupChange,
-  onSortableIndexChange,
+  onSortableChange,
   extraScrollOffset,
   children,
   motions,
@@ -104,6 +106,14 @@ export default function useSortable({
 
     const rawGroups = element.getAttribute('data-sortable-groups');
     return rawGroups?.split(',').includes(targetGroup) ?? false;
+  };
+
+  const isOwnerContainer = () => {
+    return Boolean(
+      ref.current?.querySelector(
+        `[data-dragging][data-sortable-item-of="${group}"]`,
+      ),
+    );
   };
 
   const getMousePosition = (location: {
@@ -142,8 +152,11 @@ export default function useSortable({
 
   const closestIndex = (): number => {
     const { pageX, pageY } = mouse.current;
-    const { offsetX, offsetY, width, height } = window.sortable;
-    const { scrollTop, scrollLeft } = ref.current;
+    const { offsetX, offsetY, width, height } = offset.current;
+    const { scrollTop, scrollLeft } = ref.current ?? {
+      scrollTop: 0,
+      scrollLeft: 0,
+    };
     const originalCachedRects = cachedRects.current;
 
     // Calculate virtual drag box rect
@@ -157,10 +170,10 @@ export default function useSortable({
     // Shift scroll position from cached rects
     const adjustedRects = originalCachedRects.map((rect) => ({
       ...rect,
-      top: rect.top - scrollTop - extraOffset.current.scrollTop,
-      left: rect.left - scrollLeft - extraOffset.current.scrollLeft,
-      right: rect.right - scrollLeft - extraOffset.current.scrollLeft,
-      bottom: rect.bottom - scrollTop - extraOffset.current.scrollTop,
+      top: rect.top - scrollTop - (extraScrollOffset?.scrollTop ?? 0),
+      left: rect.left - scrollLeft - (extraScrollOffset?.scrollLeft ?? 0),
+      right: rect.right - scrollLeft - (extraScrollOffset?.scrollLeft ?? 0),
+      bottom: rect.bottom - scrollTop - (extraScrollOffset?.scrollTop ?? 0),
     }));
 
     // Helper function for corner calculation
@@ -338,31 +351,112 @@ export default function useSortable({
       cleanupPreview();
     };
   }, []);
+  // #endregion
 
   // #region Sortable Index Calculation
   const cachedRects = useRef<SortableRect[]>([]);
+  const [reCalculateRectFlag, reCalculateRect] = useState(false);
+  useEffect(() => {
+    if (reCalculateRectFlag) {
+      cachedRects.current = getCachedRects();
+      reCalculateRect(false);
+    }
+  }, [reCalculateRectFlag]);
+
+  const mouse = useRef({ pageX: 0, pageY: 0 });
+  const offset = useRef({ offsetX: 0, offsetY: 0, width: 0, height: 0 });
+  const index = useRef({ current: -1, previous: -1 });
 
   useMonitor(
     {
       enabled: Boolean(sortable) && Boolean(group),
       canMonitor: ({ source }) =>
         monitorGroupsHavingItemSorting(source.element, group),
-      onDragStart: () => {
+      onDragStart: ({ source, location }) => {
+        // Cached all rects inside this container
         cachedRects.current = getCachedRects();
-        console.log(group, cachedRects.current);
+
+        // Init mouse position
+        mouse.current = getMousePosition(location);
+
+        // Init target sortable rect offset
+        const rect = source.element.getBoundingClientRect();
+        offset.current = {
+          offsetX: mouse.current.pageX - rect.left + scrollX,
+          offsetY: mouse.current.pageY - rect.top + scrollY,
+          width: rect.width,
+          height: rect.height,
+        };
+
+        // Init start index
+        const elements = getSortableElements();
+        const targetIndex = elements.findIndex((el) => el === source.element);
+        index.current = {
+          current: targetIndex,
+          previous: -1,
+        };
       },
-      // onDrag: ({ source, location }) => {
-      //   console.log('onDrag', group);
-      // },
-      // onDrop: ({ source }) => {
-      //   console.log('onDrop', group);
-      // },
-      onTargetChange: (data) => {
-        console.log('onTargetChange', group, data);
+      onDrag: ({ source, location }) => {
+        // Early return for container not contain sorting item
+        const sorting = isOwnerContainer();
+        if (!sorting) return;
+
+        // Early return if position not change
+        const { pageX, pageY } = getMousePosition(location);
+        if (pageX !== mouse.current.pageX || pageY !== mouse.current.pageY) {
+          mouse.current = { pageX, pageY };
+        } else return;
+
+        // Early return if dragging element or container not found for any reason
+        const draggingElement = source.element as HTMLElement | null;
+        if (!draggingElement || !ref.current) return;
+
+        // Early return if cached rects not initialized
+        if (!cachedRects.current) return;
+
+        /**
+         * Dragging logic
+         */
+        const closestIdx = closestIndex();
+        if (closestIdx !== -1 && closestIdx !== index.current.current) {
+          index.current = {
+            current: closestIdx,
+            previous: index.current.current,
+          };
+          onSortableChange?.(index.current);
+        }
       },
-      // onGenerateDragPreview: ({ source, location }) => {
-      //   console.log('onGenerateDragPreview', group);
-      // },
+      onTargetChange: ({ data, location }) => {
+        console.log('onTargetChange', group);
+
+        // Check if item is entering this container
+        const topDropTarget = location.current.dropTargets?.[0] ?? null;
+        const entering = ref.current === topDropTarget?.element;
+
+        if (entering) {
+          const closestIdx = closestIndex();
+          index.current = { current: closestIdx, previous: -1 };
+          onGroupChange?.({ type: 'enter', itemData: data, index: closestIdx });
+          reCalculateRect(true);
+          return;
+        }
+
+        // Check if item is leaving this container
+        const leaving = isOwnerContainer();
+
+        if (leaving) {
+          index.current = { current: -1, previous: -1 };
+          onGroupChange?.({ type: 'leave', itemData: data });
+          reCalculateRect(true);
+          return;
+        }
+      },
+      onDrop: () => {
+        // Reset the mouse, offset, and index refs to their default states after dropping
+        mouse.current = { pageX: 0, pageY: 0 };
+        offset.current = { offsetX: 0, offsetY: 0, width: 0, height: 0 };
+        index.current = { current: -1, previous: -1 };
+      },
     },
     [
       ref,
@@ -371,9 +465,9 @@ export default function useSortable({
       group,
       itemOf,
       onGroupChange,
-      onSortableIndexChange,
-      extraScrollOffset?.left,
-      extraScrollOffset?.top,
+      onSortableChange,
+      extraScrollOffset?.scrollLeft,
+      extraScrollOffset?.scrollTop,
       motions,
     ],
   );

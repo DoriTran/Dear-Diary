@@ -64,3 +64,23 @@ export type DropTargetChangeArgs = Parameters<
 export type GetDataArgs = Parameters<
   NonNullable<DropTargetOptions['getData']>
 >[0];
+
+/* ----------------------------- */
+/* sortable types */
+/* ----------------------------- */
+
+export type OnGroupChange = (args: {
+  type: 'enter' | 'leave';
+  itemData: any;
+  index?: number;
+}) => void;
+
+export type OnSortableChange = (args: {
+  current: number;
+  previous: number;
+}) => void;
+
+export type ExtraScrollOffset = {
+  scrollLeft: number;
+  scrollTop: number;
+};
