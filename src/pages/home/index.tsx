@@ -3,7 +3,8 @@ import { type FC, useState } from 'react';
 import './index.styles.css';
 import { AdDragDrop } from '@/packages/base';
 
-import { mixed } from './data';
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+import { items, groups, mixed, lmixed } from './data';
 
 /** Item nested under a group — includes `groupId` matching the parent group. */
 export interface GroupItem {
@@ -37,7 +38,6 @@ const ItemBox: FC<{ id: string; label: string; free?: boolean }> = ({
       itemOf={free ? 'container' : 'group'}
       validGroups={['container', 'group']}
       dragData={{ kind: 'itembox', id } satisfies DragItemBoxData}
-      logEvents={['dragStart']}
     >
       <div className="item">
         <span className="item-label">{label}</span>
@@ -62,7 +62,6 @@ const GroupBlock: FC<{
       droppable
       group="group"
       itemOf="container"
-      logEvents={['catch']}
       dropData={{ id: name }}
       stopDropPropagation
       sortable
@@ -71,7 +70,10 @@ const GroupBlock: FC<{
         onMoveItemBox({ groupId: name, current, previous });
       }}
     >
-      <div className="group">
+      <div
+        className="group"
+        style={{ minHeight: items.length * 40 + (items.length - 1) * 10 + 60 }}
+      >
         <div data-handle className="group-label">
           || {name}
         </div>
@@ -177,7 +179,6 @@ const Home: FC = () => {
         group="container"
         hostPreview
         dropData={{ id: 'Container' }}
-        logEvents={['catch']}
         onSortableChange={({ current, previous }) => {
           console.log('Container onSortableChange', current, '←→', previous);
           moveItemBox({ scope: { type: 'container' }, current, previous });

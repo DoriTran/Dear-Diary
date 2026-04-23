@@ -15,7 +15,7 @@ const makeGroupItems = (args: {
     groupId: args.groupId,
   }));
 
-export const allItems: ContainerRow[] = [
+export const items: ContainerRow[] = [
   { type: 'item', id: 'item-1' },
   { type: 'item', id: 'item-2' },
   { type: 'item', id: 'item-3' },
@@ -24,13 +24,7 @@ export const allItems: ContainerRow[] = [
   { type: 'item', id: 'item-6' },
 ];
 
-export const allGroupsNoItems: ContainerRow[] = [
-  { type: 'group', id: 'Group-1', items: [] },
-  { type: 'group', id: 'Group-2', items: [] },
-  { type: 'group', id: 'Group-3', items: [] },
-];
-
-export const allGroupsThreeItems: ContainerRow[] = (() => {
+export const groups: ContainerRow[] = (() => {
   const nextId = createItemIdFactory(1);
 
   return [
@@ -78,7 +72,7 @@ export const mixed: ContainerRow[] = (() => {
   ];
 })();
 
-export const largeMixed: ContainerRow[] = (() => {
+export const lmixed: ContainerRow[] = (() => {
   const nextId = createItemIdFactory(1);
 
   return [

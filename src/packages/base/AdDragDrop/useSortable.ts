@@ -95,6 +95,29 @@ export default function useSortable({
   }, [validGroups, itemOf]);
 
   // #region Utility Functions
+  const logCachedRects = (
+    rects: readonly SortableRect[] | null | undefined,
+    label = group,
+  ) => {
+    if (!rects) {
+      console.log(`${label}:`, rects);
+      return;
+    }
+
+    const rows = rects.map((r) => ({
+      top: Math.round(r.top),
+      left: Math.round(r.left),
+      right: Math.round(r.right),
+      bottom: Math.round(r.bottom),
+      width: Math.round(r.right - r.left),
+      height: Math.round(r.bottom - r.top),
+    }));
+
+    console.groupCollapsed(`${label} → (${rects.length}) items`);
+    console.table(rows);
+    console.groupEnd();
+  };
+
   /**
    * Only monitor items with the same sortable id as the container
    */
@@ -219,6 +242,8 @@ export default function useSortable({
         closestIndex = i;
       }
     });
+
+    console.log('closestIndex', closestIndex);
 
     return closestIndex;
   };
@@ -375,6 +400,7 @@ export default function useSortable({
       onDragStart: ({ source, location }) => {
         // Cached all rects inside this container
         cachedRects.current = getCachedRects();
+        logCachedRects(cachedRects.current);
 
         // Init mouse position
         mouse.current = getMousePosition(location);
@@ -423,14 +449,32 @@ export default function useSortable({
             current: closestIdx,
             previous: index.current.current,
           };
-          onSortableChange?.(index.current);
+
+          // Make sure implemented sortable index change logic outside
+          if (onSortableChange) {
+            // Swap the cached rects
+            const newCachedRects = [...cachedRects.current];
+            [
+              newCachedRects[index.current.current],
+              newCachedRects[index.current.previous],
+            ] = [
+              newCachedRects[index.current.previous],
+              newCachedRects[index.current.current],
+            ];
+
+            // Call the onSortableChange callback
+            onSortableChange(index.current);
+          }
         }
       },
       onTargetChange: ({ data, location }) => {
-        console.log('onTargetChange', group);
+        // console.log('onTargetChange', group);
+
+        // Early return if no drop targets
+        if (location.current.dropTargets.length === 0) return;
 
         // Check if item is entering this container
-        const topDropTarget = location.current.dropTargets?.[0] ?? null;
+        const topDropTarget = location.current.dropTargets[0];
         const entering = ref.current === topDropTarget?.element;
 
         if (entering) {
@@ -445,7 +489,6 @@ export default function useSortable({
         const leaving = isOwnerContainer();
 
         if (leaving) {
-          index.current = { current: -1, previous: -1 };
           onGroupChange?.({ type: 'leave', itemData: data });
           reCalculateRect(true);
           return;
