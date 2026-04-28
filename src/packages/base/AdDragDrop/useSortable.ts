@@ -243,8 +243,6 @@ export default function useSortable({
       }
     });
 
-    console.log('closestIndex', closestIndex);
-
     return closestIndex;
   };
 
@@ -423,6 +421,9 @@ export default function useSortable({
         };
       },
       onDrag: ({ source, location }) => {
+        // Early return if outside logic is not implemented
+        if (!onSortableChange) return;
+
         // Early return for container not contain sorting item
         const sorting = isOwnerContainer();
         if (!sorting) return;
@@ -450,25 +451,23 @@ export default function useSortable({
             previous: index.current.current,
           };
 
-          // Make sure implemented sortable index change logic outside
-          if (onSortableChange) {
-            // Swap the cached rects
-            const newCachedRects = [...cachedRects.current];
-            [
-              newCachedRects[index.current.current],
-              newCachedRects[index.current.previous],
-            ] = [
-              newCachedRects[index.current.previous],
-              newCachedRects[index.current.current],
-            ];
+          // Swap the cached rects
+          const newCachedRects = [...cachedRects.current];
+          [
+            newCachedRects[index.current.current],
+            newCachedRects[index.current.previous],
+          ] = [
+            newCachedRects[index.current.previous],
+            newCachedRects[index.current.current],
+          ];
 
-            // Call the onSortableChange callback
-            onSortableChange(index.current);
-          }
+          // Call the onSortableChange callback
+          onSortableChange(index.current);
         }
       },
       onTargetChange: ({ data, location }) => {
-        // console.log('onTargetChange', group);
+        // Early return if outside logic is not implemented
+        if (!onGroupChange) return;
 
         // Early return if no drop targets
         if (location.current.dropTargets.length === 0) return;
