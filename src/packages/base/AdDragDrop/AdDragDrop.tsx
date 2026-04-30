@@ -71,6 +71,7 @@ export interface AdDragDropProps extends Partial<AutoScrollOptions> {
   /* Sortable options */
   sortable?: boolean; // Enables sortable registration, Overwrite drag preview behavior.
   hostPreview?: boolean; // Register this element as a sortable drag preview host (must be static element).
+  motionDuration?: number; // Motion duration in ms. Default is 400ms.
   group?: string; // Group identifier string for sortable group.
   itemOf?: string; // Group identifier string that the item CURRENTLY belongs to.
   validGroups?: string[] | undefined; // Group ids the item may sort into. Use itemOf if not provided.
@@ -123,12 +124,13 @@ const AdDragDrop: FC<AdDragDropProps> = (props) => {
     /* Sortable options */
     sortable = false,
     hostPreview = false,
+    motionDuration = 400,
     group,
     itemOf,
     validGroups,
     onGroupChange,
     onSortableChange,
-    extraScrollOffset = { left: 0, top: 0 },
+    extraScrollOffset = { scrollLeft: 0, scrollTop: 0 },
 
     /* Auto scroll options */
     autoScroll,
@@ -211,6 +213,7 @@ const AdDragDrop: FC<AdDragDropProps> = (props) => {
     ref,
     sortable,
     hostPreview,
+    motionDuration,
     group,
     itemOf,
     validGroups,
@@ -253,10 +256,17 @@ const AdDragDrop: FC<AdDragDropProps> = (props) => {
     <>
       {cloneElement(renderedChild, {
         ref,
+        // If the item is dragging.
         'data-dragging': dragging ? true : undefined,
+        // If drop event callback should not bubbled up to the parent.
         'data-stop-drop-propagation': stopDropPropagation ? true : undefined,
+        // In sortable, use for container, indicate group id.
+        'data-sortable-group': sortable ? group : undefined,
+        // In sortable, use for item, indicate current group that item belongs to.
         'data-sortable-item-of': sortable ? itemOf : undefined,
-        'data-sortable-groups': sortable ? sortableGroups : undefined,
+        // In sortable, use for item, indicate all groups that item can be sorted into.
+        'data-sortable-valid-groups': sortable ? sortableGroups : undefined,
+        // Custom styling
         style: {
           ...(children.props as { style?: CSSProperties }).style,
           ...(dragging && style.base),

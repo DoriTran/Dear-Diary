@@ -65,12 +65,14 @@ const GroupBlock: FC<{
       dropData={{ id: name }}
       stopDropPropagation
       sortable
-      onSortableChange={({ current, previous }) => {
-        console.log('Group onSortableChange', current, '←→', previous);
-        onMoveItemBox({ groupId: name, current, previous });
-      }}
+      // onSortableChange={({ current, previous }) => {
+      //   console.log('Group onSortableChange', current, '←→', previous);
+      //   onMoveItemBox({ groupId: name, current, previous });
+      // }}
+      onGroupChange={() => false}
     >
       <div
+        data-test-id={name}
         className="group"
         style={{ minHeight: items.length * 40 + (items.length - 1) * 10 + 60 }}
       >
@@ -179,12 +181,12 @@ const Home: FC = () => {
         group="container"
         hostPreview
         dropData={{ id: 'Container' }}
-        onSortableChange={({ current, previous }) => {
-          console.log('Container onSortableChange', current, '←→', previous);
-          moveItemBox({ scope: { type: 'container' }, current, previous });
-        }}
+        // onSortableChange={({ current, previous }) => {
+        //   moveItemBox({ scope: { type: 'container' }, current, previous });
+        // }}
+        onGroupChange={() => false}
       >
-        <div className="stacked-container">
+        <div className="stacked-container" data-test-id="Container">
           <span className="container-label">Container</span>
           <div className="stacked-list">
             {rows.map((row) =>

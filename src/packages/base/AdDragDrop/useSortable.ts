@@ -1,3 +1,5 @@
+import type { DropTargetRecord } from '@atlaskit/pragmatic-drag-and-drop/dist/types/internal-types';
+
 import { motion } from 'framer-motion';
 import {
   createElement,
@@ -5,10 +7,8 @@ import {
   type ReactNode,
   type ReactElement,
   type RefObject,
-  useState,
   useRef,
   useLayoutEffect,
-  useEffect,
 } from 'react';
 
 import type {
@@ -49,6 +49,9 @@ export interface UseSortableOptions<TData = unknown> {
   /** Extra scroll offset for sortable items. */
   extraScrollOffset?: ExtraScrollOffset;
 
+  /** Motion duration in ms. Default is 400ms. */
+  motionDuration?: number;
+
   children: ReactElement;
   motions?: Record<string, unknown>;
 
@@ -78,6 +81,7 @@ export default function useSortable({
   onGroupChange,
   onSortableChange,
   extraScrollOffset,
+  motionDuration = 400,
   children,
   motions,
 }: UseSortableOptions): UseSortableResult {
@@ -127,7 +131,7 @@ export default function useSortable({
   ) => {
     if (!targetGroup) return false;
 
-    const rawGroups = element.getAttribute('data-sortable-groups');
+    const rawGroups = element.getAttribute('data-sortable-valid-groups');
     return rawGroups?.split(',').includes(targetGroup) ?? false;
   };
 
@@ -284,7 +288,7 @@ export default function useSortable({
       node.removeAttribute('data-drop-target-for-element');
       node.removeAttribute('data-dragging');
       node.removeAttribute('data-sortable-item-of');
-      node.removeAttribute('data-sortable-groups');
+      node.removeAttribute('data-sortable-valid-groups');
       node.removeAttribute('data-stop-drop-propagation');
     });
   };
@@ -378,17 +382,10 @@ export default function useSortable({
 
   // #region Sortable Index Calculation
   const cachedRects = useRef<SortableRect[]>([]);
-  const [reCalculateRectFlag, reCalculateRect] = useState(false);
-  useEffect(() => {
-    if (reCalculateRectFlag) {
-      cachedRects.current = getCachedRects();
-      reCalculateRect(false);
-    }
-  }, [reCalculateRectFlag]);
-
   const mouse = useRef({ pageX: 0, pageY: 0 });
   const offset = useRef({ offsetX: 0, offsetY: 0, width: 0, height: 0 });
   const index = useRef({ current: -1, previous: -1 });
+  const sorting = useRef(false); // This container hold & sort the item being dragged
 
   useMonitor(
     {
@@ -419,6 +416,11 @@ export default function useSortable({
           current: targetIndex,
           previous: -1,
         };
+
+        // Init sorting status
+        sorting.current =
+          source.element.getAttribute('data-sortable-item-of') === group &&
+          elements.includes(source.element);
       },
       onDrag: ({ source, location }) => {
         // Early return if outside logic is not implemented
@@ -451,53 +453,102 @@ export default function useSortable({
             previous: index.current.current,
           };
 
-          // Swap the cached rects
-          const newCachedRects = [...cachedRects.current];
-          [
-            newCachedRects[index.current.current],
-            newCachedRects[index.current.previous],
-          ] = [
-            newCachedRects[index.current.previous],
-            newCachedRects[index.current.current],
-          ];
-
           // Call the onSortableChange callback
-          onSortableChange(index.current);
+          const didSortableChange = onSortableChange(index.current);
+
+          // Update cached rects if outside sortable index changed or result not returned
+          if (didSortableChange === true || didSortableChange === undefined) {
+            const newCachedRects = [...cachedRects.current];
+            [
+              newCachedRects[index.current.current],
+              newCachedRects[index.current.previous],
+            ] = [
+              newCachedRects[index.current.previous],
+              newCachedRects[index.current.current],
+            ];
+          }
         }
       },
-      onTargetChange: ({ data, location }) => {
+      onTargetChange: ({ data, source, location }) => {
+        const id = ref.current?.getAttribute('data-test-id');
         // Early return if outside logic is not implemented
         if (!onGroupChange) return;
 
+        // Filter out drop targets have group id that are not in the valid groups of item
+        const validGroups =
+          source.element
+            .getAttribute('data-sortable-valid-groups')
+            ?.split(',') ?? [];
+        const dropTargets = location.current.dropTargets.filter(
+          (target: DropTargetRecord) => {
+            const groupId = target.element.getAttribute('data-sortable-group');
+            return (
+              groupId !== undefined &&
+              groupId !== null &&
+              validGroups.includes(groupId)
+            );
+          },
+        );
+
+        // console.log(location.current.dropTargets);
+        // console.log('dropTargets', dropTargets);
+
         // Early return if no drop targets
-        if (location.current.dropTargets.length === 0) return;
+        if (dropTargets.length === 0) return;
+
+        // Early return if item not change group container but target change event triggered
+        const topDropTarget = dropTargets[0];
+        if (ref.current === topDropTarget?.element && sorting.current) return;
+        sorting.current = ref.current === topDropTarget?.element;
 
         // Check if item is entering this container
-        const topDropTarget = location.current.dropTargets[0];
         const entering = ref.current === topDropTarget?.element;
-
         if (entering) {
           const closestIdx = closestIndex();
           index.current = { current: closestIdx, previous: -1 };
-          onGroupChange?.({ type: 'enter', itemData: data, index: closestIdx });
-          reCalculateRect(true);
+          console.log(id, 'entering', closestIdx);
+          const didGroupChange = onGroupChange?.({
+            type: 'enter',
+            itemData: data,
+            index: closestIdx,
+          });
+
+          // Update cached rects if outside group changed or result not returned
+          if (didGroupChange === true || didGroupChange === undefined) {
+            setTimeout(() => {
+              cachedRects.current = getCachedRects();
+            }, motionDuration);
+          }
+
           return;
         }
 
         // Check if item is leaving this container
-        const leaving = isOwnerContainer();
-
+        const leaving = isOwnerContainer(); //?
         if (leaving) {
-          onGroupChange?.({ type: 'leave', itemData: data });
-          reCalculateRect(true);
+          console.log(id, 'leaving');
+          // console.log(`[${group}]`, 'onGroupChange leave', { itemData: data });
+          const didGroupChange = onGroupChange?.({
+            type: 'leave',
+            itemData: data,
+          });
+
+          // Update cached rects if outside group changed or result not returned
+          if (didGroupChange === true || didGroupChange === undefined) {
+            setTimeout(() => {
+              cachedRects.current = getCachedRects();
+            }, motionDuration);
+          }
+
           return;
         }
       },
       onDrop: () => {
-        // Reset the mouse, offset, and index refs to their default states after dropping
+        // Reset the mouse, offset, index, and sorting refs to their default states after dropping
         mouse.current = { pageX: 0, pageY: 0 };
         offset.current = { offsetX: 0, offsetY: 0, width: 0, height: 0 };
         index.current = { current: -1, previous: -1 };
+        sorting.current = false;
       },
     },
     [
@@ -510,6 +561,7 @@ export default function useSortable({
       onSortableChange,
       extraScrollOffset?.scrollLeft,
       extraScrollOffset?.scrollTop,
+      motionDuration,
       motions,
     ],
   );
@@ -521,8 +573,13 @@ export default function useSortable({
       ? createElement(
           motionedTag!,
           {
+            ...(children.props as Record<string, unknown>),
             layout: true,
-            transition: { type: 'spring', stiffness: 400, damping: 30 },
+            transition: {
+              type: 'spring',
+              duration: motionDuration / 1000,
+              bounce: 0.25,
+            },
             ...(motions ?? {}),
           },
           (children.props as { children?: ReactNode }).children,
