@@ -10,93 +10,20 @@ import {
 } from 'react';
 import { createPortal } from 'react-dom';
 
-import type {
-  ExtraScrollOffset,
-  OnGroupChange,
-  OnSortableChange,
-} from './type';
+import type { AdDragDropProps, DragClassName, DragStyle } from './type';
 
-import { type LogDebugEvent } from './logEvents';
-import useAutoScroll, { type AutoScrollOptions } from './useAutoScroll';
-import useDragging, {
-  type UseDraggingOptions,
-  type UseDraggingResult,
-} from './useDragging';
-import useDropping, {
-  type UseDroppingOptions,
-  type UseDroppingResult,
-} from './useDropping';
+import useAutoScroll from './useAutoScroll';
+import useDragging, { type UseDraggingResult } from './useDragging';
+import useDropping, { type UseDroppingResult } from './useDropping';
 import useSortable from './useSortable';
 
-export interface DragStyle {
-  base?: CSSProperties;
-  hover?: CSSProperties;
-  overlay?: CSSProperties;
-  [key: string]: CSSProperties | undefined;
-}
-
-export interface DragClassName {
-  base?: string;
-  hover?: string;
-  overlay?: string;
-  [key: string]: string | undefined;
-}
-
-export interface AdDragDropProps extends Partial<AutoScrollOptions> {
-  /* Dragging options */
-  draggable?: boolean; // Enables drag registration;
-  dragData?: UseDraggingOptions['dragData'];
-  canDrag?: UseDraggingOptions['canDrag'];
-  onDragStart?: UseDraggingOptions['onDragStart'];
-  onDrag?: UseDraggingOptions['onDrag'];
-  onDrop?: UseDraggingOptions['onDrop'];
-  onTargetChange?: UseDraggingOptions['onTargetChange'];
-  onGenerateOverlay?: UseDraggingOptions['onGenerateOverlay'];
-  dragDeps?: unknown[];
-  drag?: Partial<UseDraggingOptions>;
-
-  /* Dropping options */
-  droppable?: boolean; // Enables drop target registration;
-  dropData?: UseDroppingOptions['data'];
-  canDrop?: UseDroppingOptions['canDrop'];
-  onCatch?: UseDroppingOptions['onCatch'];
-  onDragEnter?: UseDroppingOptions['onDragEnter'];
-  onDragLeave?: UseDroppingOptions['onDragLeave'];
-  cursorEffect?: UseDroppingOptions['cursorEffect'];
-  stopDropPropagation?: UseDroppingOptions['stopDropPropagation'];
-  sticky?: UseDroppingOptions['sticky'];
-  dropDeps?: unknown[];
-  drop?: Partial<UseDroppingOptions>;
-
-  /* Sortable options */
-  sortable?: boolean; // Enables sortable registration, Overwrite drag preview behavior.
-  hostPreview?: boolean; // Register this element as a sortable drag preview host (must be static element).
-  motionDuration?: number; // Motion duration in ms. Default is 400ms.
-  group?: string; // Group identifier string for sortable group.
-  itemOf?: string; // Group identifier string that the item CURRENTLY belongs to.
-  validGroups?: string[] | undefined; // Group ids the item may sort into. Use itemOf if not provided.
-  onGroupChange?: OnGroupChange; // Drag into a different group.
-  onSortableChange?: OnSortableChange; // Sortable item index changed.
-  extraScrollOffset?: ExtraScrollOffset; // Extra scroll offset for sortable items.
-
-  /* Log Debug Options */
-  logEvents?: LogDebugEvent[];
-
-  /* Other Options */
-  style?: DragStyle;
-  className?: DragClassName | string;
-  overlay?: ReactElement | null;
-  native?: boolean;
-  from?: string;
-  showOrigin?: boolean;
-  children: ReactElement;
-}
+export type { AdDragDropProps, DragClassName, DragStyle };
 
 const AdDragDrop: FC<AdDragDropProps> = (props) => {
   const {
     /* Dragging options */
     draggable = false,
-    dragData,
+    data,
     canDrag,
     onDragStart,
     onDrag,
@@ -165,7 +92,7 @@ const AdDragDrop: FC<AdDragDropProps> = (props) => {
     {
       ref,
       handle,
-      dragData,
+      data,
       canDrag,
       onDragStart,
       onDrag,
@@ -209,9 +136,10 @@ const AdDragDrop: FC<AdDragDropProps> = (props) => {
     // dependency array is handled inside hook
   );
 
-  const { motioned, sortableGroups } = useSortable({
+  const { motioned, sortableGroups, sorting, holdingStatus } = useSortable({
     ref,
     sortable,
+    data,
     hostPreview,
     motionDuration,
     group,
@@ -256,10 +184,10 @@ const AdDragDrop: FC<AdDragDropProps> = (props) => {
     <>
       {cloneElement(renderedChild, {
         ref,
-        // If the item is dragging.
-        'data-dragging': dragging ? true : undefined,
         // If drop event callback should not bubbled up to the parent.
         'data-stop-drop-propagation': stopDropPropagation ? true : undefined,
+        // If the item is sorting.
+        'data-sorting': sorting,
         // In sortable, use for container, indicate group id.
         'data-sortable-group': sortable ? group : undefined,
         // In sortable, use for item, indicate current group that item belongs to.
@@ -268,11 +196,17 @@ const AdDragDrop: FC<AdDragDropProps> = (props) => {
         'data-sortable-valid-groups': sortable ? sortableGroups : undefined,
         // Custom styling
         style: {
+          ...(sorting && {
+            backgroundColor: 'aliceblue',
+          }),
+          ...(holdingStatus && {
+            border: '1px solid red',
+          }),
           ...(children.props as { style?: CSSProperties }).style,
           ...(dragging && style.base),
           ...(hovering && style.hover),
           ...(isDraggable && {
-            opacity: !showOrigin && dragging ? 0 : 1,
+            opacity: !showOrigin && (dragging || sorting) ? 0 : 1,
             cursor: dragging ? 'grabbing' : 'grab',
           }),
         } as CSSProperties,

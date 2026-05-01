@@ -8,7 +8,7 @@ import { useEffect } from 'react';
 
 type MonitorOptions = Parameters<typeof monitorForElements>[0];
 type ExtractArg<T> = T extends (arg: infer A) => unknown ? A : never;
-type WithData<T extends { source: { data: unknown } }> = T & {
+export type WithData<T extends { source: { data: unknown } }> = T & {
   data: T['source']['data'];
 };
 

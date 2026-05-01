@@ -15,12 +15,15 @@ import type {
 import { logEvents } from './logEvents';
 import useMonitor from './useMonitor';
 
-type GetFeedbackArgs = {
+/** Args passed to `data` when it is a function (same as draggable `getInitialData`). */
+export type DraggingGetInitialDataArgs = {
   element: HTMLElement;
   input: unknown;
   dragHandle: HTMLElement | null;
   [key: string]: any;
 };
+
+type GetFeedbackArgs = DraggingGetInitialDataArgs;
 
 export interface UseDraggingOptions extends Record<string, unknown> {
   ref: RefObject<HTMLElement | null>;
@@ -29,7 +32,7 @@ export interface UseDraggingOptions extends Record<string, unknown> {
   /** When false, drag behavior is not registered. */
   draggable?: boolean;
 
-  dragData?:
+  data?:
     | Record<string, unknown>
     | ((args: GetFeedbackArgs) => Record<string, unknown>);
 
@@ -133,9 +136,9 @@ export default function useDragging(
       dragHandle: handle,
 
       getInitialData: (args: any) =>
-        typeof drags.dragData === 'function'
-          ? drags.dragData(args)
-          : (drags.dragData ?? {}),
+        typeof drags.data === 'function'
+          ? drags.data(args)
+          : (drags.data ?? {}),
 
       canDrag: (args: any) => {
         if (drags.canDrag === undefined) return true;

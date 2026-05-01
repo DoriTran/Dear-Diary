@@ -9,6 +9,7 @@ import {
   type RefObject,
   useRef,
   useLayoutEffect,
+  useState,
 } from 'react';
 
 import type {
@@ -19,10 +20,11 @@ import type {
   OnGroupChange,
   OnSortableChange,
 } from './type';
+import type { UseDraggingOptions } from './useDragging';
 
-import useMonitor from './useMonitor';
+import useMonitor, { type WithData } from './useMonitor';
 
-export interface UseSortableOptions<TData = unknown> {
+export interface UseSortableOptions {
   ref: RefObject<HTMLElement | null>;
 
   /** Enables sortable registration; overwrite drag preview behavior. */
@@ -30,6 +32,9 @@ export interface UseSortableOptions<TData = unknown> {
 
   /** Register this element as a sortable drag preview host (must be static element). */
   hostPreview?: boolean;
+
+  /** Same as `useDragging` `data` (static payload or `getInitialData` callback). */
+  data?: UseDraggingOptions['data'];
 
   /** Group identifier string for sortable group. */
   group?: string;
@@ -54,14 +59,13 @@ export interface UseSortableOptions<TData = unknown> {
 
   children: ReactElement;
   motions?: Record<string, unknown>;
-
-  /** Optional: pass any drag data type. */
-  data?: TData;
 }
 
 export interface UseSortableResult {
   motioned: ReactElement | null;
   sortableGroups: string | undefined;
+  sorting: boolean | undefined;
+  holdingStatus: boolean | undefined;
 }
 
 type SortableRect = {
@@ -75,6 +79,7 @@ export default function useSortable({
   ref,
   sortable,
   hostPreview,
+  data,
   group,
   itemOf,
   validGroups,
@@ -104,7 +109,6 @@ export default function useSortable({
     label = group,
   ) => {
     if (!rects) {
-      console.log(`${label}:`, rects);
       return;
     }
 
@@ -133,14 +137,6 @@ export default function useSortable({
 
     const rawGroups = element.getAttribute('data-sortable-valid-groups');
     return rawGroups?.split(',').includes(targetGroup) ?? false;
-  };
-
-  const isOwnerContainer = () => {
-    return Boolean(
-      ref.current?.querySelector(
-        `[data-dragging][data-sortable-item-of="${group}"]`,
-      ),
-    );
   };
 
   const getMousePosition = (location: {
@@ -250,6 +246,43 @@ export default function useSortable({
     return closestIndex;
   };
 
+  // #endregion
+
+  // #region Sortable Item status
+  const [sorting, setSorting] = useState<boolean | undefined>(undefined);
+  const [holdingStatus, setHoldingStatus] = useState<boolean | undefined>(
+    undefined,
+  );
+
+  useMonitor(
+    {
+      // Enable and monitor all sortable items
+      enabled: Boolean(sortable) && Boolean(itemOf),
+      canMonitor: () => Boolean(sortable) && Boolean(itemOf),
+      onDrag: (args: WithData<DragArgs>) => {
+        if (sorting !== undefined) return;
+
+        const { source, location } = args;
+
+        if (typeof data === 'function') {
+          const local = data({
+            element: source.element,
+            input: location.initial.input,
+            dragHandle:
+              (source as { dragHandle?: HTMLElement | null }).dragHandle ??
+              null,
+          });
+          setSorting(local.id === source.data?.id);
+        } else {
+          setSorting(data?.id === source.data?.id);
+        }
+      },
+      onDrop: () => {
+        setSorting(undefined);
+      },
+    },
+    [sortable, itemOf, data],
+  );
   // #endregion
 
   // #region Sortable Host Preview
@@ -385,7 +418,8 @@ export default function useSortable({
   const mouse = useRef({ pageX: 0, pageY: 0 });
   const offset = useRef({ offsetX: 0, offsetY: 0, width: 0, height: 0 });
   const index = useRef({ current: -1, previous: -1 });
-  const sorting = useRef(false); // This container hold & sort the item being dragged
+  const holding = useRef(false); // This container holds & sorts the item being dragged
+  const transitioning = useRef(false); // Is group changing transition in progress
 
   useMonitor(
     {
@@ -417,18 +451,21 @@ export default function useSortable({
           previous: -1,
         };
 
-        // Init sorting status
-        sorting.current =
+        // Init holding status
+        holding.current =
           source.element.getAttribute('data-sortable-item-of') === group &&
           elements.includes(source.element);
+        setHoldingStatus(holding.current);
       },
       onDrag: ({ source, location }) => {
         // Early return if outside logic is not implemented
         if (!onSortableChange) return;
 
-        // Early return for container not contain sorting item
-        const sorting = isOwnerContainer();
-        if (!sorting) return;
+        // Early return if transition between groups is in progress
+        if (transitioning.current) return;
+
+        // Early return for container not holding the dragged item
+        if (!holding.current) return;
 
         // Early return if position not change
         const { pageX, pageY } = getMousePosition(location);
@@ -470,11 +507,11 @@ export default function useSortable({
         }
       },
       onTargetChange: ({ data, source, location }) => {
-        const id = ref.current?.getAttribute('data-test-id');
+        console.log('targetChange');
         // Early return if outside logic is not implemented
         if (!onGroupChange) return;
 
-        // Filter out drop targets have group id that are not in the valid groups of item
+        // Early return if no valid drop targets
         const validGroups =
           source.element
             .getAttribute('data-sortable-valid-groups')
@@ -489,34 +526,36 @@ export default function useSortable({
             );
           },
         );
-
-        // console.log(location.current.dropTargets);
-        // console.log('dropTargets', dropTargets);
-
-        // Early return if no drop targets
         if (dropTargets.length === 0) return;
 
         // Early return if item not change group container but target change event triggered
         const topDropTarget = dropTargets[0];
-        if (ref.current === topDropTarget?.element && sorting.current) return;
-        sorting.current = ref.current === topDropTarget?.element;
+        if (ref.current === topDropTarget?.element && holding.current) return;
+
+        /**
+         * Group change logic
+         */
+
+        // Set container holding status if top drop target is this container
+        holding.current = ref.current === topDropTarget?.element;
+        setHoldingStatus(holding.current);
 
         // Check if item is entering this container
-        const entering = ref.current === topDropTarget?.element;
-        if (entering) {
+        if (holding.current) {
           const closestIdx = closestIndex();
           index.current = { current: closestIdx, previous: -1 };
-          console.log(id, 'entering', closestIdx);
           const didGroupChange = onGroupChange?.({
             type: 'enter',
-            itemData: data,
             index: closestIdx,
+            data,
           });
 
           // Update cached rects if outside group changed or result not returned
           if (didGroupChange === true || didGroupChange === undefined) {
+            transitioning.current = true;
             setTimeout(() => {
               cachedRects.current = getCachedRects();
+              transitioning.current = false;
             }, motionDuration);
           }
 
@@ -524,19 +563,19 @@ export default function useSortable({
         }
 
         // Check if item is leaving this container
-        const leaving = isOwnerContainer(); //?
-        if (leaving) {
-          console.log(id, 'leaving');
-          // console.log(`[${group}]`, 'onGroupChange leave', { itemData: data });
+        if (!holding.current) {
           const didGroupChange = onGroupChange?.({
             type: 'leave',
-            itemData: data,
+            index: index.current.current,
+            data,
           });
 
           // Update cached rects if outside group changed or result not returned
           if (didGroupChange === true || didGroupChange === undefined) {
+            transitioning.current = true;
             setTimeout(() => {
               cachedRects.current = getCachedRects();
+              transitioning.current = false;
             }, motionDuration);
           }
 
@@ -544,11 +583,11 @@ export default function useSortable({
         }
       },
       onDrop: () => {
-        // Reset the mouse, offset, index, and sorting refs to their default states after dropping
+        // Reset the mouse, offset, index, and holding refs to their default states after dropping
         mouse.current = { pageX: 0, pageY: 0 };
         offset.current = { offsetX: 0, offsetY: 0, width: 0, height: 0 };
         index.current = { current: -1, previous: -1 };
-        sorting.current = false;
+        holding.current = false;
       },
     },
     [
@@ -586,5 +625,7 @@ export default function useSortable({
         )
       : null,
     sortableGroups,
+    sorting,
+    holdingStatus,
   };
 }

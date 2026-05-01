@@ -105,3 +105,24 @@ export const lmixed: ContainerRow[] = (() => {
     { type: 'item', id: nextId() },
   ];
 })();
+
+export const seed1: ContainerRow[] = [
+  {
+    type: 'group',
+    id: 'Group-1',
+    items: [
+      { groupId: 'Group-1', id: 'item-1' },
+      { groupId: 'Group-1', id: 'item-2' },
+      { groupId: 'Group-1', id: 'item-3' },
+      { groupId: 'Group-1', id: 'item-4' },
+      { groupId: 'Group-1', id: 'item-5' },
+      { groupId: 'Group-1', id: 'item-6' },
+    ],
+  },
+  { type: 'item', id: 'item-7' },
+  { type: 'item', id: 'item-8' },
+  { type: 'item', id: 'item-9' },
+  { type: 'item', id: 'item-10' },
+  { type: 'item', id: 'item-11' },
+  { type: 'item', id: 'item-12' },
+];

@@ -4,7 +4,9 @@ import './index.styles.css';
 import { AdDragDrop } from '@/packages/base';
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
-import { items, groups, mixed, lmixed } from './data';
+import { mixed, seed1 } from './data';
+
+// #region Data Types
 
 /** Item nested under a group — includes `groupId` matching the parent group. */
 export interface GroupItem {
@@ -26,6 +28,51 @@ type DragItemBoxData = {
   id: string;
 };
 
+// #endregion
+
+// #region Utility Functions
+
+const clampIndex = (index: number, length: number) => {
+  if (Number.isNaN(index)) return length;
+  if (index < 0) return 0;
+  if (index > length) return length;
+  return index;
+};
+
+const swapArray = <T,>(
+  input: readonly T[],
+  x: number,
+  y: number,
+): readonly T[] => {
+  if (x === y) return input;
+  if (x < 0 || y < 0) return input;
+  if (x >= input.length || y >= input.length) return input;
+
+  const next = input.slice();
+  [next[x], next[y]] = [next[y], next[x]];
+  return next;
+};
+
+const addArray = <T,>(
+  input: readonly T[],
+  at: number,
+  data: T,
+): readonly T[] => {
+  const insertAt = clampIndex(at, input.length);
+  const next = input.slice();
+  next.splice(insertAt, 0, data);
+  return next;
+};
+
+const removeArray = <T,>(input: readonly T[], at: number): readonly T[] => {
+  if (at < 0 || at >= input.length) return input;
+  const next = input.slice();
+  next.splice(at, 1);
+  return next;
+};
+
+// #endregion
+
 const ItemBox: FC<{ id: string; label: string; free?: boolean }> = ({
   id,
   label,
@@ -37,9 +84,9 @@ const ItemBox: FC<{ id: string; label: string; free?: boolean }> = ({
       sortable
       itemOf={free ? 'container' : 'group'}
       validGroups={['container', 'group']}
-      dragData={{ kind: 'itembox', id } satisfies DragItemBoxData}
+      data={{ kind: 'itembox', id } satisfies DragItemBoxData}
     >
-      <div className="item">
+      <div className="item" data-test-id={id}>
         <span className="item-label">{label}</span>
       </div>
     </AdDragDrop>
@@ -49,27 +96,33 @@ const ItemBox: FC<{ id: string; label: string; free?: boolean }> = ({
 const GroupBlock: FC<{
   name: string;
   items: GroupItem[];
-  onCatchItemBox: (args: { itemId: string; groupId: string }) => void;
-  onMoveItemBox: (args: {
-    groupId: string;
-    current: number;
-    previous: number;
-  }) => void;
-}> = ({ name, items, onCatchItemBox, onMoveItemBox }) => {
+  swap: (current: number, previous: number) => void;
+  add: (at: number, data: ContainerRow | GroupItem) => void;
+  remove: (at: number) => void;
+}> = ({ name, items, swap, add, remove }) => {
   return (
     <AdDragDrop
       draggable
       droppable
       group="group"
       itemOf="container"
+      data={{ id: name, kind: 'group' }}
       dropData={{ id: name }}
       stopDropPropagation
       sortable
-      // onSortableChange={({ current, previous }) => {
-      //   console.log('Group onSortableChange', current, '←→', previous);
-      //   onMoveItemBox({ groupId: name, current, previous });
-      // }}
-      onGroupChange={() => false}
+      onSortableChange={({ current, previous }) => {
+        console.log(name, 'onSortableChange', current, previous);
+        swap(current, previous);
+      }}
+      onGroupChange={({ type, index, data }) => {
+        console.log(name, type, index, data);
+        if (type === 'enter') {
+          add(index, data);
+        }
+        if (type === 'leave') {
+          remove(index);
+        }
+      }}
     >
       <div
         data-test-id={name}
@@ -90,85 +143,59 @@ const GroupBlock: FC<{
 };
 
 const Home: FC = () => {
-  const [rows, setRows] = useState<ContainerRow[]>(mixed);
+  const [rows, setRows] = useState<ContainerRow[]>(seed1);
 
-  const catchItemBox = (
-    itemId: string,
-    target: { type: 'container' } | { type: 'group'; groupId: string },
-  ) => {
-    setRows((prev) => {
-      const existsInTarget =
-        target.type === 'container'
-          ? prev.some((r) => r.type === 'item' && r.id === itemId)
-          : prev.some(
-              (r) =>
-                r.type === 'group' &&
-                r.id === target.groupId &&
-                r.items.some((it) => it.id === itemId),
-            );
+  // useEffect(() => console.log(rows), [rows]);
 
-      if (existsInTarget) return prev;
+  type InScope = { type: 'container' } | { type: 'group'; groupId: string };
 
-      const stripped = prev
-        .filter((r) => !(r.type === 'item' && r.id === itemId))
-        .map((r) =>
-          r.type === 'group'
-            ? { ...r, items: r.items.filter((it) => it.id !== itemId) }
-            : r,
-        );
-
-      if (target.type === 'container') {
-        return [...stripped, { type: 'item', id: itemId }];
-      }
-
-      return stripped.map((r) => {
-        if (r.type !== 'group' || r.id !== target.groupId) return r;
-        return {
-          ...r,
-          items: [...r.items, { id: itemId, groupId: target.groupId }],
-        };
-      });
-    });
-  };
-
-  const moveItemBox = (args: {
-    scope: { type: 'container' } | { type: 'group'; groupId: string };
-    current: number;
-    previous: number;
-  }) => {
-    const { scope, current, previous } = args;
-    if (current === previous) return;
-
+  // swap(in, x, y) → swap in "container" or "group"
+  const swap = (scope: InScope, x: number, y: number) => {
+    if (x === y) return;
     setRows((prev) => {
       if (scope.type === 'container') {
-        if (
-          previous < 0 ||
-          current < 0 ||
-          previous >= prev.length ||
-          current >= prev.length
-        ) {
-          return prev;
-        }
-
-        const next = prev.slice();
-        [next[previous], next[current]] = [next[current], next[previous]];
-        return next;
+        const next = swapArray(prev, x, y);
+        return next === prev ? prev : (next as ContainerRow[]);
       }
 
       return prev.map((r) => {
         if (r.type !== 'group' || r.id !== scope.groupId) return r;
-        if (
-          previous < 0 ||
-          current < 0 ||
-          previous >= r.items.length ||
-          current >= r.items.length
-        ) {
-          return r;
-        }
+        const items = swapArray(r.items, x, y);
+        if (items === r.items) return r;
+        return { ...r, items: items as GroupItem[] };
+      });
+    });
+  };
 
-        const items = r.items.slice();
-        [items[previous], items[current]] = [items[current], items[previous]];
-        return { ...r, items };
+  // add(in, at, data) → add data at the at in the in
+  const add = (scope: InScope, at: number, data: ContainerRow | GroupItem) => {
+    setRows((prev) => {
+      if (scope.type === 'container') {
+        const next = addArray(prev, at, data as ContainerRow);
+        return next as ContainerRow[];
+      }
+
+      return prev.map((r) => {
+        if (r.type !== 'group' || r.id !== scope.groupId) return r;
+        const items = addArray(r.items, at, data as GroupItem);
+        return { ...r, items: items as GroupItem[] };
+      });
+    });
+  };
+
+  // remove(in, at) → remove data at the at and in the in
+  const remove = (scope: InScope, at: number) => {
+    setRows((prev) => {
+      if (scope.type === 'container') {
+        const next = removeArray(prev, at);
+        return next === prev ? prev : (next as ContainerRow[]);
+      }
+
+      return prev.map((r) => {
+        if (r.type !== 'group' || r.id !== scope.groupId) return r;
+        const items = removeArray(r.items, at);
+        if (items === r.items) return r;
+        return { ...r, items: items as GroupItem[] };
       });
     });
   };
@@ -181,10 +208,19 @@ const Home: FC = () => {
         group="container"
         hostPreview
         dropData={{ id: 'Container' }}
-        // onSortableChange={({ current, previous }) => {
-        //   moveItemBox({ scope: { type: 'container' }, current, previous });
-        // }}
-        onGroupChange={() => false}
+        onSortableChange={({ current, previous }) => {
+          console.log('Container', 'onSortableChange', current, previous);
+          swap({ type: 'container' }, current, previous);
+        }}
+        onGroupChange={({ type, index, data }) => {
+          console.log('Container', type, index, data);
+          if (type === 'enter') {
+            add({ type: 'container' }, index, data);
+          }
+          if (type === 'leave') {
+            remove({ type: 'container' }, index);
+          }
+        }}
       >
         <div className="stacked-container" data-test-id="Container">
           <span className="container-label">Container</span>
@@ -195,15 +231,14 @@ const Home: FC = () => {
                   key={row.id}
                   name={row.id}
                   items={row.items}
-                  onCatchItemBox={({ itemId, groupId }) =>
-                    catchItemBox(itemId, { type: 'group', groupId })
+                  swap={(current, previous) =>
+                    swap({ type: 'group', groupId: row.id }, current, previous)
                   }
-                  onMoveItemBox={({ groupId, current, previous }) =>
-                    moveItemBox({
-                      scope: { type: 'group', groupId },
-                      current,
-                      previous,
-                    })
+                  add={(at, data) =>
+                    add({ type: 'group', groupId: row.id }, at, data)
+                  }
+                  remove={(at) =>
+                    remove({ type: 'group', groupId: row.id }, at)
                   }
                 />
               ) : (
