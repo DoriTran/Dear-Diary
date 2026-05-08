@@ -19,7 +19,7 @@ import type {
   ExtraScrollOffset,
   OnGroupChange,
   OnSortableChange,
-  SortableStrategy,
+  SortableDirection,
 } from './type';
 import type { UseDraggingOptions } from './useDragging';
 
@@ -59,10 +59,9 @@ export interface UseSortableOptions {
   motionDuration?: number;
 
   /**
-   * Sortable list layout strategy. Default `'none'` (auto-detect axis from rects).
-   * Use `'vertical'` or `'horizontal'` to force the swap axis.
+   * Sortable list layout direction. Default `'vertical'`.
    */
-  strategy?: SortableStrategy;
+  direction?: SortableDirection;
 
   children: ReactElement;
   motions?: Record<string, unknown>;
@@ -96,7 +95,7 @@ export default function useSortable({
   onSortableChange,
   extraScrollOffset,
   motionDuration = 400,
-  strategy = 'none',
+  direction = 'vertical',
   children,
   motions,
 }: UseSortableOptions): UseSortableResult {
@@ -172,24 +171,7 @@ export default function useSortable({
     const firstRect = rects[first];
     const secondRect = rects[second];
 
-    const axis =
-      strategy === 'none'
-        ? {
-            isVertical:
-              secondRect.top >= firstRect.bottom &&
-              Math.abs(secondRect.left - firstRect.left) <
-                Math.abs(secondRect.top - firstRect.top),
-            isHorizontal:
-              secondRect.left >= firstRect.right &&
-              Math.abs(secondRect.top - firstRect.top) <
-                Math.abs(secondRect.left - firstRect.left),
-          }
-        : {
-            isVertical: strategy === 'vertical',
-            isHorizontal: strategy === 'horizontal',
-          };
-
-    if (axis.isVertical) {
+    if (direction === 'vertical') {
       const sizes = result.map((rect) => rect.height);
 
       sizes[first] = secondRect.height;
@@ -212,7 +194,7 @@ export default function useSortable({
       }
     }
 
-    if (axis.isHorizontal) {
+    if (direction === 'horizontal') {
       const sizes = result.map((rect) => rect.width);
 
       sizes[first] = secondRect.width;
@@ -281,9 +263,10 @@ export default function useSortable({
       scrollTop: 0,
       scrollLeft: 0,
     };
-    const originalCachedRects = cachedRects.current;
 
-    // Calculate virtual drag box rect
+    const extraTop = extraScrollOffset?.scrollTop ?? 0;
+    const extraLeft = extraScrollOffset?.scrollLeft ?? 0;
+
     const virtualRect = {
       left: pageX - offsetX,
       top: pageY - offsetY,
@@ -291,34 +274,16 @@ export default function useSortable({
       bottom: pageY - offsetY + height,
     };
 
-    // Shift scroll position from cached rects
-    const adjustedRects = originalCachedRects.map((rect) => ({
-      ...rect,
-      top: rect.top - scrollTop - (extraScrollOffset?.scrollTop ?? 0),
-      left: rect.left - scrollLeft - (extraScrollOffset?.scrollLeft ?? 0),
-      right: rect.right - scrollLeft - (extraScrollOffset?.scrollLeft ?? 0),
-      bottom: rect.bottom - scrollTop - (extraScrollOffset?.scrollTop ?? 0),
-    }));
-
-    // Helper function for corner calculation
-    const getCornersFromRect = (r: {
+    const getCenterFromRect = (rect: {
       left: number;
       top: number;
       right: number;
       bottom: number;
-    }): {
-      topLeft: { x: number; y: number };
-      topRight: { x: number; y: number };
-      bottomLeft: { x: number; y: number };
-      bottomRight: { x: number; y: number };
-    } => ({
-      topLeft: { x: r.left, y: r.top },
-      topRight: { x: r.right, y: r.top },
-      bottomLeft: { x: r.left, y: r.bottom },
-      bottomRight: { x: r.right, y: r.bottom },
+    }) => ({
+      x: (rect.left + rect.right) / 2,
+      y: (rect.top + rect.bottom) / 2,
     });
 
-    // Helper function for distance calculation
     const distance = (
       p1: { x: number; y: number },
       p2: { x: number; y: number },
@@ -326,20 +291,25 @@ export default function useSortable({
       return Math.sqrt((p1.x - p2.x) ** 2 + (p1.y - p2.y) ** 2);
     };
 
-    const dragCorners = getCornersFromRect(virtualRect);
+    const dragCenter = getCenterFromRect(virtualRect);
+
     let closestIndex = -1;
     let minDist = Infinity;
 
-    adjustedRects.forEach((rect, i) => {
-      const c = getCornersFromRect(rect);
-      const totalDist =
-        distance(dragCorners.topLeft, c.topLeft) +
-        distance(dragCorners.topRight, c.topRight) +
-        distance(dragCorners.bottomLeft, c.bottomLeft) +
-        distance(dragCorners.bottomRight, c.bottomRight);
+    cachedRects.current.forEach((rect, i) => {
+      const adjustedRect = {
+        ...rect,
+        top: rect.top - scrollTop - extraTop,
+        left: rect.left - scrollLeft - extraLeft,
+        right: rect.right - scrollLeft - extraLeft,
+        bottom: rect.bottom - scrollTop - extraTop,
+      };
 
-      if (totalDist < minDist) {
-        minDist = totalDist;
+      const rectCenter = getCenterFromRect(adjustedRect);
+      const dist = distance(dragCenter, rectCenter);
+
+      if (dist < minDist) {
+        minDist = dist;
         closestIndex = i;
       }
     });

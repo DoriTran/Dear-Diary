@@ -85,12 +85,9 @@ export type ExtraScrollOffset = {
 };
 
 /**
- * Sortable list layout strategy.
- *
- * - `'vertical'` / `'horizontal'`: force the swap axis.
- * - `'none'` (default): auto-detect axis from the cached item rects.
+ * Sortable list layout direction. Default `'vertical'`.
  */
-export type SortableStrategy = 'vertical' | 'horizontal' | 'none';
+export type SortableDirection = 'vertical' | 'horizontal';
 // #endregion
 
 // #region AdDragDrop props
@@ -150,7 +147,7 @@ interface AdDragDropPropsBase extends Partial<AutoScrollOptions> {
   /* Sortable options (sortable / itemOf narrowed on `AdDragDropProps`) */
   hostPreview?: boolean;
   motionDuration?: number;
-  strategy?: SortableStrategy;
+  direction?: SortableDirection;
   group?: string;
   validGroups?: string[] | undefined;
   onGroupChange?: OnGroupChange;
