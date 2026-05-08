@@ -19,6 +19,7 @@ import type {
   ExtraScrollOffset,
   OnGroupChange,
   OnSortableChange,
+  SortableStrategy,
 } from './type';
 import type { UseDraggingOptions } from './useDragging';
 
@@ -57,6 +58,12 @@ export interface UseSortableOptions {
   /** Motion duration in ms. Default is 400ms. */
   motionDuration?: number;
 
+  /**
+   * Sortable list layout strategy. Default `'none'` (auto-detect axis from rects).
+   * Use `'vertical'` or `'horizontal'` to force the swap axis.
+   */
+  strategy?: SortableStrategy;
+
   children: ReactElement;
   motions?: Record<string, unknown>;
 }
@@ -73,6 +80,8 @@ type SortableRect = {
   left: number;
   right: number;
   bottom: number;
+  width: number;
+  height: number;
 };
 
 export default function useSortable({
@@ -87,6 +96,7 @@ export default function useSortable({
   onSortableChange,
   extraScrollOffset,
   motionDuration = 400,
+  strategy = 'none',
   children,
   motions,
 }: UseSortableOptions): UseSortableResult {
@@ -126,9 +136,7 @@ export default function useSortable({
     console.groupEnd();
   };
 
-  /**
-   * Only monitor items with the same sortable id as the container
-   */
+  // Only monitor items with the same sortable id as the container
   const monitorGroupsHavingItemSorting = (
     element: HTMLElement,
     targetGroup?: string,
@@ -137,6 +145,97 @@ export default function useSortable({
 
     const rawGroups = element.getAttribute('data-sortable-valid-groups');
     return rawGroups?.split(',').includes(targetGroup) ?? false;
+  };
+
+  // Swap cached rects by its size and position
+  const swapCachedRect = (
+    rects: SortableRect[],
+    first: number,
+    second: number,
+  ): SortableRect[] => {
+    if (
+      first === second ||
+      first < 0 ||
+      second < 0 ||
+      first >= rects.length ||
+      second >= rects.length
+    ) {
+      return rects;
+    }
+
+    if (first > second) {
+      return swapCachedRect(rects, second, first);
+    }
+
+    const result = rects.map((rect) => ({ ...rect }));
+
+    const firstRect = rects[first];
+    const secondRect = rects[second];
+
+    const axis =
+      strategy === 'none'
+        ? {
+            isVertical:
+              secondRect.top >= firstRect.bottom &&
+              Math.abs(secondRect.left - firstRect.left) <
+                Math.abs(secondRect.top - firstRect.top),
+            isHorizontal:
+              secondRect.left >= firstRect.right &&
+              Math.abs(secondRect.top - firstRect.top) <
+                Math.abs(secondRect.left - firstRect.left),
+          }
+        : {
+            isVertical: strategy === 'vertical',
+            isHorizontal: strategy === 'horizontal',
+          };
+
+    if (axis.isVertical) {
+      const sizes = result.map((rect) => rect.height);
+
+      sizes[first] = secondRect.height;
+      sizes[second] = firstRect.height;
+
+      for (let i = first; i <= second; i++) {
+        const previousRect = result[i - 1];
+        const originalRect = rects[i];
+
+        const gap = i === first ? 0 : originalRect.top - rects[i - 1].bottom;
+
+        const top = i === first ? firstRect.top : previousRect.bottom + gap;
+
+        result[i] = {
+          ...originalRect,
+          height: sizes[i],
+          top,
+          bottom: top + sizes[i],
+        };
+      }
+    }
+
+    if (axis.isHorizontal) {
+      const sizes = result.map((rect) => rect.width);
+
+      sizes[first] = secondRect.width;
+      sizes[second] = firstRect.width;
+
+      for (let i = first; i <= second; i++) {
+        const previousRect = result[i - 1];
+        const originalRect = rects[i];
+
+        const gap = i === first ? 0 : originalRect.left - rects[i - 1].right;
+
+        const left = i === first ? firstRect.left : previousRect.right + gap;
+
+        result[i] = {
+          ...originalRect,
+          width: sizes[i],
+          left,
+          right: left + sizes[i],
+        };
+      }
+    }
+
+    return result;
   };
 
   const getMousePosition = (location: {
@@ -169,6 +268,8 @@ export default function useSortable({
         left: rect.left + elRef.scrollLeft,
         right: rect.right + elRef.scrollLeft,
         bottom: rect.bottom + elRef.scrollTop,
+        width: rect.width,
+        height: rect.height,
       };
     });
   };
@@ -245,7 +346,6 @@ export default function useSortable({
 
     return closestIndex;
   };
-
   // #endregion
 
   // #region Sortable Item status
@@ -279,6 +379,7 @@ export default function useSortable({
       },
       onDrop: () => {
         setSorting(undefined);
+        setHoldingStatus(undefined);
       },
     },
     [sortable, itemOf, data],
@@ -450,6 +551,7 @@ export default function useSortable({
           current: targetIndex,
           previous: -1,
         };
+        console.log('index.current', index.current);
 
         // Init holding status
         holding.current =
@@ -484,25 +586,26 @@ export default function useSortable({
          * Dragging logic
          */
         const closestIdx = closestIndex();
+        const newIndex = {
+          current: closestIdx,
+          previous: index.current.current,
+        };
+        console.table(cachedRects.current);
+        console.log('closestIdx', closestIdx);
         if (closestIdx !== -1 && closestIdx !== index.current.current) {
-          index.current = {
-            current: closestIdx,
-            previous: index.current.current,
-          };
-
           // Call the onSortableChange callback
-          const didSortableChange = onSortableChange(index.current);
+          const didSortableChange = onSortableChange(newIndex);
 
           // Update cached rects if outside sortable index changed or result not returned
           if (didSortableChange === true || didSortableChange === undefined) {
-            const newCachedRects = [...cachedRects.current];
-            [
-              newCachedRects[index.current.current],
-              newCachedRects[index.current.previous],
-            ] = [
-              newCachedRects[index.current.previous],
-              newCachedRects[index.current.current],
-            ];
+            index.current = newIndex;
+
+            cachedRects.current = swapCachedRect(
+              cachedRects.current,
+              index.current.previous,
+              index.current.current,
+            );
+            logCachedRects(cachedRects.current);
           }
         }
       },
@@ -542,6 +645,7 @@ export default function useSortable({
 
         // Check if item is entering this container
         if (holding.current) {
+          // Find closest index to the mouse position
           const closestIdx = closestIndex();
           index.current = { current: closestIdx, previous: -1 };
           const didGroupChange = onGroupChange?.({

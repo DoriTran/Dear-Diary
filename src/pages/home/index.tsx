@@ -4,7 +4,7 @@ import './index.styles.css';
 import { AdDragDrop } from '@/packages/base';
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
-import { mixed, seed1 } from './data';
+import { items, mixed, seed1 } from './data';
 
 // #region Data Types
 
