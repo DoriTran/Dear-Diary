@@ -73,7 +73,6 @@ export interface UseSortableResult {
   motioned: ReactElement | null;
   sortableGroups: string | undefined;
   sorting: boolean | undefined;
-  holdingStatus: boolean | undefined;
 }
 
 type SortableRect = {
@@ -259,7 +258,7 @@ export default function useSortable({
     });
   };
 
-  const closestIndex = (): number => {
+  const calculateRect = () => {
     const { pageX, pageY } = mouse.current;
     const { offsetX, offsetY, width, height } = offset.current;
     const { scrollTop, scrollLeft } = ref.current ?? {
@@ -275,6 +274,8 @@ export default function useSortable({
       top: pageY - offsetY,
       right: pageX - offsetX + width,
       bottom: pageY - offsetY + height,
+      width: width,
+      height: height,
     };
 
     const adjustedRects = cachedRects.current.map((rect) => ({
@@ -284,6 +285,12 @@ export default function useSortable({
       right: rect.right - scrollLeft - extraLeft,
       bottom: rect.bottom - scrollTop - extraTop,
     }));
+
+    return { virtualRect, adjustedRects };
+  };
+
+  const closestIndex = (): number => {
+    const { virtualRect, adjustedRects } = calculateRect();
 
     type Point = { x: number; y: number };
     type RectLike = {
@@ -403,13 +410,33 @@ export default function useSortable({
         return closestByCenter();
     }
   };
+
+  const insertIndex = (closestIdx: number) => {
+    const { virtualRect, adjustedRects } = calculateRect();
+    const closestRect = adjustedRects[closestIdx];
+
+    if (!closestRect) return closestIdx;
+
+    if (direction === 'vertical') {
+      const virtualCenter = (virtualRect.top + virtualRect.bottom) / 2;
+      const closestCenter = (closestRect.top + closestRect.bottom) / 2;
+
+      return virtualCenter > closestCenter ? closestIdx + 1 : closestIdx;
+    }
+
+    if (direction === 'horizontal') {
+      const virtualCenter = (virtualRect.left + virtualRect.right) / 2;
+      const closestCenter = (closestRect.left + closestRect.right) / 2;
+
+      return virtualCenter > closestCenter ? closestIdx + 1 : closestIdx;
+    }
+
+    return closestIdx;
+  };
   // #endregion
 
   // #region Sortable Item status
   const [sorting, setSorting] = useState<boolean | undefined>(undefined);
-  const [holdingStatus, setHoldingStatus] = useState<boolean | undefined>(
-    undefined,
-  );
 
   useMonitor(
     {
@@ -436,7 +463,6 @@ export default function useSortable({
       },
       onDrop: () => {
         setSorting(undefined);
-        setHoldingStatus(undefined);
       },
     },
     [sortable, itemOf, data],
@@ -609,11 +635,9 @@ export default function useSortable({
           previous: -1,
         };
 
-        // Init holding status
         holding.current =
           source.element.getAttribute('data-sortable-item-of') === group &&
           elements.includes(source.element);
-        setHoldingStatus(holding.current);
       },
       onDrag: ({ source, location }) => {
         // Early return if outside logic is not implemented
@@ -628,6 +652,7 @@ export default function useSortable({
         // Early return if position not change
         const { pageX, pageY } = getMousePosition(location);
         if (pageX !== mouse.current.pageX || pageY !== mouse.current.pageY) {
+          console.log('mouse: ', pageX, pageY);
           mouse.current = { pageX, pageY };
         } else return;
 
@@ -646,8 +671,7 @@ export default function useSortable({
           current: closestIdx,
           previous: index.current.current,
         };
-        console.table(cachedRects.current);
-        console.log('closestIdx', closestIdx);
+
         if (closestIdx !== -1 && closestIdx !== index.current.current) {
           // Call the onSortableChange callback
           const didSortableChange = onSortableChange(newIndex);
@@ -666,7 +690,6 @@ export default function useSortable({
         }
       },
       onTargetChange: ({ data, source, location }) => {
-        console.log('targetChange');
         // Early return if outside logic is not implemented
         if (!onGroupChange) return;
 
@@ -695,34 +718,37 @@ export default function useSortable({
          * Group change logic
          */
 
-        // Set container holding status if top drop target is this container
         holding.current = ref.current === topDropTarget?.element;
-        setHoldingStatus(holding.current);
 
-        // Check if item is entering this container
+        // [Enter] Check if item is entering this container
         if (holding.current) {
           // Find closest index to the mouse position
+          mouse.current = getMousePosition(location);
           const closestIdx = closestIndex();
-          index.current = { current: closestIdx, previous: -1 };
+          const insertIdx = insertIndex(closestIdx);
           const didGroupChange = onGroupChange?.({
             type: 'enter',
-            index: closestIdx,
+            index: insertIdx,
             data,
           });
 
           // Update cached rects if outside group changed or result not returned
           if (didGroupChange === true || didGroupChange === undefined) {
+            index.current = { current: insertIdx, previous: -1 };
             transitioning.current = true;
-            setTimeout(() => {
-              cachedRects.current = getCachedRects();
-              transitioning.current = false;
-            }, motionDuration);
+            setTimeout(
+              () => {
+                cachedRects.current = getCachedRects();
+                transitioning.current = false;
+              },
+              Math.max(0, motionDuration - 150),
+            );
           }
 
           return;
         }
 
-        // Check if item is leaving this container
+        // [Leave] Check if item is leaving this container
         if (!holding.current) {
           const didGroupChange = onGroupChange?.({
             type: 'leave',
@@ -733,10 +759,13 @@ export default function useSortable({
           // Update cached rects if outside group changed or result not returned
           if (didGroupChange === true || didGroupChange === undefined) {
             transitioning.current = true;
-            setTimeout(() => {
-              cachedRects.current = getCachedRects();
-              transitioning.current = false;
-            }, motionDuration);
+            setTimeout(
+              () => {
+                cachedRects.current = getCachedRects();
+                transitioning.current = false;
+              },
+              Math.max(0, motionDuration - 150),
+            );
           }
 
           return;
@@ -788,6 +817,5 @@ export default function useSortable({
       : null,
     sortableGroups,
     sorting,
-    holdingStatus,
   };
 }

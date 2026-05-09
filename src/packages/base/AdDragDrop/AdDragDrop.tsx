@@ -53,7 +53,7 @@ const AdDragDrop: FC<AdDragDropProps> = (props) => {
     hostPreview = false,
     motionDuration = 400,
     direction = 'vertical',
-    strategy = 'side',
+    strategy = 'vertex',
     group,
     itemOf,
     validGroups,
@@ -138,7 +138,7 @@ const AdDragDrop: FC<AdDragDropProps> = (props) => {
     // dependency array is handled inside hook
   );
 
-  const { motioned, sortableGroups, sorting, holdingStatus } = useSortable({
+  const { motioned, sortableGroups, sorting } = useSortable({
     ref,
     sortable,
     data,
@@ -200,12 +200,6 @@ const AdDragDrop: FC<AdDragDropProps> = (props) => {
         'data-sortable-valid-groups': sortable ? sortableGroups : undefined,
         // Custom styling
         style: {
-          ...(sorting && {
-            backgroundColor: 'aliceblue',
-          }),
-          ...(holdingStatus && {
-            border: '1px solid red',
-          }),
           ...(children.props as { style?: CSSProperties }).style,
           ...(dragging && style.base),
           ...(hovering && style.hover),

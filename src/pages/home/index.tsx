@@ -115,7 +115,7 @@ const GroupBlock: FC<{
         swap(current, previous);
       }}
       onGroupChange={({ type, index, data }) => {
-        console.log(name, type, index, data);
+        console.log(name, 'onGroupChange', type, index, data);
         if (type === 'enter') {
           add(index, data);
         }
@@ -213,7 +213,7 @@ const Home: FC = () => {
           swap({ type: 'container' }, current, previous);
         }}
         onGroupChange={({ type, index, data }) => {
-          console.log('Container', type, index, data);
+          console.log('Container', 'onGroupChange', type, index, data);
           if (type === 'enter') {
             add({ type: 'container' }, index, data);
           }
