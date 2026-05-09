@@ -2,7 +2,7 @@ import { draggable } from '@atlaskit/pragmatic-drag-and-drop/element/adapter';
 import { disableNativeDragPreview } from '@atlaskit/pragmatic-drag-and-drop/element/disable-native-drag-preview';
 import { preserveOffsetOnSource } from '@atlaskit/pragmatic-drag-and-drop/element/preserve-offset-on-source';
 import { setCustomNativeDragPreview } from '@atlaskit/pragmatic-drag-and-drop/element/set-custom-native-drag-preview';
-import { useEffect, useMemo, useState, type RefObject } from 'react';
+import { useEffect, useMemo, useRef, useState, type RefObject } from 'react';
 
 import type { LogDebugEvent } from './logEvents';
 import type {
@@ -74,8 +74,8 @@ export default function useDragging(
 ): UseDraggingResult {
   const [dragging, setDragging] = useState(false);
   const [container, setContainer] = useState<HTMLElement | null>(null);
-
-  const [offset, setOffset] = useState({ x: 0, y: 0 });
+  const offsetRef = useRef({ x: 0, y: 0 });
+  const overlayElRef = useRef<HTMLElement | null>(null);
 
   const [style, setStyle] = useState({
     width: 0,
@@ -131,7 +131,7 @@ export default function useDragging(
 
     if (!el || !drags.draggable) return;
 
-    return draggable({
+    const cleanup = draggable({
       element: el,
       dragHandle: handle,
 
@@ -162,8 +162,8 @@ export default function useDragging(
 
           setStyle((prev) => ({
             ...prev,
-            left: pageX - offset.x,
-            top: pageY - offset.y,
+            left: pageX - offsetRef.current.x,
+            top: pageY - offsetRef.current.y,
           }));
 
           const overlayContainer = document.createElement('div');
@@ -174,6 +174,7 @@ export default function useDragging(
 
           document.body.appendChild(overlayContainer);
 
+          overlayElRef.current = overlayContainer;
           setContainer(overlayContainer);
         }
       },
@@ -190,8 +191,8 @@ export default function useDragging(
         if (!drags.native) {
           setStyle((prev) => ({
             ...prev,
-            left: location.current.input.pageX - offset.x,
-            top: location.current.input.pageY - offset.y,
+            left: location.current.input.pageX - offsetRef.current.x,
+            top: location.current.input.pageY - offsetRef.current.y,
           }));
         }
       },
@@ -207,8 +208,12 @@ export default function useDragging(
 
         setDragging(false);
 
-        if (!drags.native && container) {
-          document.body.removeChild(container);
+        if (!drags.native) {
+          const node = overlayElRef.current;
+          if (node?.parentNode) {
+            node.parentNode.removeChild(node);
+          }
+          overlayElRef.current = null;
         }
 
         setContainer(null);
@@ -243,6 +248,7 @@ export default function useDragging(
               input: location.current.input,
             }),
             render({ container: ctn }) {
+              overlayElRef.current = ctn;
               setContainer(ctn);
             },
           });
@@ -253,10 +259,10 @@ export default function useDragging(
           const rect = source.element.getBoundingClientRect();
           const { input } = location.current;
 
-          setOffset({
+          offsetRef.current = {
             x: input.clientX - rect.x,
             y: input.clientY - rect.y,
-          });
+          };
 
           setStyle((prev) => ({
             ...prev,
@@ -276,7 +282,16 @@ export default function useDragging(
         });
       },
     });
-  }, [...Object.values(drags), offset, container, ...dependencies]);
+
+    return () => {
+      cleanup?.();
+      const orphan = overlayElRef.current;
+      if (orphan?.parentNode) {
+        orphan.parentNode.removeChild(orphan);
+      }
+      overlayElRef.current = null;
+    };
+  }, [...Object.values(drags), ...dependencies]);
 
   return {
     draggable: Boolean(drags.draggable),
