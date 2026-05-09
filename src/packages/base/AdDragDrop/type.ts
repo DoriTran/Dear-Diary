@@ -88,6 +88,15 @@ export type ExtraScrollOffset = {
  * Sortable list layout direction. Default `'vertical'`.
  */
 export type SortableDirection = 'vertical' | 'horizontal';
+
+/**
+ * Closest-index calculation strategy used while sorting. Default `'center'`.
+ *
+ * - `'center'`: distance between rect centers.
+ * - `'vertex'`: sum of distances between matching corners.
+ * - `'side'`: distance between matching edges.
+ */
+export type SortableStrategy = 'center' | 'vertex' | 'side';
 // #endregion
 
 // #region AdDragDrop props
@@ -148,6 +157,7 @@ interface AdDragDropPropsBase extends Partial<AutoScrollOptions> {
   hostPreview?: boolean;
   motionDuration?: number;
   direction?: SortableDirection;
+  strategy?: SortableStrategy;
   group?: string;
   validGroups?: string[] | undefined;
   onGroupChange?: OnGroupChange;

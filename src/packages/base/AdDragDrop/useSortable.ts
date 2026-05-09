@@ -20,6 +20,7 @@ import type {
   OnGroupChange,
   OnSortableChange,
   SortableDirection,
+  SortableStrategy,
 } from './type';
 import type { UseDraggingOptions } from './useDragging';
 
@@ -58,10 +59,11 @@ export interface UseSortableOptions {
   /** Motion duration in ms. Default is 400ms. */
   motionDuration?: number;
 
-  /**
-   * Sortable list layout direction. Default `'vertical'`.
-   */
+  /** Sortable list layout direction. Default `vertical`. */
   direction?: SortableDirection;
+
+  /** Closest index calculation strategy. Default `center`. */
+  strategy?: SortableStrategy;
 
   children: ReactElement;
   motions?: Record<string, unknown>;
@@ -96,6 +98,7 @@ export default function useSortable({
   extraScrollOffset,
   motionDuration = 400,
   direction = 'vertical',
+  strategy = 'center',
   children,
   motions,
 }: UseSortableOptions): UseSortableResult {
@@ -274,47 +277,131 @@ export default function useSortable({
       bottom: pageY - offsetY + height,
     };
 
-    const getCenterFromRect = (rect: {
+    const adjustedRects = cachedRects.current.map((rect) => ({
+      ...rect,
+      top: rect.top - scrollTop - extraTop,
+      left: rect.left - scrollLeft - extraLeft,
+      right: rect.right - scrollLeft - extraLeft,
+      bottom: rect.bottom - scrollTop - extraTop,
+    }));
+
+    type Point = { x: number; y: number };
+    type RectLike = {
       left: number;
       top: number;
       right: number;
       bottom: number;
-    }) => ({
-      x: (rect.left + rect.right) / 2,
-      y: (rect.top + rect.bottom) / 2,
-    });
-
-    const distance = (
-      p1: { x: number; y: number },
-      p2: { x: number; y: number },
-    ): number => {
-      return Math.sqrt((p1.x - p2.x) ** 2 + (p1.y - p2.y) ** 2);
     };
 
-    const dragCenter = getCenterFromRect(virtualRect);
+    const squaredDistance = (p1: Point, p2: Point): number => {
+      return (p1.x - p2.x) ** 2 + (p1.y - p2.y) ** 2;
+    };
 
-    let closestIndex = -1;
-    let minDist = Infinity;
+    // #region Center Strategy
+    const closestByCenter = (): number => {
+      const getCenterFromRect = (rect: RectLike): Point => ({
+        x: (rect.left + rect.right) / 2,
+        y: (rect.top + rect.bottom) / 2,
+      });
 
-    cachedRects.current.forEach((rect, i) => {
-      const adjustedRect = {
-        ...rect,
-        top: rect.top - scrollTop - extraTop,
-        left: rect.left - scrollLeft - extraLeft,
-        right: rect.right - scrollLeft - extraLeft,
-        bottom: rect.bottom - scrollTop - extraTop,
-      };
+      const dragCenter = getCenterFromRect(virtualRect);
 
-      const rectCenter = getCenterFromRect(adjustedRect);
-      const dist = distance(dragCenter, rectCenter);
+      let closestIndex = -1;
+      let minDistance = Infinity;
 
-      if (dist < minDist) {
-        minDist = dist;
-        closestIndex = i;
-      }
-    });
+      adjustedRects.forEach((rect, i) => {
+        const rectCenter = getCenterFromRect(rect);
+        const distance = squaredDistance(dragCenter, rectCenter);
 
-    return closestIndex;
+        if (distance < minDistance) {
+          minDistance = distance;
+          closestIndex = i;
+        }
+      });
+
+      return closestIndex;
+    };
+    // #endregion
+
+    // #region Vertex Strategy
+    const closestByVertex = (): number => {
+      const getCornersFromRect = (rect: RectLike) => ({
+        topLeft: { x: rect.left, y: rect.top },
+        topRight: { x: rect.right, y: rect.top },
+        bottomLeft: { x: rect.left, y: rect.bottom },
+        bottomRight: { x: rect.right, y: rect.bottom },
+      });
+
+      const dragCorners = getCornersFromRect(virtualRect);
+
+      let closestIndex = -1;
+      let minDistance = Infinity;
+
+      adjustedRects.forEach((rect, i) => {
+        const corners = getCornersFromRect(rect);
+        const totalDistance =
+          squaredDistance(dragCorners.topLeft, corners.topLeft) +
+          squaredDistance(dragCorners.topRight, corners.topRight) +
+          squaredDistance(dragCorners.bottomLeft, corners.bottomLeft) +
+          squaredDistance(dragCorners.bottomRight, corners.bottomRight);
+
+        if (totalDistance < minDistance) {
+          minDistance = totalDistance;
+          closestIndex = i;
+        }
+      });
+
+      return closestIndex;
+    };
+    // #endregion
+
+    // #region Side Strategy
+    const closestBySide = (): number => {
+      let closestIndex = -1;
+      let maxCoveredPercent = -1;
+
+      adjustedRects.forEach((rect, i) => {
+        const rectSize =
+          direction === 'vertical'
+            ? rect.bottom - rect.top
+            : rect.right - rect.left;
+
+        if (rectSize <= 0) return;
+
+        const coveredSize =
+          direction === 'vertical'
+            ? Math.max(
+                0,
+                Math.min(virtualRect.bottom, rect.bottom) -
+                  Math.max(virtualRect.top, rect.top),
+              )
+            : Math.max(
+                0,
+                Math.min(virtualRect.right, rect.right) -
+                  Math.max(virtualRect.left, rect.left),
+              );
+
+        const coveredPercent = coveredSize / rectSize;
+
+        if (coveredPercent > maxCoveredPercent) {
+          maxCoveredPercent = coveredPercent;
+          closestIndex = i;
+        }
+      });
+
+      return closestIndex;
+    };
+    // #endregion
+
+    switch (strategy) {
+      case 'vertex':
+        return closestByVertex();
+      case 'side':
+        return closestBySide();
+      case 'center':
+      default:
+        return closestByCenter();
+    }
   };
   // #endregion
 
@@ -521,7 +608,6 @@ export default function useSortable({
           current: targetIndex,
           previous: -1,
         };
-        console.log('index.current', index.current);
 
         // Init holding status
         holding.current =
@@ -675,6 +761,8 @@ export default function useSortable({
       extraScrollOffset?.scrollLeft,
       extraScrollOffset?.scrollTop,
       motionDuration,
+      direction,
+      strategy,
       motions,
     ],
   );
