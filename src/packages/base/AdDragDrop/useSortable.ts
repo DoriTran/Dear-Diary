@@ -258,6 +258,143 @@ export default function useSortable({
     });
   };
 
+  const insertTemplateToCachedRects = (insertIndex: number) => {
+    // If container empty, early return
+    if (cachedRects.current.length === 0) return;
+
+    const { virtualRect } = calculateRect();
+    const rects = cachedRects.current;
+
+    const safeIndex = Math.max(0, Math.min(insertIndex, rects.length));
+    const firstRect = rects[0];
+
+    const gap =
+      rects.length >= 2
+        ? direction === 'vertical'
+          ? rects[1].top - rects[0].bottom
+          : rects[1].left - rects[0].right
+        : 0;
+
+    const template: SortableRect =
+      direction === 'vertical'
+        ? {
+            left: firstRect.left,
+            right: firstRect.right,
+            width: firstRect.width,
+            height: virtualRect.height,
+            top: 0,
+            bottom: 0,
+          }
+        : {
+            top: firstRect.top,
+            bottom: firstRect.bottom,
+            height: firstRect.height,
+            width: virtualRect.width,
+            left: 0,
+            right: 0,
+          };
+
+    const nextRects = [
+      ...rects.slice(0, safeIndex),
+      template,
+      ...rects.slice(safeIndex),
+    ];
+
+    if (direction === 'vertical') {
+      let top =
+        safeIndex === 0 ? firstRect.top : nextRects[safeIndex - 1].bottom + gap;
+
+      for (let i = safeIndex; i < nextRects.length; i++) {
+        const height = nextRects[i].height;
+
+        nextRects[i] = {
+          ...nextRects[i],
+          top,
+          bottom: top + height,
+        };
+
+        top = nextRects[i].bottom + gap;
+      }
+    }
+
+    if (direction === 'horizontal') {
+      let left =
+        safeIndex === 0 ? firstRect.left : nextRects[safeIndex - 1].right + gap;
+
+      for (let i = safeIndex; i < nextRects.length; i++) {
+        const width = nextRects[i].width;
+
+        nextRects[i] = {
+          ...nextRects[i],
+          left,
+          right: left + width,
+        };
+
+        left = nextRects[i].right + gap;
+      }
+    }
+
+    cachedRects.current = nextRects;
+  };
+
+  const removeRectFromCachedRects = (removeIndex: number) => {
+    const rects = cachedRects.current;
+    if (removeIndex < 0 || removeIndex >= rects.length) return;
+
+    const gap =
+      rects.length >= 2
+        ? direction === 'vertical'
+          ? rects[1].top - rects[0].bottom
+          : rects[1].left - rects[0].right
+        : 0;
+
+    const nextRects = [
+      ...rects.slice(0, removeIndex),
+      ...rects.slice(removeIndex + 1),
+    ];
+
+    if (nextRects.length === 0) {
+      cachedRects.current = nextRects;
+      return;
+    }
+
+    if (direction === 'vertical') {
+      let top =
+        removeIndex === 0
+          ? rects[0].top
+          : nextRects[removeIndex - 1].bottom + gap;
+
+      for (let i = removeIndex; i < nextRects.length; i++) {
+        const height = nextRects[i].height;
+        nextRects[i] = {
+          ...nextRects[i],
+          top,
+          bottom: top + height,
+        };
+        top = nextRects[i].bottom + gap;
+      }
+    }
+
+    if (direction === 'horizontal') {
+      let left =
+        removeIndex === 0
+          ? rects[0].left
+          : nextRects[removeIndex - 1].right + gap;
+
+      for (let i = removeIndex; i < nextRects.length; i++) {
+        const width = nextRects[i].width;
+        nextRects[i] = {
+          ...nextRects[i],
+          left,
+          right: left + width,
+        };
+        left = nextRects[i].right + gap;
+      }
+    }
+
+    cachedRects.current = nextRects;
+  };
+
   const calculateRect = () => {
     const { pageX, pageY } = mouse.current;
     const { offsetX, offsetY, width, height } = offset.current;
@@ -603,7 +740,6 @@ export default function useSortable({
   const offset = useRef({ offsetX: 0, offsetY: 0, width: 0, height: 0 });
   const index = useRef({ current: -1, previous: -1 });
   const holding = useRef(false); // This container holds & sorts the item being dragged
-  const transitioning = useRef(false); // Is group changing transition in progress
 
   useMonitor(
     {
@@ -642,9 +778,6 @@ export default function useSortable({
       onDrag: ({ source, location }) => {
         // Early return if outside logic is not implemented
         if (!onSortableChange) return;
-
-        // Early return if transition between groups is in progress
-        if (transitioning.current) return;
 
         // Early return for container not holding the dragged item
         if (!holding.current) return;
@@ -735,14 +868,7 @@ export default function useSortable({
           // Update cached rects if outside group changed or result not returned
           if (didGroupChange === true || didGroupChange === undefined) {
             index.current = { current: insertIdx, previous: -1 };
-            transitioning.current = true;
-            setTimeout(
-              () => {
-                cachedRects.current = getCachedRects();
-                transitioning.current = false;
-              },
-              Math.max(0, motionDuration - 150),
-            );
+            insertTemplateToCachedRects(insertIdx);
           }
 
           return;
@@ -750,22 +876,16 @@ export default function useSortable({
 
         // [Leave] Check if item is leaving this container
         if (!holding.current) {
+          const leaveIndex = index.current.current;
           const didGroupChange = onGroupChange?.({
             type: 'leave',
-            index: index.current.current,
+            index: leaveIndex,
             data,
           });
 
           // Update cached rects if outside group changed or result not returned
           if (didGroupChange === true || didGroupChange === undefined) {
-            transitioning.current = true;
-            setTimeout(
-              () => {
-                cachedRects.current = getCachedRects();
-                transitioning.current = false;
-              },
-              Math.max(0, motionDuration - 150),
-            );
+            removeRectFromCachedRects(leaveIndex);
           }
 
           return;
