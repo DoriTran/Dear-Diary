@@ -4,7 +4,7 @@ import './index.styles.css';
 import { AdDragDrop } from '@/packages/base';
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
-import { items, mixed, seed1 } from './data';
+import { items, mixed, seed1, seed2 } from './data';
 
 // #region Data Types
 
@@ -143,7 +143,7 @@ const GroupBlock: FC<{
 };
 
 const Home: FC = () => {
-  const [rows, setRows] = useState<ContainerRow[]>(seed1);
+  const [rows, setRows] = useState<ContainerRow[]>(seed2);
 
   // useEffect(() => console.log(rows), [rows]);
 

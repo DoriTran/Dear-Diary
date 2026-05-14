@@ -126,3 +126,39 @@ export const seed1: ContainerRow[] = [
   { type: 'item', id: 'item-11' },
   { type: 'item', id: 'item-12' },
 ];
+
+export const seed2: ContainerRow[] = [
+  {
+    type: 'group',
+    id: 'Group-1',
+    items: [
+      { groupId: 'Group-1', id: 'item-1' },
+      { groupId: 'Group-1', id: 'item-2' },
+      { groupId: 'Group-1', id: 'item-3' },
+    ],
+  },
+  {
+    type: 'group',
+    id: 'Group-2',
+    items: [
+      { groupId: 'Group-2', id: 'item-4' },
+      { groupId: 'Group-2', id: 'item-5' },
+      { groupId: 'Group-2', id: 'item-6' },
+    ],
+  },
+  {
+    type: 'group',
+    id: 'Group-3',
+    items: [
+      { groupId: 'Group-3', id: 'item-7' },
+      { groupId: 'Group-3', id: 'item-8' },
+      { groupId: 'Group-3', id: 'item-9' },
+    ],
+  },
+  { type: 'item', id: 'item-10' },
+  { type: 'item', id: 'item-11' },
+  { type: 'item', id: 'item-12' },
+  { type: 'item', id: 'item-13' },
+  { type: 'item', id: 'item-14' },
+  { type: 'item', id: 'item-15' },
+];

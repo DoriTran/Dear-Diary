@@ -851,10 +851,12 @@ export default function useSortable({
          * Group change logic
          */
 
-        holding.current = ref.current === topDropTarget?.element;
+        const isEntering = ref.current === topDropTarget?.element;
+        const isLeaving = holding.current;
+        holding.current = isEntering;
 
         // [Enter] Check if item is entering this container
-        if (holding.current) {
+        if (isEntering) {
           // Find closest index to the mouse position
           mouse.current = getMousePosition(location);
           const closestIdx = closestIndex();
@@ -875,7 +877,7 @@ export default function useSortable({
         }
 
         // [Leave] Check if item is leaving this container
-        if (!holding.current) {
+        if (isLeaving) {
           const leaveIndex = index.current.current;
           const didGroupChange = onGroupChange?.({
             type: 'leave',
