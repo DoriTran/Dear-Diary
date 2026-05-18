@@ -84,6 +84,30 @@ type SortableRect = {
   height: number;
 };
 
+type MouseMoveDirection = 'up' | 'down' | 'left' | 'right' | 'none';
+
+type MousePosition = {
+  pageX: number;
+  pageY: number;
+  direction: MouseMoveDirection;
+};
+
+type MouseState = {
+  current: MousePosition;
+  previous: MousePosition;
+};
+
+const DEFAULT_MOUSE_POSITION: MousePosition = {
+  pageX: 0,
+  pageY: 0,
+  direction: 'none',
+};
+
+const DEFAULT_MOUSE_STATE: MouseState = {
+  current: { ...DEFAULT_MOUSE_POSITION },
+  previous: { ...DEFAULT_MOUSE_POSITION },
+};
+
 export default function useSortable({
   ref,
   sortable,
@@ -97,7 +121,7 @@ export default function useSortable({
   extraScrollOffset,
   motionDuration = 400,
   direction = 'vertical',
-  strategy = 'center',
+  strategy = 'vertex',
   children,
   motions,
 }: UseSortableOptions): UseSortableResult {
@@ -227,6 +251,40 @@ export default function useSortable({
   }): { pageX: number; pageY: number } => {
     const { pageX, pageY } = location.current.input;
     return { pageX, pageY };
+  };
+
+  const calculateMouseState = (
+    state: MouseState,
+    pageX: number,
+    pageY: number,
+    options?: { resetPrevious?: boolean },
+  ): MouseState => {
+    if (options?.resetPrevious) {
+      const position: MousePosition = {
+        pageX,
+        pageY,
+        direction: 'none',
+      };
+      return { current: position, previous: { ...position } };
+    }
+
+    const from = state.current;
+    const dx = pageX - from.pageX;
+    const dy = pageY - from.pageY;
+
+    let moveDirection = from.direction;
+    if (direction === 'vertical') {
+      if (dy > 0) moveDirection = 'down';
+      else if (dy < 0) moveDirection = 'up';
+    } else if (direction === 'horizontal') {
+      if (dx > 0) moveDirection = 'right';
+      else if (dx < 0) moveDirection = 'left';
+    }
+
+    return {
+      previous: from,
+      current: { pageX, pageY, direction: moveDirection },
+    };
   };
 
   const getSortableElements = (): Element[] => {
@@ -396,7 +454,7 @@ export default function useSortable({
   };
 
   const calculateRect = () => {
-    const { pageX, pageY } = mouse.current;
+    const { pageX, pageY } = mouse.current.current;
     const { offsetX, offsetY, width, height } = offset.current;
     const { scrollTop, scrollLeft } = ref.current ?? {
       scrollTop: 0,
@@ -736,7 +794,7 @@ export default function useSortable({
 
   // #region Sortable Index Calculation
   const cachedRects = useRef<SortableRect[]>([]);
-  const mouse = useRef({ pageX: 0, pageY: 0 });
+  const mouse = useRef<MouseState>(DEFAULT_MOUSE_STATE);
   const offset = useRef({ offsetX: 0, offsetY: 0, width: 0, height: 0 });
   const index = useRef({ current: -1, previous: -1 });
   const holding = useRef(false); // This container holds & sorts the item being dragged
@@ -752,13 +810,16 @@ export default function useSortable({
         logCachedRects(cachedRects.current);
 
         // Init mouse position
-        mouse.current = getMousePosition(location);
+        const { pageX, pageY } = getMousePosition(location);
+        mouse.current = calculateMouseState(mouse.current, pageX, pageY, {
+          resetPrevious: true,
+        });
 
         // Init target sortable rect offset
         const rect = source.element.getBoundingClientRect();
         offset.current = {
-          offsetX: mouse.current.pageX - rect.left + scrollX,
-          offsetY: mouse.current.pageY - rect.top + scrollY,
+          offsetX: mouse.current.current.pageX - rect.left + scrollX,
+          offsetY: mouse.current.current.pageY - rect.top + scrollY,
           width: rect.width,
           height: rect.height,
         };
@@ -784,9 +845,9 @@ export default function useSortable({
 
         // Early return if position not change
         const { pageX, pageY } = getMousePosition(location);
-        if (pageX !== mouse.current.pageX || pageY !== mouse.current.pageY) {
-          console.log('mouse: ', pageX, pageY);
-          mouse.current = { pageX, pageY };
+        const { pageX: currentX, pageY: currentY } = mouse.current.current;
+        if (pageX !== currentX || pageY !== currentY) {
+          mouse.current = calculateMouseState(mouse.current, pageX, pageY);
         } else return;
 
         // Early return if dragging element or container not found for any reason
@@ -806,6 +867,21 @@ export default function useSortable({
         };
 
         if (closestIdx !== -1 && closestIdx !== index.current.current) {
+          // Check if it bouncing between the same two indexes while direction not changed
+          switch (mouse.current.current.direction) {
+            case 'up':
+            case 'left':
+              if (newIndex.current > newIndex.previous) return;
+              else break;
+            case 'down':
+            case 'right':
+              if (newIndex.current < newIndex.previous) return;
+              else break;
+
+            case 'none':
+              break;
+          }
+
           // Call the onSortableChange callback
           const didSortableChange = onSortableChange(newIndex);
 
@@ -858,7 +934,8 @@ export default function useSortable({
         // [Enter] Check if item is entering this container
         if (isEntering) {
           // Find closest index to the mouse position
-          mouse.current = getMousePosition(location);
+          const { pageX, pageY } = getMousePosition(location);
+          mouse.current = calculateMouseState(mouse.current, pageX, pageY);
           const closestIdx = closestIndex();
           const insertIdx = insertIndex(closestIdx);
           const didGroupChange = onGroupChange?.({
@@ -895,7 +972,7 @@ export default function useSortable({
       },
       onDrop: () => {
         // Reset the mouse, offset, index, and holding refs to their default states after dropping
-        mouse.current = { pageX: 0, pageY: 0 };
+        mouse.current = DEFAULT_MOUSE_STATE;
         offset.current = { offsetX: 0, offsetY: 0, width: 0, height: 0 };
         index.current = { current: -1, previous: -1 };
         holding.current = false;
