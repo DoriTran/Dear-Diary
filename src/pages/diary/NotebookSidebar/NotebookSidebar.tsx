@@ -2,7 +2,7 @@ import { useMemo, useState } from 'react';
 
 import type { Chatbox, DiaryRootItem } from '@/store/diary/type';
 
-import { useDiaryStore, useShallow } from '@/store';
+import { useDiaryStore } from '@/store';
 
 import ChatboxItem from './ChatboxItem/ChatboxItem';
 import NotebookGroup from './NotebookGroup/NotebookGroup';
@@ -52,15 +52,16 @@ const NotebookSidebar = () => {
   const [searchText, setSearchText] = useState('');
   const [activeChatId, setActiveChatId] = useState<string | null>(null);
 
-  const { orders, groups, chatboxes } = useShallow(useDiaryStore)([
+  const { orders, groups, chatboxes, getRootItems } = useDiaryStore([
     'orders',
     'groups',
     'chatboxes',
+    'getRootItems',
   ]);
 
   const rootItems = useMemo(
-    () => useDiaryStore.getState().getRootItems(),
-    [orders, groups, chatboxes],
+    () => getRootItems(),
+    [orders, groups, chatboxes, getRootItems],
   );
 
   const visibleItems = useMemo(

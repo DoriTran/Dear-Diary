@@ -1,0 +1,5 @@
+.layoutCard {
+  background-color: var(--surface);
+  border-radius: 8px;
+  border: 1px solid var(--border-soft);
+}

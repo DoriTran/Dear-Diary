@@ -1,0 +1,162 @@
+.root {
+  width: 100%;
+}
+
+.bar {
+  display: flex;
+  align-items: center;
+  gap: 0.625rem;
+  width: 100%;
+  min-height: 3rem;
+  padding: 0.5rem 0.625rem 0.5rem 1rem;
+  border-radius: 999px;
+  background: var(--surface-soft);
+  box-shadow: var(--shadow-inset);
+  color: var(--text);
+}
+
+.label {
+  flex: 1;
+  min-width: 0;
+  font-size: var(--font-sm);
+  font-weight: var(--font-semibold);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.modeIcon {
+  z-index: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: color-mix(in srgb, var(--text-soft) 85%, transparent);
+  transition: color var(--transition-fast);
+}
+
+.modeIcon[data-active='true'] {
+  color: var(--primary);
+}
+
+.menuSlot {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+}
+
+.menuSlot > * {
+  flex: 1;
+  min-width: 0;
+}
+
+.menuTrigger {
+  display: flex;
+  align-items: center;
+  gap: 0.375rem;
+  width: 100%;
+  min-width: 0;
+  height: 2rem;
+  padding: 0 0.625rem;
+  border: none;
+  border-radius: var(--radius-sm);
+  background: color-mix(in srgb, var(--surface) 70%, transparent);
+  color: var(--text-muted);
+  cursor: pointer;
+  transition:
+    background var(--transition-fast),
+    color var(--transition-fast);
+}
+
+.modeSwitch {
+  flex-shrink: 0;
+}
+
+.menuTrigger:hover {
+  background: var(--surface);
+  color: var(--text);
+}
+
+.caret {
+  display: flex;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: center;
+}
+
+.menu {
+  padding: 0.5rem;
+  border: none;
+  border-radius: var(--radius-lg);
+  background: var(--surface);
+  box-shadow: var(--shadow-md);
+}
+
+.menuList {
+  display: flex;
+  flex-direction: column;
+  gap: 0.125rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.menuItem,
+.menuAdd {
+  display: flex;
+  align-items: center;
+  gap: 0.625rem;
+  width: 100%;
+  padding: 0.5rem 0.625rem;
+  border: none;
+  border-radius: var(--radius-sm);
+  background: transparent;
+  color: inherit;
+  font: inherit;
+  font-size: var(--font-sm);
+  text-align: left;
+  cursor: pointer;
+  transition: background var(--transition-fast);
+}
+
+.menuItem:hover,
+.menuAdd:hover {
+  background: var(--surface-soft);
+}
+
+.menuItem[data-active='true'] {
+  background: color-mix(in srgb, var(--primary) 12%, var(--surface-soft));
+  font-weight: var(--font-semibold);
+}
+
+.menuItemLabel {
+  flex: 1;
+  min-width: 0;
+  white-space: nowrap;
+}
+
+.menuSwatch {
+  display: flex;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: center;
+  width: 1.25rem;
+  height: 1.25rem;
+  border-radius: 50%;
+}
+
+.menuCheck {
+  display: flex;
+  margin-left: auto;
+  color: var(--accent-purple);
+}
+
+.menuDivider {
+  height: 0;
+  margin: 0.25rem 0.375rem;
+  border-top: 1px dashed var(--border-soft);
+}
+
+.menuAdd {
+  font-weight: var(--font-medium);
+  color: var(--text-muted);
+}

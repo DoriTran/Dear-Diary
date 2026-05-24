@@ -1,3 +1,10 @@
+/* Dear Diary Theme CSS
+   Usage:
+   <html data-mode="light" data-theme="cream">
+   <html data-mode="dark" data-theme="cream">
+   <html data-mode="light" data-theme="blush">
+*/
+
 @import url('https://fonts.googleapis.com/css2?family=Mali:ital,wght@0,200;0,300;0,400;0,500;0,600;0,700;1,200;1,300;1,400;1,500;1,600;1,700&display=swap');
 
 * {
@@ -9,58 +16,24 @@
 
 body {
   margin: 0;
+  color: var(--text);
+  background: var(--background);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
 
 :root {
-  /* Color Palette */
-  --primary: #deb47d;
-  --primary-light: #fde7c9;
-  --primary-dark: #c18c56;
-  --secondary: #fbc3cb;
-  --secondary-light: #fde2e6;
-  --secondary-dark: #f9879e;
-
-  --background: #ffffff;
-
-  --success: #d5cfe6;
-  --danger: #f36864;
-  --warning: #f6ebd7;
-  --info: #c7dbe3;
-  --cancel: #808080;
-
-  --text: #d6b17e;
-  --text-muted: #bc9595;
-  --text-contrast: #ffffff;
-
-  --home: #ff6a88;
-  --diary: #8b5cf6;
-  --workspace: #f59e0b;
-  --settings: #64748b;
-
   /* Font Sizes */
-  /* 8px */
   --font-3xs: 0.5rem;
-  /* 10px */
   --font-2xs: 0.625rem;
-  /* 12px */
   --font-xs: 0.75rem;
-  /* 14px */
   --font-sm: 0.875rem;
-  /* 16px */
   --font-md: 1rem;
-  /* 18px */
   --font-lg: 1.125rem;
-  /* 20px */
   --font-xl: 1.25rem;
-  /* 24px */
   --font-2xl: 1.5rem;
-  /* 30px */
   --font-3xl: 1.875rem;
-  /* 36px */
   --font-4xl: 2.25rem;
-  /* 48px */
   --font-5xl: 3rem;
 
   /* Font Weights */
@@ -74,10 +47,540 @@ body {
   --font-extrabold: 800;
   --font-black: 900;
 
-  /** Global size variables **/
+  /* Layout */
   --navigation-width: 310px;
   --navigation-height: 110px;
-
-  --sidebar-width: 300px;
+  --sidebar-width: 280px;
   --detail-panel-width: 340px;
+
+  /* Radius & Shadow */
+  --radius-xs: 6px;
+  --radius-sm: 10px;
+  --radius-md: 14px;
+  --radius-lg: 20px;
+  --radius-xl: 28px;
+
+  --shadow-sm: 0 2px 8px rgb(86 58 34 / 8%);
+  --shadow-md: 0 8px 24px rgb(86 58 34 / 10%);
+  --shadow-lg: 0 16px 40px rgb(86 58 34 / 14%);
+  --shadow-inset:
+    inset 2px 3px 8px rgb(86 58 34 / 10%),
+    inset -1px -2px 6px rgb(255 255 255 / 55%);
+
+  --transition-fast: 160ms ease;
+  --transition-normal: 240ms ease;
+}
+
+/* ==================================================
+   DESIGN TOKEN GUIDE
+
+[Backgrounds]
+--background: Main app/page background.
+--background-soft: Secondary page/section background.
+
+--surface: Main card/modal background.
+--surface-soft: Softer card/sub-panel background.
+--surface-muted: Muted/disabled/inactive surface.
+
+[Borders]
+--border: Primary border color.
+--border-soft: Soft divider/subtle border.
+
+[Text]
+--text: Primary text color.
+--text-muted: Secondary/description text.
+--text-soft: Placeholder/hint text.
+--text-contrast: Text on strong backgrounds.
+
+[Brand]
+--primary: Main brand color.
+--primary-light: Soft primary background.
+--primary-dark: Primary hover/active color.
+
+--secondary: Secondary brand color.
+--secondary-light: Soft secondary background.
+--secondary-dark: Secondary hover/active color.
+
+[Accent]
+--accent-purple: Purple accent.
+--accent-blue: Blue accent.
+--accent-green: Green accent.
+--accent-yellow: Yellow accent.
+
+[Modules]
+--home: Home module color.
+--diary: Diary module color.
+--workspace: Workspace module color.
+--scheduler: Scheduler module color.
+--settings: Settings module color.
+
+[Status]
+--success: Success state.
+--danger: Error/delete state.
+--warning: Warning state.
+--info: Info state.
+--cancel: Neutral/cancel state.
+
+[Effects]
+--overlay: Modal/dialog backdrop overlay.
+--paper-texture-opacity: Paper/noise texture intensity.
+
+[Shared Components]
+--card-bg: Default card background.
+--card-bg-soft: Soft card background.
+--input-bg: Input background.
+
+--button-bg: Primary button background.
+--button-bg-hover: Primary button hover color.
+--button-text: Primary button text color.
+
+[Chat Blocks]
+--chat-text-bg: Text block background.
+--chat-todo-bg: Todo/checklist background.
+--chat-link-bg: Link block background.
+--chat-image-bg: Image/media block background.
+--chat-timer-bg: Timer/reminder block background.
+--chat-sticky-bg: Sticky-note background.
+
+================================================== */
+
+/* --------------------------------------------------
+   1. Cream Theme - default / formal cute
+-------------------------------------------------- */
+[data-theme='cream'] {
+  --primary: #c18c56;
+  --primary-light: #fde7c9;
+  --primary-dark: #8f6238;
+
+  --secondary: #f6a8b8;
+  --secondary-light: #fde2e6;
+  --secondary-dark: #e67f96;
+
+  --accent-purple: #a78bfa;
+  --accent-blue: #9fd3e6;
+  --accent-green: #b9d8a8;
+  --accent-yellow: #f6d88f;
+
+  --home: #f47792;
+  --diary: #9b7df5;
+  --workspace: #e7a73d;
+  --scheduler: #89b8bf;
+  --settings: #8f9aaa;
+
+  --success: #b9d8a8;
+  --danger: #ef767a;
+  --warning: #f6d88f;
+  --info: #9fd3e6;
+  --cancel: #9c9188;
+}
+
+[data-theme='cream'][data-mode='light'] {
+  --background: #fffaf1;
+  --background-soft: #f8eedf;
+  --surface: #fffdf8;
+  --surface-soft: #fff4e4;
+  --surface-muted: #f4e5d0;
+
+  --border: #ead7bd;
+  --border-soft: #f2e5d5;
+
+  --text: #5f4632;
+  --text-muted: #9f8269;
+  --text-soft: #b79d85;
+  --text-contrast: #ffffff;
+
+  --overlay: rgb(255 250 241 / 72%);
+  --paper-texture-opacity: 0.22;
+}
+
+[data-theme='cream'][data-mode='dark'] {
+  --background: #221a16;
+  --background-soft: #2c221d;
+  --surface: #332720;
+  --surface-soft: #3c2e26;
+  --surface-muted: #46362d;
+
+  --border: #5b4538;
+  --border-soft: #49382f;
+
+  --text: #f8e8d4;
+  --text-muted: #c9a98d;
+  --text-soft: #ad8d75;
+  --text-contrast: #261b15;
+
+  --primary: #e0ad75;
+  --primary-light: #5a3e28;
+  --primary-dark: #ffd4a3;
+
+  --overlay: rgb(34 26 22 / 72%);
+  --paper-texture-opacity: 0.08;
+}
+
+/* --------------------------------------------------
+   2. Blush Theme
+-------------------------------------------------- */
+[data-theme='blush'] {
+  --primary: #f299b1;
+  --primary-light: #ffe1e9;
+  --primary-dark: #d86f91;
+
+  --secondary: #b89cff;
+  --secondary-light: #eee7ff;
+  --secondary-dark: #8e6fea;
+
+  --accent-purple: #b89cff;
+  --accent-blue: #a7d8f0;
+  --accent-green: #bfe3c0;
+  --accent-yellow: #ffe49d;
+
+  --home: #ff8faa;
+  --diary: #a98cff;
+  --workspace: #f6bd60;
+  --scheduler: #8fcfd1;
+  --settings: #9aa5b1;
+
+  --success: #bfe3c0;
+  --danger: #f06f86;
+  --warning: #ffe49d;
+  --info: #a7d8f0;
+  --cancel: #aaa0a0;
+}
+
+[data-theme='blush'][data-mode='light'] {
+  --background: #fff7fa;
+  --background-soft: #fff0f5;
+  --surface: #fffdfd;
+  --surface-soft: #fff1f6;
+  --surface-muted: #f8dce8;
+
+  --border: #f1d4df;
+  --border-soft: #f8e5ed;
+
+  --text: #60404b;
+  --text-muted: #a77d8c;
+  --text-soft: #bf99a6;
+  --text-contrast: #ffffff;
+
+  --overlay: rgb(255 247 250 / 72%);
+  --paper-texture-opacity: 0.16;
+}
+
+[data-theme='blush'][data-mode='dark'] {
+  --background: #24171d;
+  --background-soft: #2e1d25;
+  --surface: #38242d;
+  --surface-soft: #432b35;
+  --surface-muted: #513440;
+
+  --border: #674554;
+  --border-soft: #563846;
+
+  --text: #ffe5ee;
+  --text-muted: #d7a5b6;
+  --text-soft: #bd879a;
+  --text-contrast: #27171e;
+
+  --primary: #ff9fbb;
+  --primary-light: #5a3341;
+  --primary-dark: #ffd5e2;
+
+  --overlay: rgb(36 23 29 / 72%);
+  --paper-texture-opacity: 0.06;
+}
+
+/* --------------------------------------------------
+   3. Lavender Theme
+-------------------------------------------------- */
+[data-theme='lavender'] {
+  --primary: #9b7df5;
+  --primary-light: #eee7ff;
+  --primary-dark: #7657d9;
+
+  --secondary: #f6a8b8;
+  --secondary-light: #fde2e6;
+  --secondary-dark: #df7f98;
+
+  --accent-purple: #9b7df5;
+  --accent-blue: #a7d8f0;
+  --accent-green: #c7ddb1;
+  --accent-yellow: #f6d88f;
+
+  --home: #f47792;
+  --diary: #9b7df5;
+  --workspace: #e9ad4d;
+  --scheduler: #93c5d6;
+  --settings: #9098aa;
+
+  --success: #c7ddb1;
+  --danger: #ef767a;
+  --warning: #f6d88f;
+  --info: #a7d8f0;
+  --cancel: #9a93a4;
+}
+
+[data-theme='lavender'][data-mode='light'] {
+  --background: #fbf8ff;
+  --background-soft: #f3edff;
+  --surface: #fffefe;
+  --surface-soft: #f5efff;
+  --surface-muted: #e8ddff;
+
+  --border: #ded0f8;
+  --border-soft: #ede4ff;
+
+  --text: #4d425f;
+  --text-muted: #84759d;
+  --text-soft: #a093b5;
+  --text-contrast: #ffffff;
+
+  --overlay: rgb(251 248 255 / 72%);
+  --paper-texture-opacity: 0.14;
+}
+
+[data-theme='lavender'][data-mode='dark'] {
+  --background: #1b1724;
+  --background-soft: #231d31;
+  --surface: #2c253d;
+  --surface-soft: #352d49;
+  --surface-muted: #40365a;
+
+  --border: #56487a;
+  --border-soft: #493d68;
+
+  --text: #eee6ff;
+  --text-muted: #b9a9da;
+  --text-soft: #9f8fc2;
+  --text-contrast: #1e1829;
+
+  --primary: #b69eff;
+  --primary-light: #443266;
+  --primary-dark: #e2d7ff;
+
+  --overlay: rgb(27 23 36 / 72%);
+  --paper-texture-opacity: 0.06;
+}
+
+/* --------------------------------------------------
+   4. Mint Theme
+-------------------------------------------------- */
+[data-theme='mint'] {
+  --primary: #80bfa3;
+  --primary-light: #dff5ea;
+  --primary-dark: #579274;
+
+  --secondary: #f4b6c2;
+  --secondary-light: #fde6eb;
+  --secondary-dark: #dd8298;
+
+  --accent-purple: #a995e8;
+  --accent-blue: #9fd3e6;
+  --accent-green: #80bfa3;
+  --accent-yellow: #f6d88f;
+
+  --home: #f47792;
+  --diary: #9d88ec;
+  --workspace: #e3ad4d;
+  --scheduler: #80bfa3;
+  --settings: #8796a3;
+
+  --success: #80bfa3;
+  --danger: #ef767a;
+  --warning: #f6d88f;
+  --info: #9fd3e6;
+  --cancel: #8e9993;
+}
+
+[data-theme='mint'][data-mode='light'] {
+  --background: #f7fff9;
+  --background-soft: #effaf3;
+  --surface: #fffefd;
+  --surface-soft: #edfaef;
+  --surface-muted: #dceee3;
+
+  --border: #cde5d6;
+  --border-soft: #e1f1e8;
+
+  --text: #354f43;
+  --text-muted: #708a7d;
+  --text-soft: #91a89b;
+  --text-contrast: #ffffff;
+
+  --overlay: rgb(247 255 249 / 72%);
+  --paper-texture-opacity: 0.12;
+}
+
+[data-theme='mint'][data-mode='dark'] {
+  --background: #131f1a;
+  --background-soft: #1a2a23;
+  --surface: #21352c;
+  --surface-soft: #284034;
+  --surface-muted: #304c3e;
+
+  --border: #416653;
+  --border-soft: #365645;
+
+  --text: #e2f6ea;
+  --text-muted: #a8c8b7;
+  --text-soft: #8dad9d;
+  --text-contrast: #142019;
+
+  --primary: #9ed7b9;
+  --primary-light: #2c4a39;
+  --primary-dark: #d4f8e3;
+
+  --overlay: rgb(19 31 26 / 72%);
+  --paper-texture-opacity: 0.05;
+}
+
+/* --------------------------------------------------
+   Shared component tokens
+-------------------------------------------------- */
+:root,
+[data-theme] {
+  --card-bg: var(--surface);
+  --card-bg-soft: var(--surface-soft);
+  --input-bg: var(--surface);
+  --button-bg: var(--primary);
+  --button-bg-hover: var(--primary-dark);
+  --button-text: var(--text-contrast);
+
+  --chat-text-bg: #f0e7ff;
+  --chat-todo-bg: #fff8ee;
+  --chat-link-bg: #edf6ff;
+  --chat-image-bg: #fff0f4;
+  --chat-timer-bg: #eef4ff;
+  --chat-sticky-bg: #fff5c9;
+}
+
+[data-mode='dark'] {
+  --chat-text-bg: color-mix(in srgb, var(--primary) 18%, var(--surface));
+  --chat-todo-bg: color-mix(in srgb, var(--warning) 16%, var(--surface));
+  --chat-link-bg: color-mix(in srgb, var(--info) 16%, var(--surface));
+  --chat-image-bg: color-mix(in srgb, var(--secondary) 16%, var(--surface));
+  --chat-timer-bg: color-mix(in srgb, var(--accent-blue) 16%, var(--surface));
+  --chat-sticky-bg: color-mix(
+    in srgb,
+    var(--accent-yellow) 20%,
+    var(--surface)
+  );
+}
+
+/* --------------------------------------------------
+   Basic reusable classes
+-------------------------------------------------- */
+.app-shell {
+  min-height: 100vh;
+  background:
+    radial-gradient(circle at top left, var(--surface-soft), transparent 34%),
+    var(--background);
+}
+
+.card {
+  background: var(--card-bg);
+  border: 1px solid var(--border-soft);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-sm);
+}
+
+.panel {
+  background: var(--surface);
+  border-right: 1px solid var(--border-soft);
+}
+
+.button-primary {
+  color: var(--button-text);
+  background: var(--button-bg);
+  border: 1px solid transparent;
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-sm);
+  transition: var(--transition-fast);
+}
+
+.button-primary:hover {
+  background: var(--button-bg-hover);
+  box-shadow: var(--shadow-md);
+}
+
+.button-secondary {
+  color: var(--primary-dark);
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  transition: var(--transition-fast);
+}
+
+.button-secondary:hover {
+  background: var(--surface-soft);
+}
+
+.input {
+  color: var(--text);
+  background: var(--input-bg);
+  border: 1px solid var(--border-soft);
+  border-radius: var(--radius-md);
+  outline: none;
+  transition: var(--transition-fast);
+}
+
+.input::placeholder {
+  color: var(--text-soft);
+}
+
+.input:focus {
+  border-color: var(--primary);
+  box-shadow: 0 0 0 4px color-mix(in srgb, var(--primary) 20%, transparent);
+}
+
+.chat-bubble {
+  color: var(--text);
+  border: 1px solid var(--border-soft);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-sm);
+}
+
+.chat-bubble--text {
+  background: var(--chat-text-bg);
+}
+.chat-bubble--todo {
+  background: var(--chat-todo-bg);
+}
+.chat-bubble--link {
+  background: var(--chat-link-bg);
+}
+.chat-bubble--image {
+  background: var(--chat-image-bg);
+}
+.chat-bubble--timer {
+  background: var(--chat-timer-bg);
+}
+.chat-bubble--sticky {
+  background: var(--chat-sticky-bg);
+}
+
+.tag {
+  color: var(--primary-dark);
+  background: var(--primary-light);
+  border: 1px solid color-mix(in srgb, var(--primary) 30%, var(--border-soft));
+  border-radius: 999px;
+}
+
+.nav-item {
+  color: var(--text-muted);
+  border-radius: var(--radius-md);
+  transition: var(--transition-fast);
+}
+
+.nav-item:hover {
+  color: var(--text);
+  background: var(--surface-soft);
+}
+
+.nav-item.is-active {
+  color: var(--primary-dark);
+  background: color-mix(in srgb, var(--primary-light) 76%, var(--surface));
+  box-shadow: inset 3px 0 0 var(--primary);
+}
+
+.divider {
+  border-color: var(--border-soft);
 }

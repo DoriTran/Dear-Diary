@@ -11,6 +11,7 @@ import type {
 } from './type';
 
 import { idbStorage, nowIso } from '../helper';
+import shallow from '../shallow';
 import { diaryDummyState } from './constants';
 
 type Actions = {
@@ -41,7 +42,7 @@ type Actions = {
 
 const ensureUnique = <T>(items: T[]) => Array.from(new Set(items));
 
-export const useDiaryStore = create<DiaryStore & Actions>()(
+const useDiaryStoreBase = create<DiaryStore & Actions>()(
   persist(
     (set, get) => ({
       ...diaryDummyState,
@@ -520,3 +521,5 @@ export const useDiaryStore = create<DiaryStore & Actions>()(
     },
   ),
 );
+
+export const useDiaryStore = shallow(useDiaryStoreBase);

@@ -1,5 +1,6 @@
 .base {
-  background-size: contain;
-  background-repeat: no-repeat;
-  background-position: center;
+  display: block;
+  flex-shrink: 0;
+  object-fit: contain;
+  transition: 0.25s ease-in-out;
 }

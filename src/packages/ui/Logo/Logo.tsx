@@ -1,24 +1,40 @@
 import type { FC } from 'react';
 
 import logo from '@/assets/logo/logo.png';
+import logoImg from '@/assets/logo/logo_img.png';
+import logoText from '@/assets/logo/logo_text.png';
 
 import styles from './Logo.module.css';
 
 interface LogoProps {
+  text?: boolean;
+  image?: boolean;
+  size?: number;
   width?: number;
-  height: number;
+  height?: number;
+  className?: string;
 }
 
-const Logo: FC<LogoProps> = ({ width = 135, height }) => {
+const Logo: FC<LogoProps> = ({
+  text,
+  image,
+  size,
+  width,
+  height,
+  className,
+}) => {
+  const src = text ? logoText : image ? logoImg : logo;
+  const resolvedWidth = size ?? width;
+  const resolvedHeight = size ?? height;
+
   return (
-    <div
-      className={styles.base}
-      style={{
-        backgroundImage: `url(${logo})`,
-        width: width ? width : height * 1.6875,
-        height: height ? height : width * 0.5926,
-      }}
-    ></div>
+    <img
+      alt={text || !image ? 'Dear Diary' : ''}
+      className={[styles.base, className].filter(Boolean).join(' ')}
+      src={src}
+      height={resolvedHeight}
+      width={resolvedWidth}
+    />
   );
 };
 
