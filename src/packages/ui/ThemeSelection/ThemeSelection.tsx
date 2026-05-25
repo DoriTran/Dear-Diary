@@ -17,7 +17,11 @@ import styles from './ThemeSelection.module.css';
 
 const MENU_WIDTH = 200;
 
-const ThemeSelection: FC = () => {
+type ThemeSelectionProps = {
+  collapsed?: boolean;
+};
+
+const ThemeSelection: FC<ThemeSelectionProps> = ({ collapsed = false }) => {
   const [menuOpen, setMenuOpen] = useState(false);
 
   const { theme, mode, setTheme, setMode } = useAppStore([
@@ -38,32 +42,39 @@ const ThemeSelection: FC = () => {
     setMode(mode === 'light' ? 'dark' : 'light');
   };
 
+  const isMenuOpen = menuOpen && !collapsed;
+
   return (
-    <div className={styles.root}>
+    <div className={styles.root} data-collapsed={collapsed || undefined}>
       <div className={styles.bar}>
         <div className={styles.menuSlot}>
           <AdPopover
             classNames={{ dropdown: styles.menu }}
             offset={8}
             onChange={setMenuOpen}
-            opened={menuOpen}
+            opened={isMenuOpen}
             position="top-start"
             targetPopupType="listbox"
             width={MENU_WIDTH}
             anchor={
               <button
-                aria-expanded={menuOpen}
+                aria-expanded={isMenuOpen}
                 aria-haspopup="listbox"
                 aria-label="Choose theme"
                 className={styles.menuTrigger}
-                onClick={() => setMenuOpen((open) => !open)}
+                onClick={() => {
+                  if (!collapsed) setMenuOpen((open) => !open);
+                }}
                 type="button"
               >
                 <span className={styles.label}>
                   {activeTheme?.label ?? 'Theme'}
                 </span>
                 <span className={styles.caret}>
-                  <AdIcon icon={menuOpen ? faCaretUp : faCaretDown} size={12} />
+                  <AdIcon
+                    icon={isMenuOpen ? faCaretUp : faCaretDown}
+                    size={12}
+                  />
                 </span>
               </button>
             }
@@ -120,10 +131,10 @@ const ThemeSelection: FC = () => {
           value={mode === 'dark'}
         >
           <span className={styles.modeIcon} data-active={mode === 'light'}>
-            <AdIcon icon={faMoon} size={13} />
+            <AdIcon icon={faMoon} size={collapsed ? 11 : 13} />
           </span>
           <span className={styles.modeIcon} data-active={mode === 'dark'}>
-            <AdIcon icon={faSun} size={14} />
+            <AdIcon icon={faSun} size={collapsed ? 12 : 14} />
           </span>
         </AdSwitch>
       </div>

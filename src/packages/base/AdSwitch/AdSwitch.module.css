@@ -26,6 +26,9 @@
   border-radius: 999px;
   background: var(--switch-bg-color);
   box-shadow: inset 1px 2px 4px rgb(86 58 34 / 12%);
+  transition:
+    width var(--switch-transition-time, var(--transition-normal)),
+    height var(--switch-transition-time, var(--transition-normal));
 }
 
 .content {
@@ -38,6 +41,7 @@
   height: 100%;
   padding: 0 var(--thumb-inset);
   pointer-events: none;
+  transition: padding var(--switch-transition-time, var(--transition-normal));
 }
 
 .thumb {
@@ -53,7 +57,10 @@
     0 2px 6px rgb(86 58 34 / 16%),
     0 1px 2px rgb(255 255 255 / 80%) inset;
   transform: translateY(-50%);
-  transition: left var(--transition-normal);
+  transition:
+    left var(--switch-transition-time, var(--transition-normal)),
+    width var(--switch-transition-time, var(--transition-normal)),
+    height var(--switch-transition-time, var(--transition-normal));
   pointer-events: none;
 }
 
@@ -71,4 +78,5 @@
   padding: 0 var(--thumb-inset);
   border-radius: inherit;
   cursor: pointer;
+  transition: padding var(--switch-transition-time, var(--transition-normal));
 }

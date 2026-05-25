@@ -1,8 +1,14 @@
 /* Dear Diary Theme CSS
    Usage:
-   <html data-mode="light" data-theme="cream">
-   <html data-mode="dark" data-theme="cream">
+   <html data-mode="light" data-theme="wheat">
+   <html data-mode="dark" data-theme="wheat">
    <html data-mode="light" data-theme="blush">
+
+   Available themes:
+   - wheat
+   - blush
+   - lavender
+   - mint
 */
 
 @import url('https://fonts.googleapis.com/css2?family=Mali:ital,wght@0,200;0,300;0,400;0,500;0,600;0,700;1,200;1,300;1,400;1,500;1,600;1,700&display=swap');
@@ -69,6 +75,10 @@ body {
 
   --transition-fast: 160ms ease;
   --transition-normal: 240ms ease;
+
+  /* Left panel collapse / expand (sidebar, profile, nav groups) */
+  --left-panel-transition-duration: 4000ms;
+  --left-panel-transition: var(--left-panel-transition-duration) ease;
 }
 
 /* ==================================================
@@ -108,11 +118,28 @@ body {
 --accent-yellow: Yellow accent.
 
 [Modules]
+Each theme defines light/default module colors in [data-theme='...'].
+Each dark theme can override module colors inside [data-theme='...'][data-mode='dark'].
+
 --home: Home module color.
+--home-bg: Home soft background, readable with --home on top.
+--home-hover: Home hover background/content surface.
+
 --diary: Diary module color.
+--diary-bg: Diary soft background, readable with --diary on top.
+--diary-hover: Diary hover background/content surface.
+
 --workspace: Workspace module color.
+--workspace-bg: Workspace soft background, readable with --workspace on top.
+--workspace-hover: Workspace hover background/content surface.
+
 --scheduler: Scheduler module color.
+--scheduler-bg: Scheduler soft background, readable with --scheduler on top.
+--scheduler-hover: Scheduler hover background/content surface.
+
 --settings: Settings module color.
+--settings-bg: Settings soft background, readable with --settings on top.
+--settings-hover: Settings hover background/content surface.
 
 [Status]
 --success: Success state.
@@ -145,9 +172,9 @@ body {
 ================================================== */
 
 /* --------------------------------------------------
-   1. Cream Theme - default / formal cute
+   1. Wheat Theme - default / formal cute
 -------------------------------------------------- */
-[data-theme='cream'] {
+[data-theme='wheat'] {
   --primary: #c18c56;
   --primary-light: #fde7c9;
   --primary-dark: #8f6238;
@@ -174,7 +201,7 @@ body {
   --cancel: #9c9188;
 }
 
-[data-theme='cream'][data-mode='light'] {
+[data-theme='wheat'][data-mode='light'] {
   --background: #fffaf1;
   --background-soft: #f8eedf;
   --surface: #fffdf8;
@@ -193,7 +220,7 @@ body {
   --paper-texture-opacity: 0.22;
 }
 
-[data-theme='cream'][data-mode='dark'] {
+[data-theme='wheat'][data-mode='dark'] {
   --background: #221a16;
   --background-soft: #2c221d;
   --surface: #332720;
@@ -211,6 +238,12 @@ body {
   --primary: #e0ad75;
   --primary-light: #5a3e28;
   --primary-dark: #ffd4a3;
+
+  --home: #ff94aa;
+  --diary: #b8a2ff;
+  --workspace: #f7c46b;
+  --scheduler: #9fd0d5;
+  --settings: #b9c0cc;
 
   --overlay: rgb(34 26 22 / 72%);
   --paper-texture-opacity: 0.08;
@@ -284,6 +317,12 @@ body {
   --primary-light: #5a3341;
   --primary-dark: #ffd5e2;
 
+  --home: #ff9fbb;
+  --diary: #c3adff;
+  --workspace: #ffd07a;
+  --scheduler: #a4dcde;
+  --settings: #bec6d0;
+
   --overlay: rgb(36 23 29 / 72%);
   --paper-texture-opacity: 0.06;
 }
@@ -355,6 +394,12 @@ body {
   --primary: #b69eff;
   --primary-light: #443266;
   --primary-dark: #e2d7ff;
+
+  --home: #ff8fa8;
+  --diary: #bba6ff;
+  --workspace: #f4c46e;
+  --scheduler: #9ad7dd;
+  --settings: #b1bac7;
 
   --overlay: rgb(27 23 36 / 72%);
   --paper-texture-opacity: 0.06;
@@ -428,8 +473,53 @@ body {
   --primary-light: #2c4a39;
   --primary-dark: #d4f8e3;
 
+  --home: #ff91a8;
+  --diary: #b6a5ff;
+  --workspace: #f0c36d;
+  --scheduler: #9ed7b9;
+  --settings: #aebdc6;
+
   --overlay: rgb(19 31 26 / 72%);
   --paper-texture-opacity: 0.05;
+}
+
+/* --------------------------------------------------
+   Module color interaction tokens
+   Light mode keeps module backgrounds soft and airy.
+   Dark mode lifts the module colors and deepens their backgrounds.
+-------------------------------------------------- */
+[data-mode='light'] {
+  --home-bg: color-mix(in srgb, var(--home) 16%, var(--surface));
+  --home-hover: color-mix(in srgb, var(--home) 26%, var(--surface));
+
+  --diary-bg: color-mix(in srgb, var(--diary) 14%, var(--surface));
+  --diary-hover: color-mix(in srgb, var(--diary) 24%, var(--surface));
+
+  --workspace-bg: color-mix(in srgb, var(--workspace) 18%, var(--surface));
+  --workspace-hover: color-mix(in srgb, var(--workspace) 30%, var(--surface));
+
+  --scheduler-bg: color-mix(in srgb, var(--scheduler) 18%, var(--surface));
+  --scheduler-hover: color-mix(in srgb, var(--scheduler) 30%, var(--surface));
+
+  --settings-bg: color-mix(in srgb, var(--settings) 16%, var(--surface));
+  --settings-hover: color-mix(in srgb, var(--settings) 26%, var(--surface));
+}
+
+[data-mode='dark'] {
+  --home-bg: color-mix(in srgb, var(--home) 20%, var(--surface));
+  --home-hover: color-mix(in srgb, var(--home) 32%, var(--surface));
+
+  --diary-bg: color-mix(in srgb, var(--diary) 20%, var(--surface));
+  --diary-hover: color-mix(in srgb, var(--diary) 32%, var(--surface));
+
+  --workspace-bg: color-mix(in srgb, var(--workspace) 22%, var(--surface));
+  --workspace-hover: color-mix(in srgb, var(--workspace) 36%, var(--surface));
+
+  --scheduler-bg: color-mix(in srgb, var(--scheduler) 22%, var(--surface));
+  --scheduler-hover: color-mix(in srgb, var(--scheduler) 36%, var(--surface));
+
+  --settings-bg: color-mix(in srgb, var(--settings) 20%, var(--surface));
+  --settings-hover: color-mix(in srgb, var(--settings) 32%, var(--surface));
 }
 
 /* --------------------------------------------------

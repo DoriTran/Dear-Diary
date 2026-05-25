@@ -5,7 +5,7 @@ import type { AppMode, AppStoreState, AppTheme } from './type';
 
 import { idbStorage } from '../helper';
 import shallow from '../shallow';
-import { DEFAULT_MODE, DEFAULT_THEME } from './constants';
+import { DEFAULT_MODE, DEFAULT_THEME, THEME_OPTIONS } from './constants';
 
 type Actions = {
   setTheme: (theme: AppTheme) => void;
@@ -45,8 +45,10 @@ const useAppStoreBase = create<AppStoreState & Actions>()(
       onRehydrateStorage: () => (state) => {
         if (!state) return;
 
-        const theme =
-          (state.theme as string) === 'pink' ? 'blush' : state.theme;
+        const persisted = state.theme as string;
+        const theme = THEME_OPTIONS.some((o) => o.id === persisted)
+          ? (persisted as AppTheme)
+          : DEFAULT_THEME;
 
         if (theme !== state.theme) {
           useAppStoreBase.setState({ theme });

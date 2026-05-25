@@ -6,7 +6,7 @@ import {
 import { useState, type FC } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 
-import { AdIcon } from '@/packages/base';
+import { AdDivider, AdIcon } from '@/packages/base';
 
 import LayoutCard from '../../LayoutCard/LayoutCard';
 import Logo from '../../Logo/Logo';
@@ -67,6 +67,7 @@ const LeftPanel: FC = () => {
                 <button
                   className={styles.navItem}
                   data-active={isActive(page) || undefined}
+                  data-module={page}
                   type="button"
                   onClick={() => goToPage(page)}
                 >
@@ -79,12 +80,16 @@ const LeftPanel: FC = () => {
         </section>
 
         <section className={styles.navGroup}>
+          <AdDivider aria-hidden={!collapsed} className={styles.groupDivider} />
           <h2 className={styles.groupLabel}>Tools</h2>
           <ul className={styles.navList}>
             {toolsNav.map((item) => (
               <li key={item.id}>
                 <button
                   className={styles.navItem}
+                  data-module={
+                    item.id === 'scheduler' ? 'scheduler' : undefined
+                  }
                   type="button"
                   onClick={goHome}
                 >
@@ -97,6 +102,7 @@ const LeftPanel: FC = () => {
         </section>
 
         <section className={styles.navGroup}>
+          <AdDivider aria-hidden={!collapsed} className={styles.groupDivider} />
           <h2 className={styles.groupLabel}>System</h2>
           <ul className={styles.navList}>
             {systemNav.map((item) =>
@@ -105,6 +111,7 @@ const LeftPanel: FC = () => {
                   <button
                     className={styles.navItem}
                     data-active={isActive(item.page) || undefined}
+                    data-module={item.page}
                     type="button"
                     onClick={() => goToPage(item.page)}
                   >
@@ -130,7 +137,7 @@ const LeftPanel: FC = () => {
       </nav>
 
       <section aria-label="Appearance" className={styles.themeSection}>
-        <ThemeSelection />
+        <ThemeSelection collapsed={collapsed} />
       </section>
 
       <ProfileInfo

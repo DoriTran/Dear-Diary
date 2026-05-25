@@ -1,5 +1,6 @@
 .profileInfo {
   position: relative;
+  align-self: stretch;
   display: flex;
   flex-direction: column;
   gap: 0.75rem;
@@ -9,23 +10,30 @@
   border-radius: var(--radius-lg);
   background: var(--surface-soft);
   color: var(--text);
+  overflow: hidden;
   transition:
-    padding var(--transition-normal),
-    gap var(--transition-normal);
+    padding var(--left-panel-transition),
+    gap var(--left-panel-transition);
   box-shadow: var(--shadow-inset);
 }
 
 .collapsed {
-  align-items: center;
-  gap: 0.625rem;
-  padding: 0.75rem 0.5rem 2.75rem;
+  align-self: stretch;
+  width: 100%;
+  align-items: stretch;
+  gap: 0;
+  padding: 0.75rem 0.5rem calc(2.75rem + 8px);
+  overflow: visible;
 }
 
-/* Fold button */
+/* Fold button — animate with top/left only (no auto) */
 
 .foldBtn {
   position: absolute;
   z-index: 1;
+  top: 0.75rem;
+  right: 0.875rem;
+  left: auto;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -37,12 +45,10 @@
   background: var(--surface);
   color: var(--text-muted);
   cursor: pointer;
+  margin-top: 0;
   transition:
-    top var(--transition-normal),
-    right var(--transition-normal),
-    bottom var(--transition-normal),
-    left var(--transition-normal),
-    transform var(--transition-normal),
+    top var(--left-panel-transition),
+    right var(--left-panel-transition),
     background var(--transition-fast);
 }
 
@@ -51,41 +57,43 @@
   color: var(--text);
 }
 
-.profileInfo:not(.collapsed) .foldBtn {
-  top: 0.75rem;
-  right: 0.75rem;
-  bottom: auto;
-  left: auto;
-  transform: none;
-}
-
 .profileInfo.collapsed .foldBtn {
-  top: auto;
-  right: auto;
-  bottom: 0.625rem;
-  left: 50%;
-  transform: translateX(-50%);
+  top: calc(100% - 2.375rem);
+  right: calc(50% - 0.875rem);
 }
 
 /* Header */
 
 .header {
+  position: relative;
   display: flex;
+  justify-content: flex-start;
   align-items: flex-start;
   gap: 0.75rem;
-  min-width: 0;
+  width: 100%;
+  min-height: 2.75rem;
   padding-right: 2rem;
+  margin-left: 0;
+  transition:
+    gap var(--left-panel-transition),
+    padding var(--left-panel-transition),
+    margin-left var(--left-panel-transition);
 }
 
 .collapsed .header {
-  flex-direction: column;
-  align-items: center;
-  padding-right: 0;
+  gap: 0;
+  margin-left: -3px;
+  padding-inline: 0.125rem;
+  padding-right: 0.125rem;
+  overflow: visible;
 }
 
 .avatarWrap {
   position: relative;
   flex-shrink: 0;
+  width: 2.75rem;
+  height: 2.75rem;
+  overflow: visible;
 }
 
 .avatar {
@@ -107,8 +115,9 @@
 
 .messageBadge {
   position: absolute;
-  right: -0.375rem;
-  bottom: -0.25rem;
+  z-index: 1;
+  right: -0.125rem;
+  bottom: -0.125rem;
   padding: 0.125rem 0.375rem;
   border: 2px solid var(--surface-soft);
   border-radius: 999px;
@@ -118,14 +127,34 @@
   font-weight: var(--font-semibold);
   line-height: 1.2;
   white-space: nowrap;
+  opacity: 0;
+  transition: opacity var(--left-panel-transition);
+  pointer-events: none;
+}
+
+.collapsed .messageBadge {
+  opacity: 1;
 }
 
 .identity {
+  flex: 1 1 0;
   display: flex;
-  flex: 1;
   flex-direction: column;
   gap: 0.125rem;
   min-width: 0;
+  max-width: 100%;
+  align-self: center;
+  overflow: hidden;
+  opacity: 1;
+  transition:
+    max-width var(--left-panel-transition),
+    opacity var(--left-panel-transition);
+}
+
+.collapsed .identity {
+  max-width: 0;
+  opacity: 0;
+  pointer-events: none;
 }
 
 .name {
@@ -146,6 +175,28 @@
   white-space: nowrap;
 }
 
+/* Stats block (expanded only, animated collapse) */
+
+.details {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  max-height: 12rem;
+  opacity: 1;
+  overflow: hidden;
+  transition:
+    max-height var(--left-panel-transition),
+    opacity var(--left-panel-transition),
+    gap var(--left-panel-transition);
+}
+
+.collapsed .details {
+  max-height: 0;
+  opacity: 0;
+  gap: 0;
+  pointer-events: none;
+}
+
 .divider,
 .collapsedDivider,
 .statDivider {
@@ -154,6 +205,20 @@
 
 .collapsedDivider {
   width: 100%;
+  max-height: 0;
+  margin: 0;
+  opacity: 0;
+  overflow: hidden;
+  transition:
+    opacity var(--left-panel-transition),
+    max-height var(--left-panel-transition),
+    margin-block var(--left-panel-transition);
+}
+
+.collapsed .collapsedDivider {
+  max-height: 1.5rem;
+  margin-block: 0.125rem 0;
+  opacity: 1;
 }
 
 /* Stats */

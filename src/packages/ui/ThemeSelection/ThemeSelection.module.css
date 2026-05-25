@@ -3,16 +3,23 @@
 }
 
 .bar {
-  display: flex;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 3.5rem;
   align-items: center;
   gap: 0.625rem;
   width: 100%;
   min-height: 3rem;
   padding: 0.5rem 0.625rem 0.5rem 1rem;
-  border-radius: 999px;
+  border-radius: 60px;
   background: var(--surface-soft);
   box-shadow: var(--shadow-inset);
   color: var(--text);
+  transition:
+    grid-template-columns var(--left-panel-transition),
+    gap var(--left-panel-transition),
+    padding var(--left-panel-transition),
+    border-radius var(--left-panel-transition),
+    min-height var(--left-panel-transition);
 }
 
 .label {
@@ -39,14 +46,20 @@
 }
 
 .menuSlot {
-  flex: 1;
   min-width: 0;
-  display: flex;
+  max-width: 100%;
+  overflow: hidden;
+  opacity: 1;
+  pointer-events: auto;
+  transition:
+    max-width var(--left-panel-transition),
+    opacity var(--left-panel-transition);
 }
 
 .menuSlot > * {
-  flex: 1;
   min-width: 0;
+  width: 100%;
+  overflow: hidden;
 }
 
 .menuTrigger {
@@ -62,13 +75,28 @@
   background: color-mix(in srgb, var(--surface) 70%, transparent);
   color: var(--text-muted);
   cursor: pointer;
+  overflow: hidden;
+  white-space: nowrap;
   transition:
     background var(--transition-fast),
-    color var(--transition-fast);
+    color var(--transition-fast),
+    opacity var(--left-panel-transition);
 }
 
 .modeSwitch {
-  flex-shrink: 0;
+  --switch-transition-time: var(--left-panel-transition-duration) ease;
+
+  width: 100%;
+  min-width: 0;
+}
+
+.modeSwitch > span {
+  width: 100%;
+  transition:
+    height var(--switch-transition-time, var(--transition-normal)),
+    --switch-height var(--switch-transition-time, var(--transition-normal)),
+    --thumb-size var(--switch-transition-time, var(--transition-normal)),
+    --thumb-inset var(--switch-transition-time, var(--transition-normal));
 }
 
 .menuTrigger:hover {
@@ -159,4 +187,38 @@
 .menuAdd {
   font-weight: var(--font-medium);
   color: var(--text-muted);
+}
+
+.root[data-collapsed] {
+  width: 100%;
+}
+
+.root[data-collapsed] .menuSlot {
+  max-width: 0;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.root[data-collapsed] .bar {
+  --nav-item-pad-block: 0.625rem;
+
+  grid-template-columns: minmax(0, 1fr) 2.75rem;
+  width: 100%;
+  min-height: calc(var(--nav-item-pad-block) * 2 + 1lh);
+  padding-block: var(--nav-item-pad-block);
+  padding-inline: 0.5rem;
+  border-radius: var(--radius-md);
+  background: var(--surface-soft);
+  gap: 0;
+}
+
+.root[data-collapsed] .modeSwitch {
+  width: 100%;
+  min-width: 0;
+}
+
+.root[data-collapsed] .modeSwitch > span {
+  --switch-height: 1.375rem;
+  --thumb-inset: 0.25rem;
+  --thumb-size: 1rem;
 }

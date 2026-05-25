@@ -1,4 +1,4 @@
-export type AppTheme = 'cream' | 'blush' | 'lavender' | 'mint';
+export type AppTheme = 'wheat' | 'blush' | 'lavender' | 'mint';
 
 export type AppMode = 'light' | 'dark';
 
