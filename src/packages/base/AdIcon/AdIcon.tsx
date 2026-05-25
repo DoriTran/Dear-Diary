@@ -1,32 +1,44 @@
 import type { IconDefinition } from '@fortawesome/fontawesome-svg-core';
-import type { FC, CSSProperties } from 'react';
+import type { LucideProps } from 'lucide-react';
+import type { FC, CSSProperties, ComponentType } from 'react';
 
 import * as solidIcons from '@fortawesome/free-solid-svg-icons';
 import { faQuestion } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { CircleQuestionMark } from 'lucide-react';
 import { ReactSVG } from 'react-svg';
 
 import { svgIcon } from './svgIcon';
 
-export type IconValue = string | IconDefinition;
+type LucideIcon = ComponentType<LucideProps>;
+
+export type IconValue = string | IconDefinition | LucideIcon;
+export type IconSource = 'custom' | 'fontawesome' | 'lucide';
 
 export interface IconProps {
   icon?: IconValue;
+  source?: IconSource;
   color?: string;
   size?: string | number;
-  custom?: boolean;
+  strokeWidth?: number;
   style?: CSSProperties;
   onClick?: () => void;
 }
 
-/**
- * Resolve FontAwesome icon from string
- * "folder" -> faFolder
- */
+const REACT_FORWARD_REF = Symbol.for('react.forward_ref');
+
+const isLucideIcon = (value: IconValue): value is LucideIcon => {
+  if (typeof value === 'function') return true;
+
+  return (
+    typeof value === 'object' &&
+    value !== null &&
+    (value as { $$typeof?: symbol }).$$typeof === REACT_FORWARD_REF
+  );
+};
+
 const resolveFaIcon = (icon: IconValue): IconDefinition => {
-  if (typeof icon !== 'string') {
-    return icon;
-  }
+  if (typeof icon !== 'string') return icon as IconDefinition;
 
   return (
     (solidIcons as unknown as Record<string, IconDefinition>)[icon] ||
@@ -34,26 +46,26 @@ const resolveFaIcon = (icon: IconValue): IconDefinition => {
   );
 };
 
-const Icon: FC<IconProps> = ({
+const AdIcon: FC<IconProps> = ({
   icon = faQuestion,
+  source = 'fontawesome',
   color = 'inherit',
   size = '1.5rem',
-  custom = false,
+  strokeWidth = 2,
+  style,
+  onClick,
   ...restProps
 }) => {
-  /* ---------- Custom SVG icons ---------- */
-  if (custom) {
-    if (typeof icon !== 'string') {
-      console.warn('[Icon] Custom SVG icon expects a string key.');
-      return null;
-    }
+  const commonStyle: CSSProperties = {
+    cursor: onClick ? 'pointer' : 'unset',
+    ...style,
+  };
+
+  if (source === 'custom') {
+    if (typeof icon !== 'string') return null;
 
     const src = svgIcon[icon];
-
-    if (!src) {
-      console.warn(`[Icon] Custom SVG icon "${icon}" not found`);
-      return null;
-    }
+    if (!src) return null;
 
     return (
       <ReactSVG
@@ -63,30 +75,42 @@ const Icon: FC<IconProps> = ({
           svg.setAttribute('height', String(size));
           svg.setAttribute('fill', color);
         }}
+        onClick={onClick}
+        style={commonStyle}
         {...restProps}
-        style={{
-          cursor: restProps.onClick ? 'pointer' : 'unset',
-          ...restProps.style,
-        }}
       />
     );
   }
 
-  /* ---------- Font Awesome icons ---------- */
+  if (source === 'lucide') {
+    const LucideComponent = isLucideIcon(icon) ? icon : CircleQuestionMark;
+
+    return (
+      <LucideComponent
+        size={size}
+        color={color}
+        strokeWidth={strokeWidth}
+        onClick={onClick}
+        style={commonStyle}
+        {...restProps}
+      />
+    );
+  }
+
   const resolvedIcon = resolveFaIcon(icon);
 
   return (
     <FontAwesomeIcon
       icon={resolvedIcon}
       color={color}
-      {...restProps}
+      onClick={onClick}
       style={{
         fontSize: size,
-        cursor: restProps.onClick ? 'pointer' : 'unset',
-        ...restProps.style,
+        ...commonStyle,
       }}
+      {...restProps}
     />
   );
 };
 
-export default Icon;
+export default AdIcon;

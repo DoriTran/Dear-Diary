@@ -5,7 +5,7 @@ import {
   faMoon,
   faSun,
 } from '@fortawesome/free-solid-svg-icons';
-import { useState, type FC } from 'react';
+import { useState, type CSSProperties, type FC } from 'react';
 
 import type { AppTheme } from '@/store/app/type';
 
@@ -62,11 +62,29 @@ const ThemeSelection: FC<ThemeSelectionProps> = ({ collapsed = false }) => {
                 aria-haspopup="listbox"
                 aria-label="Choose theme"
                 className={styles.menuTrigger}
+                style={
+                  activeTheme
+                    ? ({
+                        '--theme-accent': activeTheme.iconColor,
+                      } as CSSProperties)
+                    : undefined
+                }
                 onClick={() => {
                   if (!collapsed) setMenuOpen((open) => !open);
                 }}
                 type="button"
               >
+                {activeTheme && (
+                  <span className={styles.triggerIcon}>
+                    <AdIcon
+                      color={activeTheme.iconColor}
+                      icon={activeTheme.icon}
+                      size={16}
+                      source="lucide"
+                      strokeWidth={2}
+                    />
+                  </span>
+                )}
                 <span className={styles.label}>
                   {activeTheme?.label ?? 'Theme'}
                 </span>
@@ -93,13 +111,19 @@ const ThemeSelection: FC<ThemeSelectionProps> = ({ collapsed = false }) => {
                       className={styles.menuItem}
                       data-active={isActive}
                       onClick={() => handleThemeSelect(item.id)}
+                      style={
+                        { '--theme-accent': item.iconColor } as CSSProperties
+                      }
                       type="button"
                     >
-                      <span
-                        className={styles.menuSwatch}
-                        style={{ backgroundColor: item.swatch }}
-                      >
-                        <AdIcon color="#fff" icon={faSun} size={11} />
+                      <span className={styles.menuIcon}>
+                        <AdIcon
+                          color={item.iconColor}
+                          icon={item.icon}
+                          size={18}
+                          source="lucide"
+                          strokeWidth={2}
+                        />
                       </span>
                       <span className={styles.menuItemLabel}>{item.label}</span>
                       {isActive && (

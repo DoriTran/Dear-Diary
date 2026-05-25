@@ -77,7 +77,7 @@ body {
   --transition-normal: 240ms ease;
 
   /* Left panel collapse / expand (sidebar, profile, nav groups) */
-  --left-panel-transition-duration: 4000ms;
+  --left-panel-transition-duration: 400ms;
   --left-panel-transition: var(--left-panel-transition-duration) ease;
 }
 

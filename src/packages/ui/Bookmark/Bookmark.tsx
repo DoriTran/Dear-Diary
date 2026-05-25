@@ -8,6 +8,7 @@ import styles from './Bookmark.module.css';
 
 interface BookmarkProps extends HTMLAttributes<HTMLDivElement> {
   icon: IconProps['icon'];
+  iconSource?: IconProps['source'];
   iconSize?: IconProps['size'];
   outline?: number;
   width?: number;
@@ -20,6 +21,7 @@ interface BookmarkProps extends HTMLAttributes<HTMLDivElement> {
 
 const Bookmark: FC<BookmarkProps> = ({
   icon,
+  iconSource,
   iconSize = 18,
   outline = 0,
   width = 40,
@@ -68,7 +70,14 @@ const Bookmark: FC<BookmarkProps> = ({
         }}
       ></div>
       <div className={styles.content}>
-        {icon && <Icon icon={icon} color={iconColor} size={iconSize} />}
+        {icon && (
+          <Icon
+            icon={icon}
+            source={iconSource}
+            color={iconColor}
+            size={iconSize}
+          />
+        )}
         {children}
       </div>
     </div>
