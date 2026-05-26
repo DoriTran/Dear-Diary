@@ -1,7 +1,7 @@
 import { BrowserRouter, Navigate, Route, Routes } from 'react-router-dom';
 
 import { Outlet } from '@/packages/ui';
-import { Diary, Home, Settings, Workspace } from '@/pages';
+import { Dev, Diary, Home, Settings, Workspace } from '@/pages';
 
 const App = () => {
   return (
@@ -10,6 +10,7 @@ const App = () => {
         <Route path="/" element={<Outlet />}>
           <Route index element={<Navigate to="/diary" />} />
           <Route path="home" element={<Home />} />
+          <Route path="dev" element={<Dev />} />
           <Route path="diary" element={<Diary />} />
           <Route path="workspace" element={<Workspace />} />
           <Route path="settings" element={<Settings />} />

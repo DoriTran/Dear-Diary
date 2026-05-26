@@ -1,0 +1,95 @@
+.stacked-root {
+  flex: 1;
+  width: 100%;
+  min-height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  padding: 2rem 1rem;
+  box-sizing: border-box;
+  --label-font-size: 16px;
+}
+
+.stacked-container {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  width: min(420px, 100%);
+  max-width: 100%;
+  flex: 0 0 auto;
+  padding: 1.25rem;
+  margin-top: 23px;
+  box-sizing: border-box;
+  background: #fff;
+  border-radius: 12px;
+  border: 1px solid rgba(255, 105, 180, 0.35);
+  box-shadow: 0 2px 8px rgba(255, 153, 204, 0.3);
+}
+
+.container-label {
+  position: absolute;
+  top: 0.5rem;
+  left: 0.75rem;
+  font-size: var(--label-font-size);
+  font-weight: 600;
+  color: rgba(255, 105, 180, 0.95);
+  letter-spacing: 0.02em;
+  pointer-events: none;
+}
+
+.stacked-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-top: 1.5rem;
+}
+
+.group {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  padding: 1rem 0.75rem 0.75rem;
+  background: #fff;
+  border-radius: 10px;
+  border: 1px solid rgba(255, 105, 180, 0.45);
+}
+
+.group-label {
+  position: absolute;
+  top: 0.4rem;
+  left: 0.65rem;
+  font-size: var(--label-font-size);
+  font-weight: 600;
+  color: rgba(255, 105, 180, 0.95);
+}
+
+.group-inner {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-top: 1.5rem;
+}
+
+.item {
+  background: #ffe4ec;
+  border-radius: 8px;
+  margin: 0;
+  padding: 0.5rem;
+  text-align: center;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: relative;
+  height: 40px;
+}
+
+.item:hover {
+  background: #ffcbe0;
+}
+
+.item-label {
+  flex: 1;
+  text-align: center;
+  font-size: 0.9rem;
+  color: #5c3d4a;
+}

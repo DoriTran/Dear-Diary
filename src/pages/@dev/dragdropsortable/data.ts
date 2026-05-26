@@ -1,4 +1,4 @@
-import type { ContainerRow } from './index';
+import type { ContainerRow } from './types';
 
 const createItemIdFactory = (startAt = 1) => {
   let i = startAt - 1;

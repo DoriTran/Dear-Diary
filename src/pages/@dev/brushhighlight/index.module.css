@@ -1,0 +1,74 @@
+.root {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+  width: 100%;
+  padding: 1.5rem;
+  box-sizing: border-box;
+}
+
+.controls {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem 1.5rem;
+  align-items: flex-end;
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  font-size: 0.85rem;
+  color: #5c3d4a;
+}
+
+.field input[type='text'],
+.field input[type='number'] {
+  padding: 0.4rem 0.5rem;
+  border: 1px solid rgba(255, 105, 180, 0.35);
+  border-radius: 6px;
+  font: inherit;
+  min-width: 5rem;
+}
+
+.swatches {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.swatch {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  border: 2px solid transparent;
+  cursor: pointer;
+  padding: 0;
+}
+
+.swatch[data-active] {
+  border-color: #5c3d4a;
+}
+
+.preview {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.previewBlock {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.previewLabel {
+  font-size: 0.8rem;
+  color: #7a5a66;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.titleText {
+  font-weight: 600;
+  color: #5c3d4a;
+}
