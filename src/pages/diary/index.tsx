@@ -1,14 +1,12 @@
-import DetailPanel from './DetailPanel/DetailPanel';
-import styles from './index.module.css';
-import NotebookSidebar from './NotebookSidebar/NotebookSidebar';
-import PaperChatbox from './PaperChatbox/PaperChatbox';
+﻿import type { FC } from 'react';
 
-const Diary = () => {
+import ChatboxSidebar from './ChatboxSidebar/ChatboxSidebar';
+import styles from './index.module.css';
+
+const Diary: FC = () => {
   return (
     <div className={styles.rootPage}>
-      <NotebookSidebar />
-      <PaperChatbox />
-      <DetailPanel />
+      <ChatboxSidebar />
     </div>
   );
 };

@@ -32,7 +32,7 @@ const BrushHighlight: ForwardRefExoticComponent<
         className={clsx(styles.brushes, props.className)}
         style={{
           height: size,
-          width: size * (2 + brushes),
+          minWidth: size * (2 + brushes),
           ...({
             '--brush-color': color,
             '--brush-size': `${size}px`,

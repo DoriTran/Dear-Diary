@@ -1,7 +1,9 @@
-.rootPage {
+﻿.rootPage {
   display: flex;
-  flex-direction: row;
-  height: 100vh;
-  padding-left: var(--navigation-width);
-  gap: 12px;
+  flex: 1;
+  align-items: stretch;
+  min-height: calc(100vh - 24px);
+  min-height: 0;
+  padding: 12px 12px 12px 0;
+  box-sizing: border-box;
 }

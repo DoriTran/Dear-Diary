@@ -1,0 +1,17 @@
+﻿.root {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+  flex-shrink: 0;
+  padding-bottom: 0.15rem;
+}
+
+.title {
+  margin: 0;
+  font-size: var(--font-2xl);
+  font-weight: var(--font-bold);
+  line-height: 1.15;
+  letter-spacing: -0.01em;
+  color: var(--text);
+}
