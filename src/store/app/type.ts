@@ -5,4 +5,5 @@ export type AppMode = 'light' | 'dark';
 export type AppStoreState = {
   theme: AppTheme;
   mode: AppMode;
+  folded: boolean;
 };

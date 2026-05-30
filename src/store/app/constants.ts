@@ -4,6 +4,7 @@ import type { AppMode, AppTheme } from './type';
 
 export const DEFAULT_THEME: AppTheme = 'wheat';
 export const DEFAULT_MODE: AppMode = 'light';
+export const DEFAULT_FOLDED = false;
 
 export const THEME_OPTIONS: ReadonlyArray<{
   id: AppTheme;

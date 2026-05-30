@@ -1,78 +1,91 @@
-.brushes {
+.root {
   position: relative;
+  display: inline-flex;
   width: fit-content;
   max-width: 100%;
-  background-color: var(--brush-color);
-  border-radius: calc(var(--brush-size) / 2);
+  min-height: var(--brush-height);
   z-index: 0;
   user-select: none;
-  cursor: grab;
+}
+
+/* spacing prop wins over consumer padding on the root */
+.rootSpacing {
+  padding: 0 !important;
+}
+
+.paint {
+  position: absolute;
+  z-index: 0;
+  inset: 0;
+  display: flex;
+  flex-direction: row;
+  align-items: stretch;
+  width: 100%;
+  height: 100%;
+  container-type: size;
+  color: var(--brush-color);
+  opacity: var(--brush-opacity);
+  pointer-events: none;
+}
+
+.paintShadow {
+  filter: drop-shadow(0 3px 6px rgba(120, 80, 40, 0.12));
+}
+
+.leftCap,
+.rightCap {
+  position: relative;
+  z-index: 2;
+  display: block;
+  flex: 0 0 var(--brush-cap-width);
+  width: var(--brush-cap-width);
+  height: 100%;
+  overflow: visible;
+}
+
+.leftCap {
+  margin-right: calc(var(--brush-cap-width) * -0.1);
+}
+
+.rightCap {
+  flex-shrink: 0;
+  margin-left: 0;
+}
+
+/* Flex middle — width follows container; seam overlap only (no extra bleed past cap) */
+.middle {
+  position: relative;
+  z-index: 1;
+  flex: 1 1 0;
+  min-width: 0;
+  height: 100%;
+  margin-left: calc(var(--brush-cap-width) * -0.22);
+  margin-right: calc(var(--brush-cap-width) * -0.12);
+  background-color: currentColor;
+  -webkit-mask-image: var(--brush-middle-mask);
+  mask-image: var(--brush-middle-mask);
+  -webkit-mask-repeat: repeat-x;
+  mask-repeat: repeat-x;
+  -webkit-mask-size: var(--brush-middle-tile-width, calc(100cqh * 84 / 61))
+    100%;
+  mask-size: var(--brush-middle-tile-width, calc(100cqh * 84 / 61)) 100%;
+  -webkit-mask-position: left center;
+  mask-position: left center;
+}
+
+.paintPath {
+  fill: currentColor;
 }
 
 .content {
   position: relative;
-  z-index: 1;
+  z-index: 3;
   display: flex;
   align-items: center;
   width: max-content;
   max-width: 100%;
-  height: 100%;
-  padding: 0 8px 0 6px;
+  min-height: var(--brush-height);
+  padding-inline: calc(var(--brush-cap-width) * 0.24)
+    calc(var(--brush-cap-width) * 0.36);
   box-sizing: border-box;
-}
-
-.startBrushTop {
-  position: absolute;
-  z-index: -1;
-  transform: rotate(25deg);
-  top: calc(var(--brush-size) * -0.15);
-  left: 5px;
-  width: calc(var(--brush-size) * 1.5);
-  height: calc(var(--brush-size));
-  border-radius: calc(var(--brush-size) / 2);
-  background-color: var(--brush-color);
-}
-
-.startBrushBottom {
-  position: absolute;
-  z-index: -1;
-  transform: rotate(-15deg);
-  bottom: calc(var(--brush-size) * -0.1);
-  left: -5px;
-  width: calc(var(--brush-size) * 1.5);
-  height: calc(var(--brush-size) * 0.75);
-  border-radius: calc(var(--brush-size) / 2);
-  border-top-left-radius: calc(var(--brush-size) * 1.2);
-  background-color: var(--brush-color);
-}
-
-.middleBrush {
-  position: absolute;
-  z-index: -1;
-  transform: rotate(-15deg);
-  width: calc(var(--brush-size) * 1.5);
-  height: var(--brush-size);
-  border-radius: calc(var(--brush-size) / 2);
-  background-color: var(--brush-color);
-}
-
-.middleBrushTop {
-  top: calc(var(--brush-size) * -0.1);
-}
-
-.middleBrushBottom {
-  bottom: calc(var(--brush-size) * -0.1);
-}
-
-.endBrush {
-  position: absolute;
-  z-index: -1;
-  transform: rotate(-15deg);
-  bottom: calc(var(--brush-size) * -0.1);
-  right: -10px;
-  width: calc(var(--brush-size) * 1.6);
-  height: calc(var(--brush-size) * 1.1);
-  border-radius: calc(var(--brush-size) / 2);
-  border-bottom-right-radius: var(--brush-size);
-  background-color: var(--brush-color);
 }

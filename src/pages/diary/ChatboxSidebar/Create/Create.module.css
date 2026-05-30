@@ -1,0 +1,60 @@
+﻿.root {
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+  width: 36px;
+  height: 36px;
+  padding: 0;
+  border: 1px solid color-mix(in srgb, var(--primary) 40%, var(--border-soft));
+  border-radius: var(--radius-md);
+  background: var(--surface);
+  color: var(--primary);
+  cursor: pointer;
+  box-shadow: var(--shadow-sm);
+  transform-origin: center;
+  transition:
+    background var(--transition-fast),
+    border-color var(--transition-fast),
+    box-shadow var(--transition-fast),
+    transform var(--transition-fast);
+  transform: scale(1);
+}
+
+.root:hover {
+  background: var(--primary-light);
+  border-color: var(--primary);
+  box-shadow: var(--shadow-md);
+  transform: scale(1.03);
+}
+
+.root:active {
+  background: color-mix(in srgb, var(--primary-light) 78%, var(--primary-dark) 22%);
+  border-color: color-mix(in srgb, var(--primary) 70%, var(--border-soft) 30%);
+  color: var(--primary-dark);
+  box-shadow: var(--shadow-sm);
+  transform: scale(0.98);
+}
+
+.root:focus-visible {
+  outline: none;
+  box-shadow:
+    var(--shadow-md),
+    0 0 0 4px color-mix(in srgb, var(--primary) 22%, transparent);
+}
+
+.icon {
+  display: block;
+  width: 14px;
+  height: 14px;
+  line-height: 0;
+  transform-origin: center;
+  transition: transform var(--transition-fast);
+}
+
+.root:hover .icon {
+  transform: scale(1.12);
+}
+
+.root:active .icon {
+  transform: scale(1.12);
+}

@@ -1,0 +1,16 @@
+.root {
+  display: flex;
+  justify-content: center;
+  padding: 0.25rem 0;
+}
+
+.label {
+  display: inline-flex;
+  padding: 0.2rem 0.75rem;
+  border-radius: 999px;
+  font-size: var(--font-2xs);
+  font-weight: var(--font-medium);
+  color: var(--text-muted);
+  background: var(--surface-soft);
+  border: 1px solid var(--border-soft);
+}

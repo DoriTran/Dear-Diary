@@ -1,12 +1,14 @@
+import type { FC } from 'react';
+
 import {
   faCalendar,
   faChartColumn,
   faWandMagicSparkles,
 } from '@fortawesome/free-solid-svg-icons';
-import { useState, type FC } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 
 import { AdDivider, AdIcon } from '@/packages/base';
+import { useAppStore } from '@/store';
 
 import LayoutCard from '../../LayoutCard/LayoutCard';
 import Logo from '../../Logo/Logo';
@@ -32,7 +34,7 @@ const systemNav = [
 ] as const;
 
 const LeftPanel: FC = () => {
-  const [collapsed, setCollapsed] = useState(false);
+  const { folded, setFolded } = useAppStore(['folded', 'setFolded']);
   const navigate = useNavigate();
   const location = useLocation();
 
@@ -51,10 +53,10 @@ const LeftPanel: FC = () => {
     <LayoutCard
       tag="aside"
       className={styles.panel}
-      data-collapsed={collapsed || undefined}
+      data-collapsed={folded || undefined}
     >
       <header className={styles.header}>
-        <Logo className={styles.headerLogo} image size={collapsed ? 64 : 100} />
+        <Logo className={styles.headerLogo} image size={folded ? 64 : 100} />
         <Logo className={styles.headerTextLogo} height={84} text />
       </header>
 
@@ -80,7 +82,7 @@ const LeftPanel: FC = () => {
         </section>
 
         <section className={styles.navGroup}>
-          <AdDivider aria-hidden={!collapsed} className={styles.groupDivider} />
+          <AdDivider aria-hidden={!folded} className={styles.groupDivider} />
           <h2 className={styles.groupLabel}>Tools</h2>
           <ul className={styles.navList}>
             {toolsNav.map((item) => (
@@ -102,7 +104,7 @@ const LeftPanel: FC = () => {
         </section>
 
         <section className={styles.navGroup}>
-          <AdDivider aria-hidden={!collapsed} className={styles.groupDivider} />
+          <AdDivider aria-hidden={!folded} className={styles.groupDivider} />
           <h2 className={styles.groupLabel}>System</h2>
           <ul className={styles.navList}>
             {systemNav.map((item) =>
@@ -137,12 +139,12 @@ const LeftPanel: FC = () => {
       </nav>
 
       <section aria-label="Appearance" className={styles.themeSection}>
-        <ThemeSelection collapsed={collapsed} />
+        <ThemeSelection collapsed={folded} />
       </section>
 
       <ProfileInfo
-        collapsed={collapsed}
-        onToggleCollapse={() => setCollapsed((value) => !value)}
+        collapsed={folded}
+        onToggleCollapse={() => setFolded(!folded)}
       />
     </LayoutCard>
   );

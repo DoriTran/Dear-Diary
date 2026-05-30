@@ -1,0 +1,74 @@
+.root {
+  display: flex;
+  align-items: flex-end;
+  justify-content: flex-end;
+  gap: 0.55rem;
+  max-width: 85%;
+  margin-left: auto;
+}
+
+.content {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 0.25rem;
+  min-width: 0;
+}
+
+.bubble {
+  position: relative;
+  padding: 0.65rem 0.85rem;
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--border-soft);
+  background: var(--chat-user-bg);
+  box-shadow: var(--shadow-sm);
+}
+
+.text {
+  margin: 0;
+  font-size: var(--font-sm);
+  line-height: 1.55;
+  color: var(--text);
+  white-space: pre-wrap;
+}
+
+.reaction {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.15rem;
+  margin-top: 0.35rem;
+  padding: 0.1rem 0.4rem;
+  border-radius: 999px;
+  font-size: var(--font-2xs);
+  background: var(--surface);
+  border: 1px solid var(--border-soft);
+}
+
+.meta {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+}
+
+.time {
+  font-size: var(--font-2xs);
+  color: var(--text-soft);
+}
+
+.read {
+  display: inline-flex;
+  color: var(--primary);
+}
+
+.avatar {
+  display: flex;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: center;
+  width: 2rem;
+  height: 2rem;
+  border-radius: 999px;
+  font-size: 1.1rem;
+  background: color-mix(in srgb, var(--secondary) 15%, var(--surface));
+  border: 1px solid var(--border-soft);
+}

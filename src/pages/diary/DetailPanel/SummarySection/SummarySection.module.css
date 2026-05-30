@@ -1,0 +1,38 @@
+.root {
+  scroll-margin-top: 0.5rem;
+}
+
+.heading {
+  margin: 0 0 0.6rem;
+  font-size: var(--font-sm);
+  font-weight: var(--font-bold);
+  color: var(--text);
+}
+
+.card {
+  position: relative;
+  padding: 0.85rem 2rem 0.85rem 0.85rem;
+  border-radius: var(--radius-md);
+  border: 1px solid color-mix(in srgb, var(--primary) 25%, var(--border-soft));
+  background: color-mix(in srgb, var(--primary) 8%, var(--surface));
+}
+
+.sparkle {
+  display: inline-flex;
+  margin-bottom: 0.35rem;
+  color: var(--primary);
+}
+
+.text {
+  margin: 0;
+  font-size: var(--font-xs);
+  line-height: 1.55;
+  color: var(--text);
+}
+
+.avatar {
+  position: absolute;
+  right: 0.5rem;
+  bottom: 0.5rem;
+  font-size: 1.25rem;
+}

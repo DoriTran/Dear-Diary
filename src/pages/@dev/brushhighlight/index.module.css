@@ -9,6 +9,12 @@
 
 .controls {
   display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.controlsRow {
+  display: flex;
   flex-wrap: wrap;
   gap: 1rem 1.5rem;
   align-items: flex-end;
@@ -70,5 +76,157 @@
 
 .titleText {
   font-weight: 600;
+  font-size: 0.875rem;
   color: #5c3d4a;
+  white-space: nowrap;
+}
+
+.diaryHeader {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+}
+
+.brushInner {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+}
+
+.grip {
+  display: flex;
+  flex-shrink: 0;
+  opacity: 0.4;
+  color: #9a8a8f;
+}
+
+.groupIcon {
+  display: flex;
+  flex-shrink: 0;
+  color: #5c3d4a;
+}
+
+.countCard {
+  display: inline-flex;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: center;
+  min-width: 1.35rem;
+  height: 1.35rem;
+  padding: 0 0.35rem;
+  border-radius: 999px;
+  background: #fff;
+}
+
+.count {
+  min-width: 1ch;
+  font-size: 0.75rem;
+  font-weight: 500;
+  text-align: center;
+  color: #7a5a66;
+}
+
+.presetRow {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  align-items: flex-start;
+}
+
+.rangeValue {
+  font-size: 0.75rem;
+  color: #7a5a66;
+}
+
+.field input[type='range'] {
+  width: 10rem;
+}
+
+.spacingField {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  font-size: 0.85rem;
+  color: #5c3d4a;
+}
+
+.spacingLabelRow {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.spacingLabel {
+  line-height: 1;
+}
+
+.spacingCheckbox {
+  width: 16px;
+  height: 16px;
+  margin: 0;
+  cursor: pointer;
+}
+
+.spacingInput {
+  padding: 0.4rem 0.5rem;
+  border: 1px solid rgba(255, 105, 180, 0.35);
+  border-radius: 6px;
+  font: inherit;
+  min-width: 5rem;
+  box-sizing: border-box;
+}
+
+.spacingInput:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.spacingSplit {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.spacingSideField {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  font-size: 0.85rem;
+  color: #5c3d4a;
+}
+
+.spacingSideField .spacingInput {
+  min-width: 3.5rem;
+}
+
+.spacingSplitToggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  font-size: 0.75rem;
+  color: #7a5a66;
+  cursor: pointer;
+}
+
+.spacingSplitToggle input[type='checkbox'] {
+  width: 14px;
+  height: 14px;
+  margin: 0;
+  cursor: pointer;
+}
+
+.spacingSplitToggle input[type='checkbox']:disabled {
+  cursor: not-allowed;
+}
+
+.checkboxField {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.85rem;
+  color: #5c3d4a;
+}
+
+.checkboxField input[type='checkbox'] {
+  width: 16px;
+  height: 16px;
 }

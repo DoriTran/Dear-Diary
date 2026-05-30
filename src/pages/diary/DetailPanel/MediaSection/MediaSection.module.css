@@ -1,0 +1,135 @@
+.root {
+  scroll-margin-top: 0.5rem;
+}
+
+.heading {
+  margin: 0 0 0.6rem;
+  font-size: var(--font-sm);
+  font-weight: var(--font-bold);
+  color: var(--text);
+}
+
+.filters {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.3rem;
+  margin-bottom: 0.65rem;
+}
+
+.filterChip {
+  padding: 0.2rem 0.55rem;
+  border: 1px solid var(--border-soft);
+  border-radius: 999px;
+  background: var(--surface-soft);
+  font-size: var(--font-2xs);
+  font-weight: var(--font-medium);
+  color: var(--text-muted);
+  cursor: pointer;
+  transition: var(--transition-fast);
+}
+
+.filterChip[data-active] {
+  color: var(--primary);
+  background: color-mix(in srgb, var(--primary) 10%, var(--surface));
+  border-color: color-mix(in srgb, var(--primary) 30%, var(--border-soft));
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 0.4rem;
+}
+
+.cell {
+  position: relative;
+  aspect-ratio: 1;
+  border-radius: var(--radius-md);
+  border: 1px solid var(--border-soft);
+  background: var(--surface-soft) center / cover no-repeat;
+  overflow: hidden;
+}
+
+.addCell {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-style: dashed;
+  background: transparent;
+  color: var(--text-muted);
+  cursor: pointer;
+  transition: var(--transition-fast);
+}
+
+.addCell:hover {
+  border-color: var(--primary);
+  color: var(--primary);
+}
+
+.fileCell {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.25rem;
+  padding: 0.35rem;
+  color: var(--text-muted);
+}
+
+.fileLabel {
+  font-size: 0.55rem;
+  text-align: center;
+  line-height: 1.2;
+  word-break: break-all;
+}
+
+.playOverlay {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: color-mix(in srgb, var(--text) 25%, transparent);
+  color: var(--text-contrast);
+}
+
+.duration {
+  position: absolute;
+  right: 0.25rem;
+  bottom: 0.25rem;
+  padding: 0.05rem 0.3rem;
+  border-radius: var(--radius-xs);
+  font-size: 0.55rem;
+  font-weight: var(--font-medium);
+  color: var(--text-contrast);
+  background: color-mix(in srgb, var(--text) 55%, transparent);
+}
+
+.typeIcon {
+  position: absolute;
+  left: 0.25rem;
+  bottom: 0.25rem;
+  display: flex;
+  padding: 0.15rem;
+  border-radius: var(--radius-xs);
+  background: color-mix(in srgb, var(--surface) 85%, transparent);
+  color: var(--text-muted);
+}
+
+.viewAll {
+  width: 100%;
+  margin-top: 0.55rem;
+  padding: 0.45rem;
+  border: 1px solid var(--border-soft);
+  border-radius: var(--radius-md);
+  background: var(--surface-soft);
+  font-size: var(--font-2xs);
+  font-weight: var(--font-medium);
+  color: var(--text-muted);
+  cursor: pointer;
+  transition: var(--transition-fast);
+}
+
+.viewAll:hover {
+  color: var(--primary);
+  border-color: color-mix(in srgb, var(--primary) 30%, var(--border-soft));
+}

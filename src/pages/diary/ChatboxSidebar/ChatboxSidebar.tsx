@@ -2,14 +2,19 @@
 
 import LayoutCard from '@/packages/ui/LayoutCard/LayoutCard';
 
-import Filter from '../components/Filter/Filter';
-import Group from '../components/Group/Group';
-import Header from '../components/Header/Header';
-import Search from '../components/Search/Search';
 import { diarySidebarGroups } from '../data';
+import Filter from './Filter/Filter';
+import Group from './Group/Group';
+import Header from './Header/Header';
+import Search from './Search/Search';
 import styles from './ChatboxSidebar.module.css';
 
-const ChatboxSidebar: FC = () => {
+export type ChatboxSidebarProps = {
+  selectedId?: string;
+  onSelect?: (id: string) => void;
+};
+
+const ChatboxSidebar: FC<ChatboxSidebarProps> = ({ selectedId, onSelect }) => {
   return (
     <LayoutCard
       tag="aside"
@@ -26,7 +31,12 @@ const ChatboxSidebar: FC = () => {
 
       <div className={styles.scroll}>
         {diarySidebarGroups.map((group) => (
-          <Group key={group.id} data={group} />
+          <Group
+            key={group.id}
+            data={group}
+            selectedId={selectedId}
+            onSelect={onSelect}
+          />
         ))}
       </div>
     </LayoutCard>

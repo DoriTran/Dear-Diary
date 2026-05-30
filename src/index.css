@@ -536,6 +536,7 @@ Each dark theme can override module colors inside [data-theme='...'][data-mode='
   --button-text: var(--text-contrast);
 
   --chat-text-bg: #f0e7ff;
+  --chat-user-bg: #fff0e6;
   --chat-todo-bg: #fff8ee;
   --chat-link-bg: #edf6ff;
   --chat-image-bg: #fff0f4;
@@ -545,6 +546,7 @@ Each dark theme can override module colors inside [data-theme='...'][data-mode='
 
 [data-mode='dark'] {
   --chat-text-bg: color-mix(in srgb, var(--primary) 18%, var(--surface));
+  --chat-user-bg: color-mix(in srgb, var(--warning) 14%, var(--surface));
   --chat-todo-bg: color-mix(in srgb, var(--warning) 16%, var(--surface));
   --chat-link-bg: color-mix(in srgb, var(--info) 16%, var(--surface));
   --chat-image-bg: color-mix(in srgb, var(--secondary) 16%, var(--surface));

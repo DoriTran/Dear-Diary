@@ -1,0 +1,10 @@
+.root {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  min-width: 0;
+  min-height: calc(100vh - 24px);
+  max-height: calc(100vh - 24px);
+  overflow: hidden;
+  box-shadow: var(--shadow-sm);
+}

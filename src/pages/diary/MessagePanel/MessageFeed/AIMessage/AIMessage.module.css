@@ -1,0 +1,63 @@
+.root {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.55rem;
+  max-width: 85%;
+}
+
+.avatar {
+  display: flex;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: center;
+  width: 2rem;
+  height: 2rem;
+  border-radius: 999px;
+  font-size: 1.1rem;
+  background: color-mix(in srgb, var(--warning) 20%, var(--surface));
+  border: 1px solid var(--border-soft);
+}
+
+.content {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  min-width: 0;
+}
+
+.name {
+  font-size: var(--font-2xs);
+  font-weight: var(--font-semibold);
+  color: var(--primary);
+}
+
+.bubble {
+  padding: 0.65rem 0.85rem;
+}
+
+.text {
+  margin: 0;
+  font-size: var(--font-sm);
+  line-height: 1.55;
+  white-space: pre-wrap;
+}
+
+.bubble > * + * {
+  margin-top: 0.45rem;
+}
+
+.list {
+  margin: 0.35rem 0 0;
+  padding-left: 1.15rem;
+  font-size: var(--font-sm);
+  line-height: 1.55;
+}
+
+.list li + li {
+  margin-top: 0.2rem;
+}
+
+.time {
+  font-size: var(--font-2xs);
+  color: var(--text-soft);
+}

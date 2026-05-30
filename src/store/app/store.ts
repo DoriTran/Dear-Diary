@@ -1,15 +1,15 @@
 import { create } from 'zustand';
-import { persist } from 'zustand/middleware';
+import { createJSONStorage, persist } from 'zustand/middleware';
 
 import type { AppMode, AppStoreState, AppTheme } from './type';
 
-import { idbStorage } from '../helper';
 import shallow from '../shallow';
-import { DEFAULT_MODE, DEFAULT_THEME, THEME_OPTIONS } from './constants';
+import { DEFAULT_FOLDED, DEFAULT_MODE, DEFAULT_THEME } from './constants';
 
 type Actions = {
   setTheme: (theme: AppTheme) => void;
   setMode: (mode: AppMode) => void;
+  setFolded: (folded: boolean) => void;
 };
 
 export function applyAppTheme(theme: AppTheme, mode: AppMode) {
@@ -22,6 +22,7 @@ const useAppStoreBase = create<AppStoreState & Actions>()(
     (set) => ({
       theme: DEFAULT_THEME,
       mode: DEFAULT_MODE,
+      folded: DEFAULT_FOLDED,
 
       setTheme: (theme) =>
         set((state) => {
@@ -34,32 +35,22 @@ const useAppStoreBase = create<AppStoreState & Actions>()(
           applyAppTheme(state.theme, mode);
           return { mode };
         }),
+
+      setFolded: (folded) => set({ folded }),
     }),
     {
       name: 'dear-diary-app',
-      storage: idbStorage,
+      storage: createJSONStorage(() => localStorage),
       partialize: (state) => ({
         theme: state.theme,
         mode: state.mode,
+        folded: state.folded,
       }),
-      onRehydrateStorage: () => (state) => {
-        if (!state) return;
-
-        const persisted = state.theme as string;
-        const theme = THEME_OPTIONS.some((o) => o.id === persisted)
-          ? (persisted as AppTheme)
-          : DEFAULT_THEME;
-
-        if (theme !== state.theme) {
-          useAppStoreBase.setState({ theme });
-        }
-
-        applyAppTheme(theme, state.mode);
-      },
     },
   ),
 );
 
 export const useAppStore = shallow(useAppStoreBase);
 
-applyAppTheme(DEFAULT_THEME, DEFAULT_MODE);
+const { theme, mode } = useAppStoreBase.getState();
+applyAppTheme(theme, mode);
