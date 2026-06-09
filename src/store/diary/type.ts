@@ -6,7 +6,6 @@ export type DiaryStore = {
   messages: Record<string, Message>;
   tags: Record<string, Tag>;
   orders: Orders;
-  ui: DiaryUIState;
 };
 
 // #endregion
@@ -55,32 +54,15 @@ export type DiaryStoreActions = {
 
   // #endregion
 
-  // #region UI
-
-  selectChatbox: (chatboxId: string | null) => void;
-  toggleGroup: (groupId: string) => void;
-  expandGroup: (groupId: string) => void;
-  collapseGroup: (groupId: string) => void;
-
-  // #endregion
-
   // #region Utility
 
   reset: () => void;
+  seedIfEmpty: () => void;
 
   // #endregion
 };
 
 // #endregion
-
-// #endregion
-
-// #region UI
-
-export type DiaryUIState = {
-  selectedChatboxId: string | null;
-  expandedGroupIds: string[];
-};
 
 // #endregion
 
@@ -120,6 +102,8 @@ export type Chatbox = {
 
   pinned: boolean;
   archived: boolean;
+  hasUnread: boolean;
+  notificationEnabled: boolean;
   tags: ChatboxTagStatistic[];
   totalMessage: number;
   lastMessageId: string | null;

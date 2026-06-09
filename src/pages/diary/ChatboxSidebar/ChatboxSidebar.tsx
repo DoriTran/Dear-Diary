@@ -1,13 +1,14 @@
-﻿import type { FC } from 'react';
+﻿import { useEffect, type FC } from 'react';
 
 import LayoutCard from '@/packages/ui/LayoutCard/LayoutCard';
+import { useDiaryStore } from '@/store';
 
-import { diarySidebarGroups } from '../data';
 import Filter from './Filter/Filter';
 import Group from './Group/Group';
 import Header from './Header/Header';
 import Search from './Search/Search';
 import styles from './ChatboxSidebar.module.css';
+import { useSidebarGroups } from './useSidebarGroups';
 
 export type ChatboxSidebarProps = {
   selectedId?: string;
@@ -15,6 +16,13 @@ export type ChatboxSidebarProps = {
 };
 
 const ChatboxSidebar: FC<ChatboxSidebarProps> = ({ selectedId, onSelect }) => {
+  const seedIfEmpty = useDiaryStore('seedIfEmpty');
+  const groups = useSidebarGroups();
+
+  useEffect(() => {
+    seedIfEmpty();
+  }, [seedIfEmpty]);
+
   return (
     <LayoutCard
       tag="aside"
@@ -30,7 +38,7 @@ const ChatboxSidebar: FC<ChatboxSidebarProps> = ({ selectedId, onSelect }) => {
       <Filter />
 
       <div className={styles.scroll}>
-        {diarySidebarGroups.map((group) => (
+        {groups.map((group) => (
           <Group
             key={group.id}
             data={group}

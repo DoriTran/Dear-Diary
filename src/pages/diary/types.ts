@@ -2,21 +2,32 @@
 
 export type TagTone = 'purple' | 'pink' | 'yellow' | 'teal' | 'blue';
 
-export type ChatboxTag = {
+export type ChatboxListTag = {
+  label: string;
+  count: number;
+  color: string;
+};
+
+export type HeaderTag = {
   label: string;
   tone?: TagTone;
 };
 
 export type ChatboxData = {
   id: string;
-  title: string;
+  name: string;
+  description: string;
   preview: string;
-  tags?: ChatboxTag[];
+  tags: ChatboxListTag[];
   icon: IconDefinition;
+  color: string;
   iconBg: string;
-  pinned?: boolean;
-  timestamp: string;
-  unreadCount?: number;
+  pinned: boolean;
+  archived: boolean;
+  hasUnread: boolean;
+  notificationEnabled: boolean;
+  totalMessage: number;
+  lastMessageAt: string | null;
 };
 
 export type GroupData = {
@@ -75,7 +86,7 @@ export type ChatboxDetailData = {
   id: string;
   title: string;
   subtitle: string;
-  tags: ChatboxTag[];
+  tags: HeaderTag[];
   notificationCount?: number;
 };
 

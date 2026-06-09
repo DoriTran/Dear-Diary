@@ -1,10 +1,24 @@
 import { Flower, Leaf, MoonStar, Wheat, type LucideIcon } from 'lucide-react';
 
-import type { AppMode, AppTheme } from './type';
+import type {
+  AppMode,
+  AppTheme,
+  DiaryPageUIState,
+  NavPanelState,
+} from './type';
 
 export const DEFAULT_THEME: AppTheme = 'wheat';
 export const DEFAULT_MODE: AppMode = 'light';
 export const DEFAULT_FOLDED = false;
+
+export const DEFAULT_NAV_PANEL: NavPanelState = {
+  folded: DEFAULT_FOLDED,
+};
+
+export const DEFAULT_DIARY_PAGE: DiaryPageUIState = {
+  selectedChatboxId: null,
+  expandedGroupIds: [],
+};
 
 export const THEME_OPTIONS: ReadonlyArray<{
   id: AppTheme;

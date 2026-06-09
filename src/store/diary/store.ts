@@ -15,7 +15,7 @@ import type {
 
 import { idbStorage, nowIso } from '../helper';
 import shallow from '../shallow';
-import { diaryInitialState } from './constants';
+import { diaryDummyState, diaryInitialState } from './constants';
 
 // #region Helpers
 
@@ -221,6 +221,8 @@ const useDiaryStoreBase = create<DiaryStore & DiaryStoreActions>()(
           color: data.color ?? '',
           pinned: false,
           archived: false,
+          hasUnread: false,
+          notificationEnabled: false,
           tags: [],
           totalMessage: 0,
           lastMessageId: null,
@@ -655,53 +657,22 @@ const useDiaryStoreBase = create<DiaryStore & DiaryStoreActions>()(
         })),
       // #endregion
 
-      // #region UI
-      selectChatbox: (chatboxId) =>
-        set((state) => ({
-          ui: {
-            ...state.ui,
-            selectedChatboxId: chatboxId,
-          },
-        })),
-      toggleGroup: (groupId) =>
-        set((state) => {
-          const expanded = state.ui.expandedGroupIds.includes(groupId);
-
-          return {
-            ui: {
-              ...state.ui,
-              expandedGroupIds: expanded
-                ? state.ui.expandedGroupIds.filter((id) => id !== groupId)
-                : [...state.ui.expandedGroupIds, groupId],
-            },
-          };
-        }),
-      expandGroup: (groupId) =>
-        set((state) => ({
-          ui: {
-            ...state.ui,
-            expandedGroupIds: ensureUnique([
-              ...state.ui.expandedGroupIds,
-              groupId,
-            ]),
-          },
-        })),
-      collapseGroup: (groupId) =>
-        set((state) => ({
-          ui: {
-            ...state.ui,
-            expandedGroupIds: state.ui.expandedGroupIds.filter(
-              (id) => id !== groupId,
-            ),
-          },
-        })),
-      // #endregion
-
       // #region Utility
       reset: () =>
         set(() => ({
           ...diaryInitialState,
         })),
+      seedIfEmpty: () => {
+        const state = get();
+
+        if (Object.keys(state.groups).length > 0) {
+          return;
+        }
+
+        set(() => ({
+          ...diaryDummyState,
+        }));
+      },
       // #endregion
     }),
     {
@@ -713,7 +684,6 @@ const useDiaryStoreBase = create<DiaryStore & DiaryStoreActions>()(
         messages: state.messages,
         tags: state.tags,
         orders: state.orders,
-        ui: state.ui,
       }),
     },
   ),

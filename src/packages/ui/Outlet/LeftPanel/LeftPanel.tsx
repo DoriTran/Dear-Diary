@@ -34,7 +34,11 @@ const systemNav = [
 ] as const;
 
 const LeftPanel: FC = () => {
-  const { folded, setFolded } = useAppStore(['folded', 'setFolded']);
+  const { navPanel, setNavPanelFolded } = useAppStore([
+    'navPanel',
+    'setNavPanelFolded',
+  ]);
+  const folded = navPanel.folded;
   const navigate = useNavigate();
   const location = useLocation();
 
@@ -144,7 +148,7 @@ const LeftPanel: FC = () => {
 
       <ProfileInfo
         collapsed={folded}
-        onToggleCollapse={() => setFolded(!folded)}
+        onToggleCollapse={() => setNavPanelFolded(!folded)}
       />
     </LayoutCard>
   );

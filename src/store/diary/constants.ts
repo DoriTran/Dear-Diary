@@ -12,10 +12,6 @@ export const diaryInitialState: DiaryStore = {
     groupChatboxOrders: {},
     chatboxMessageOrders: {},
   },
-  ui: {
-    selectedChatboxId: null,
-    expandedGroupIds: [],
-  },
 };
 
 // #endregion
@@ -77,6 +73,21 @@ export const diaryDummyState: DiaryStore = {
       label: 'Anime',
       color: '#A5D6A7',
     },
+    'tag:vocabulary': {
+      id: 'tag:vocabulary',
+      label: 'vocabulary',
+      color: '#F8BBD9',
+    },
+    'tag:grammar': {
+      id: 'tag:grammar',
+      label: 'grammar',
+      color: '#A5D6A7',
+    },
+    'tag:diary': {
+      id: 'tag:diary',
+      label: 'diary',
+      color: '#F8BBD9',
+    },
   },
 
   // #endregion
@@ -90,20 +101,41 @@ export const diaryDummyState: DiaryStore = {
       name: 'Japanese Study',
       icon: 'faBookOpen',
       color: '#E1BEE7',
-      description: 'My study notes and learning journey.',
+      description:
+        "A place to organize my Japanese study materials, vocabulary, grammar, and daily progress. Let's grow together!",
       pinned: true,
       archived: false,
+      hasUnread: true,
+      notificationEnabled: true,
       tags: [
-        {
-          tagId: 'tag:japanese',
-          count: 2,
-        },
+        { tagId: 'tag:japanese', count: 24 },
+        { tagId: 'tag:vocabulary', count: 18 },
+        { tagId: 'tag:grammar', count: 7 },
+        { tagId: 'tag:important', count: 4 },
       ],
-      totalMessage: 3,
-      lastMessageId: 'ms:study-image',
-      lastMessageAt: '2026-01-05T10:30:00.000Z',
+      totalMessage: 128,
+      lastMessageId: 'ms:study-last',
+      lastMessageAt: '2026-06-09T10:30:00.000Z',
       createdAt: '2026-01-01T00:00:00.000Z',
-      updatedAt: '2026-01-05T10:30:00.000Z',
+      updatedAt: '2026-06-09T10:30:00.000Z',
+    },
+    'cb:diary': {
+      id: 'cb:diary',
+      groupId: 'gr:personal',
+      name: 'Daily Diary',
+      icon: 'faPenFancy',
+      color: '#F8BBD9',
+      description: 'Personal reflections and daily notes.',
+      pinned: false,
+      archived: true,
+      hasUnread: false,
+      notificationEnabled: false,
+      tags: [{ tagId: 'tag:diary', count: 12 }],
+      totalMessage: 45,
+      lastMessageId: 'ms:diary-1',
+      lastMessageAt: '2026-06-08T09:15:00.000Z',
+      createdAt: '2026-01-01T00:00:00.000Z',
+      updatedAt: '2026-06-08T09:15:00.000Z',
     },
     'cb:project': {
       id: 'cb:project',
@@ -114,21 +146,17 @@ export const diaryDummyState: DiaryStore = {
       description: 'Dear Diary architecture and development.',
       pinned: false,
       archived: false,
+      hasUnread: true,
+      notificationEnabled: false,
       tags: [
-        {
-          tagId: 'tag:project',
-          count: 2,
-        },
-        {
-          tagId: 'tag:important',
-          count: 1,
-        },
+        { tagId: 'tag:project', count: 2 },
+        { tagId: 'tag:important', count: 1 },
       ],
-      totalMessage: 2,
+      totalMessage: 1100,
       lastMessageId: 'ms:project-2',
-      lastMessageAt: '2026-01-10T20:00:00.000Z',
+      lastMessageAt: '2026-06-07T20:00:00.000Z',
       createdAt: '2026-01-01T00:00:00.000Z',
-      updatedAt: '2026-01-10T20:00:00.000Z',
+      updatedAt: '2026-06-07T20:00:00.000Z',
     },
     'cb:anime': {
       id: 'cb:anime',
@@ -139,12 +167,9 @@ export const diaryDummyState: DiaryStore = {
       description: 'Anime watchlist and episode notes.',
       pinned: false,
       archived: false,
-      tags: [
-        {
-          tagId: 'tag:anime',
-          count: 1,
-        },
-      ],
+      hasUnread: false,
+      notificationEnabled: true,
+      tags: [{ tagId: 'tag:anime', count: 1 }],
       totalMessage: 1,
       lastMessageId: 'ms:anime-1',
       lastMessageAt: '2026-01-15T21:00:00.000Z',
@@ -218,6 +243,34 @@ export const diaryDummyState: DiaryStore = {
       createdAt: '2026-01-05T10:30:00.000Z',
       updatedAt: null,
     },
+    'ms:study-last': {
+      id: 'ms:study-last',
+      chatboxId: 'cb:study',
+      type: 'text',
+      content: {
+        text: 'Finished the vocabulary review! The focus timer helped me stay on track for the full session.',
+      },
+      tagIds: ['tag:japanese', 'tag:vocabulary'],
+      pinned: false,
+      reactions: [],
+      edited: false,
+      createdAt: '2026-06-09T10:30:00.000Z',
+      updatedAt: null,
+    },
+    'ms:diary-1': {
+      id: 'ms:diary-1',
+      chatboxId: 'cb:diary',
+      type: 'text',
+      content: {
+        text: 'Had a quiet morning with coffee and notes.',
+      },
+      tagIds: ['tag:diary'],
+      pinned: false,
+      reactions: [],
+      edited: false,
+      createdAt: '2026-06-08T09:15:00.000Z',
+      updatedAt: null,
+    },
     'ms:project-1': {
       id: 'ms:project-1',
       chatboxId: 'cb:project',
@@ -270,24 +323,21 @@ export const diaryDummyState: DiaryStore = {
   orders: {
     rootOrders: ['gr:personal', 'gr:work', 'gr:entertainment'],
     groupChatboxOrders: {
-      'gr:personal': ['cb:study'],
+      'gr:personal': ['cb:study', 'cb:diary'],
       'gr:work': ['cb:project'],
       'gr:entertainment': ['cb:anime'],
     },
     chatboxMessageOrders: {
-      'cb:study': ['ms:study-text', 'ms:study-todo', 'ms:study-image'],
+      'cb:study': [
+        'ms:study-text',
+        'ms:study-todo',
+        'ms:study-image',
+        'ms:study-last',
+      ],
+      'cb:diary': ['ms:diary-1'],
       'cb:project': ['ms:project-1', 'ms:project-2'],
       'cb:anime': ['ms:anime-1'],
     },
-  },
-
-  // #endregion
-
-  // #region UI
-
-  ui: {
-    selectedChatboxId: 'cb:study',
-    expandedGroupIds: ['gr:personal', 'gr:work', 'gr:entertainment'],
   },
 
   // #endregion

@@ -111,6 +111,7 @@ const eslintConfig = defineConfig([
       'react/react-in-jsx-scope': 'off',
       'react-hooks/exhaustive-deps': 'off',
       'react-hooks/immutability': 'off',
+      'react-hooks/preserve-manual-memoization': 'off',
 
       // TypeScript rules
       '@typescript-eslint/no-explicit-any': 'off',
