@@ -195,3 +195,12 @@ export const seed5: ContainerRow[] = Array.from({ length: 20 }, (_, i) => ({
   type: 'item',
   id: `item-${i + 1}`,
 }));
+
+export const seed6: ContainerRow[] = [
+  { type: 'item', id: 'item-1' },
+  { type: 'item', id: 'item-2' },
+  { type: 'group', id: 'Group-1', items: [] },
+  { type: 'group', id: 'Group-2', items: [] },
+  { type: 'item', id: 'item-3' },
+  { type: 'item', id: 'item-4' },
+];

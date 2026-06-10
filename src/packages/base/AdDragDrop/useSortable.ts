@@ -106,6 +106,8 @@ const DEFAULT_MOUSE_STATE: MouseState = {
   previous: { ...DEFAULT_MOUSE_POSITION },
 };
 
+let debug = false;
+
 export default function useSortable({
   ref,
   sortable,
@@ -474,8 +476,6 @@ export default function useSortable({
       extraScrollOffsetRef.current.scrollLeft -
       initialScrollOffset.current.scrollLeft;
 
-    console.log(extraScrollOffsetRef.current);
-
     const virtualRect = {
       left: pageX - offsetX,
       top: pageY - offsetY,
@@ -621,6 +621,8 @@ export default function useSortable({
   const insertIndex = (closestIdx: number) => {
     const { virtualRect, adjustedRects } = calculateRect();
     const closestRect = adjustedRects[closestIdx];
+
+    if (adjustedRects.length === 0) return 0;
 
     if (!closestRect) return closestIdx;
 
@@ -1014,6 +1016,10 @@ export default function useSortable({
 
         // [Leave] Check if item is leaving this container
         if (isLeaving) {
+          if (debug) {
+            console.log('debug');
+          }
+          debug = true;
           const leaveIndex = index.current.current;
           const didGroupChange = onGroupChange?.({
             type: 'leave',

@@ -59,7 +59,7 @@ const AdDragDrop: FC<AdDragDropProps> = (props) => {
     hostPreview = false,
     motionDuration = 400,
     direction = 'vertical',
-    strategy = 'center',
+    strategy = 'vertex',
     group,
     itemOf,
     validGroups,

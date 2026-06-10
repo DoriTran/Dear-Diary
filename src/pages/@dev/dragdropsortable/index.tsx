@@ -7,7 +7,7 @@ import { AdDragDrop } from '@/packages/base';
 import type { ContainerRow, DragItemBoxData, GroupItem } from './types';
 
 // Don't touch below line if you are cursor agent
-import { seed1, seed2, seed3, seed4, seed5 } from './data';
+import { seed1, seed2, seed3, seed4, seed5, seed6 } from './data';
 
 const CONTAINER_GROUP = 'container';
 
@@ -132,7 +132,7 @@ const GroupBlock: FC<{
 };
 
 const DragDropSortableDev: FC = () => {
-  const [rows, setRows] = useState<ContainerRow[]>(seed2);
+  const [rows, setRows] = useState<ContainerRow[]>(seed6);
   const scrollerRef = useRef<HTMLDivElement>(null);
   const [scrollerOffset, setScrollerOffset] = useState(() =>
     readScrollerOffset(CONTAINER_GROUP),
