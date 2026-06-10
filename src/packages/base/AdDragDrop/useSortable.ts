@@ -8,6 +8,7 @@ import {
   type ReactElement,
   type RefObject,
   useRef,
+  useEffect,
   useLayoutEffect,
   useState,
 } from 'react';
@@ -16,7 +17,7 @@ import type {
   DragArgs,
   DragPreviewArgs,
   DragStartArgs,
-  ExtraScrollOffset,
+  ScrollOffset,
   OnGroupChange,
   OnSortableChange,
   SortableDirection,
@@ -52,9 +53,6 @@ export interface UseSortableOptions {
 
   /** Sortable item index changed. */
   onSortableChange?: OnSortableChange;
-
-  /** Extra scroll offset for sortable items. */
-  extraScrollOffset?: ExtraScrollOffset;
 
   /** Motion duration in ms. Default is 400ms. */
   motionDuration?: number;
@@ -118,7 +116,6 @@ export default function useSortable({
   validGroups,
   onGroupChange,
   onSortableChange,
-  extraScrollOffset,
   motionDuration = 400,
   direction = 'vertical',
   strategy = 'vertex',
@@ -137,6 +134,15 @@ export default function useSortable({
       return validGroups.join(',');
     }
   }, [validGroups, itemOf]);
+
+  const initialScrollOffset = useRef<ScrollOffset>({
+    scrollLeft: 0,
+    scrollTop: 0,
+  });
+  const extraScrollOffsetRef = useRef<ScrollOffset>({
+    scrollLeft: 0,
+    scrollTop: 0,
+  });
 
   // #region Utility Functions
   const logCachedRects = (
@@ -461,8 +467,14 @@ export default function useSortable({
       scrollLeft: 0,
     };
 
-    const extraTop = extraScrollOffset?.scrollTop ?? 0;
-    const extraLeft = extraScrollOffset?.scrollLeft ?? 0;
+    const extraTop =
+      extraScrollOffsetRef.current.scrollTop -
+      initialScrollOffset.current.scrollTop;
+    const extraLeft =
+      extraScrollOffsetRef.current.scrollLeft -
+      initialScrollOffset.current.scrollLeft;
+
+    console.log(extraScrollOffsetRef.current);
 
     const virtualRect = {
       left: pageX - offsetX,
@@ -628,6 +640,53 @@ export default function useSortable({
 
     return closestIdx;
   };
+  // #endregion
+
+  // #region Sortable Scroll Offset
+  const getGroupScrollers = (): HTMLElement[] =>
+    Array.from(
+      document.querySelectorAll<HTMLElement>('[data-scroller]'),
+    ).filter((el) => el.getAttribute('data-scroller') === group);
+
+  const getGroupScrollOffset = (): ScrollOffset => {
+    const scrollers = getGroupScrollers();
+
+    return {
+      scrollLeft: scrollers.reduce((sum, el) => sum + el.scrollLeft, 0),
+      scrollTop: scrollers.reduce((sum, el) => sum + el.scrollTop, 0),
+    };
+  };
+
+  useEffect(() => {
+    if (!sortable || !group) return;
+
+    const updateExtraScrollOffset = () => {
+      extraScrollOffsetRef.current = getGroupScrollOffset();
+    };
+
+    updateExtraScrollOffset();
+
+    const scrollers = getGroupScrollers();
+    const listenerOptions: AddEventListenerOptions = { passive: true };
+
+    scrollers.forEach((el) => {
+      el.addEventListener('scroll', updateExtraScrollOffset, listenerOptions);
+    });
+
+    return () => {
+      scrollers.forEach((el) => {
+        el.removeEventListener('scroll', updateExtraScrollOffset);
+      });
+    };
+  }, [sortable, group]);
+
+  useMonitor({
+    enabled: Boolean(sortable) && Boolean(group),
+    canMonitor: () => Boolean(sortable) && Boolean(group),
+    onDragStart: () => {
+      initialScrollOffset.current = getGroupScrollOffset();
+    },
+  });
   // #endregion
 
   // #region Sortable Item status
@@ -986,8 +1045,6 @@ export default function useSortable({
       itemOf,
       onGroupChange,
       onSortableChange,
-      extraScrollOffset?.scrollLeft,
-      extraScrollOffset?.scrollTop,
       motionDuration,
       direction,
       strategy,

@@ -8,7 +8,7 @@ export type NavPanelState = {
 
 export type DiaryPageUIState = {
   selectedChatboxId: string | null;
-  expandedGroupIds: string[];
+  expandedGroupIds: Set<string>;
 };
 
 export type AppStoreState = {

@@ -19,6 +19,12 @@ import useSortable from './useSortable';
 
 export type { AdDragDropProps, DragClassName, DragStyle };
 
+/**
+ * Custom data properties:
+ * → data-handle: Boolean; whether the element is a handle
+ * → data-scroller: Sortable group id; scroll offset is summed when it matches `group`
+ */
+
 const AdDragDrop: FC<AdDragDropProps> = (props) => {
   const {
     /* Dragging options */
@@ -53,13 +59,12 @@ const AdDragDrop: FC<AdDragDropProps> = (props) => {
     hostPreview = false,
     motionDuration = 400,
     direction = 'vertical',
-    strategy = 'vertex',
+    strategy = 'center',
     group,
     itemOf,
     validGroups,
     onGroupChange,
     onSortableChange,
-    extraScrollOffset = { scrollLeft: 0, scrollTop: 0 },
 
     /* Auto scroll options */
     autoScroll,
@@ -151,7 +156,6 @@ const AdDragDrop: FC<AdDragDropProps> = (props) => {
     validGroups,
     onGroupChange,
     onSortableChange,
-    extraScrollOffset,
     children,
   });
 

@@ -5,9 +5,74 @@
   display: flex;
   justify-content: center;
   align-items: flex-start;
-  padding: 2rem 1rem;
+  gap: 1.25rem;
+  padding: 1.5rem 1rem;
   box-sizing: border-box;
   --label-font-size: 16px;
+}
+
+.stacked-hint {
+  flex: 0 0 220px;
+  max-width: 220px;
+  padding: 1rem 1.1rem;
+  border-radius: 12px;
+  border: 1px solid rgba(255, 105, 180, 0.25);
+  background: rgba(255, 255, 255, 0.92);
+  box-shadow: 0 2px 8px rgba(255, 153, 204, 0.18);
+}
+
+.stacked-hint-title {
+  margin: 0 0 0.5rem;
+  font-size: 1rem;
+  font-weight: 700;
+  color: rgba(255, 70, 150, 0.95);
+}
+
+.stacked-hint-text {
+  margin: 0 0 1rem;
+  font-size: 0.875rem;
+  line-height: 1.45;
+  color: #5c3d4a;
+}
+
+.stacked-hint-stats {
+  margin: 0;
+  display: grid;
+  gap: 0.65rem;
+}
+
+.stacked-hint-stats div {
+  display: flex;
+  justify-content: space-between;
+  gap: 0.75rem;
+  font-size: 0.8125rem;
+}
+
+.stacked-hint-stats dt {
+  margin: 0;
+  color: #8a6573;
+}
+
+.stacked-hint-stats dd {
+  margin: 0;
+  font-variant-numeric: tabular-nums;
+  font-weight: 600;
+  color: #5c3d4a;
+}
+
+.stacked-scroller {
+  flex: 0 1 auto;
+  width: min(420px, 100%);
+  max-height: min(70vh, 560px);
+  overflow: auto;
+  border-radius: 14px;
+  border: 2px dashed rgba(255, 105, 180, 0.55);
+  background: rgba(255, 240, 246, 0.65);
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.65);
+}
+
+.stacked-scroller .stacked-container {
+  margin-top: 0;
 }
 
 .stacked-container {

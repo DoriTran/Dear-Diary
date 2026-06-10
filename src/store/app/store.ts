@@ -11,8 +11,6 @@ import {
   DEFAULT_THEME,
 } from './constants';
 
-const ensureUnique = <T>(items: T[]) => Array.from(new Set(items));
-
 export function applyAppTheme(theme: AppTheme, mode: AppMode) {
   document.documentElement.setAttribute('data-theme', theme);
   document.documentElement.setAttribute('data-mode', mode);
@@ -56,40 +54,47 @@ const useAppStoreBase = create<AppStore>()(
 
       toggleGroup: (groupId) =>
         set((state) => {
-          const expanded = state.diaryPage.expandedGroupIds.includes(groupId);
+          const next = new Set(state.diaryPage.expandedGroupIds);
+
+          if (next.has(groupId)) {
+            next.delete(groupId);
+          } else {
+            next.add(groupId);
+          }
 
           return {
             diaryPage: {
               ...state.diaryPage,
-              expandedGroupIds: expanded
-                ? state.diaryPage.expandedGroupIds.filter(
-                    (id) => id !== groupId,
-                  )
-                : [...state.diaryPage.expandedGroupIds, groupId],
+              expandedGroupIds: next,
             },
           };
         }),
 
       expandGroup: (groupId) =>
-        set((state) => ({
-          diaryPage: {
-            ...state.diaryPage,
-            expandedGroupIds: ensureUnique([
-              ...state.diaryPage.expandedGroupIds,
-              groupId,
-            ]),
-          },
-        })),
+        set((state) => {
+          const next = new Set(state.diaryPage.expandedGroupIds);
+          next.add(groupId);
+
+          return {
+            diaryPage: {
+              ...state.diaryPage,
+              expandedGroupIds: next,
+            },
+          };
+        }),
 
       collapseGroup: (groupId) =>
-        set((state) => ({
-          diaryPage: {
-            ...state.diaryPage,
-            expandedGroupIds: state.diaryPage.expandedGroupIds.filter(
-              (id) => id !== groupId,
-            ),
-          },
-        })),
+        set((state) => {
+          const next = new Set(state.diaryPage.expandedGroupIds);
+          next.delete(groupId);
+
+          return {
+            diaryPage: {
+              ...state.diaryPage,
+              expandedGroupIds: next,
+            },
+          };
+        }),
     }),
     {
       name: 'dear-diary-app',
@@ -98,8 +103,38 @@ const useAppStoreBase = create<AppStore>()(
         theme: state.theme,
         mode: state.mode,
         navPanel: state.navPanel,
-        diaryPage: state.diaryPage,
+        diaryPage: {
+          selectedChatboxId: state.diaryPage.selectedChatboxId,
+          expandedGroupIds: Array.from(state.diaryPage.expandedGroupIds),
+        },
       }),
+      merge: (persistedState, currentState) => {
+        const persisted = persistedState as {
+          theme?: AppTheme;
+          mode?: AppMode;
+          navPanel?: typeof DEFAULT_NAV_PANEL;
+          diaryPage?: {
+            selectedChatboxId?: string | null;
+            expandedGroupIds?: string[];
+          };
+        };
+
+        return {
+          ...currentState,
+          ...persisted,
+          navPanel: {
+            ...currentState.navPanel,
+            ...persisted.navPanel,
+          },
+          diaryPage: {
+            ...currentState.diaryPage,
+            ...persisted.diaryPage,
+            expandedGroupIds: new Set(
+              persisted.diaryPage?.expandedGroupIds ?? [],
+            ),
+          },
+        };
+      },
     },
   ),
 );

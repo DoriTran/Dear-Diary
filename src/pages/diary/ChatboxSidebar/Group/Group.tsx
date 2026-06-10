@@ -24,7 +24,7 @@ const Group: FC<GroupProps> = ({ data, selectedId, onSelect }) => {
   const { id, title, brushColor, groupIcon, chatboxes } = data;
 
   const { diaryPage, toggleGroup } = useAppStore(['diaryPage', 'toggleGroup']);
-  const isExpanded = (diaryPage.expandedGroupIds ?? []).includes(id);
+  const isExpanded = diaryPage.expandedGroupIds.has(id);
 
   const rootRef = useRef<HTMLElement>(null);
   const listRef = useRef<HTMLDivElement>(null);

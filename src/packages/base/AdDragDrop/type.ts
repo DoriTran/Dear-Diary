@@ -79,7 +79,7 @@ export type OnSortableChange = (args: {
   previous: number;
 }) => boolean | void;
 
-export type ExtraScrollOffset = {
+export type ScrollOffset = {
   scrollLeft: number;
   scrollTop: number;
 };
@@ -162,7 +162,6 @@ interface AdDragDropPropsBase extends Partial<AutoScrollOptions> {
   validGroups?: string[] | undefined;
   onGroupChange?: OnGroupChange;
   onSortableChange?: OnSortableChange;
-  extraScrollOffset?: ExtraScrollOffset;
 
   /* Log Debug Options */
   logEvents?: LogDebugEvent[];

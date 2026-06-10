@@ -63,7 +63,7 @@ const Dev: FC = () => {
             <p>Select one from the sidebar, for example:</p>
             <ul>
               <li>
-                <code>/dev?id=1</code> — dragdropsortable
+                <code>/dev?id=1</code> — dragdropsortable (data-scroller)
               </li>
               <li>
                 <code>/dev?id=2</code> — BrushHighlight

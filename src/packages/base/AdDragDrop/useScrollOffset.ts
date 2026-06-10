@@ -7,8 +7,7 @@ export interface ScrollOffset {
 
 /**
  * Get the scroll offset of an element.
- * Use for useSortable sortable prop in AdDragDrop.
- * Fill the extraScrollOffset prop in useSortable.
+ * @deprecated Mark scroll containers with `data-scroller="<group>"` instead; sortable tracks them internally.
  */
 export default function useScrollOffset(
   ref: RefObject<HTMLElement | null>,

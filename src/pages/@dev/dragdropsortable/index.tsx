@@ -1,11 +1,27 @@
-import { type FC, useState } from 'react';
+/* eslint-disable @typescript-eslint/no-unused-vars */
+import { type FC, useEffect, useRef, useState } from 'react';
 
 import './index.styles.css';
 import { AdDragDrop } from '@/packages/base';
 
 import type { ContainerRow, DragItemBoxData, GroupItem } from './types';
 
-import { seed3 } from './data';
+// Don't touch below line if you are cursor agent
+import { seed1, seed2, seed3, seed4, seed5 } from './data';
+
+const CONTAINER_GROUP = 'container';
+
+const readScrollerOffset = (group: string) => {
+  const scrollers = Array.from(
+    document.querySelectorAll<HTMLElement>('[data-scroller]'),
+  ).filter((el) => el.getAttribute('data-scroller') === group);
+
+  return {
+    scrollLeft: scrollers.reduce((sum, el) => sum + el.scrollLeft, 0),
+    scrollTop: scrollers.reduce((sum, el) => sum + el.scrollTop, 0),
+    count: scrollers.length,
+  };
+};
 
 const clampIndex = (index: number, length: number) => {
   if (Number.isNaN(index)) return length;
@@ -116,7 +132,23 @@ const GroupBlock: FC<{
 };
 
 const DragDropSortableDev: FC = () => {
-  const [rows, setRows] = useState<ContainerRow[]>(seed3);
+  const [rows, setRows] = useState<ContainerRow[]>(seed2);
+  const scrollerRef = useRef<HTMLDivElement>(null);
+  const [scrollerOffset, setScrollerOffset] = useState(() =>
+    readScrollerOffset(CONTAINER_GROUP),
+  );
+
+  useEffect(() => {
+    const scroller = scrollerRef.current;
+    if (!scroller) return;
+
+    const update = () => setScrollerOffset(readScrollerOffset(CONTAINER_GROUP));
+
+    update();
+    scroller.addEventListener('scroll', update, { passive: true });
+
+    return () => scroller.removeEventListener('scroll', update);
+  }, []);
 
   type InScope = { type: 'container' } | { type: 'group'; groupId: string };
 
@@ -170,52 +202,89 @@ const DragDropSortableDev: FC = () => {
 
   return (
     <div className="stacked-root">
-      <AdDragDrop
-        droppable
-        sortable
-        group="container"
-        hostPreview
-        dropData={{ id: 'Container' }}
-        onSortableChange={({ current, previous }) => {
-          console.log('Container', 'onSortableChange', current, previous);
-          swap({ type: 'container' }, current, previous);
-        }}
-        onGroupChange={({ type, index, data }) => {
-          console.log('Container', 'onGroupChange', type, index, data);
-          if (type === 'enter') {
-            add({ type: 'container' }, index, data);
-          }
-          if (type === 'leave') {
-            remove({ type: 'container' }, index);
-          }
-        }}
-      >
-        <div className="stacked-container" data-test-id="Container">
-          <span className="container-label">Container</span>
-          <div className="stacked-list">
-            {rows.map((row) =>
-              row.type === 'group' ? (
-                <GroupBlock
-                  key={row.id}
-                  name={row.id}
-                  items={row.items}
-                  swap={(current, previous) =>
-                    swap({ type: 'group', groupId: row.id }, current, previous)
-                  }
-                  add={(at, data) =>
-                    add({ type: 'group', groupId: row.id }, at, data)
-                  }
-                  remove={(at) =>
-                    remove({ type: 'group', groupId: row.id }, at)
-                  }
-                />
-              ) : (
-                <ItemBox key={row.id} id={row.id} label={row.id} free />
-              ),
-            )}
+      <aside className="stacked-hint" aria-label="Test instructions">
+        <h2 className="stacked-hint-title">data-scroller sortable</h2>
+        <p className="stacked-hint-text">
+          Scroll the panel, then drag items and groups while scrolled. Drop
+          targets should stay aligned with the pointer.
+        </p>
+        <dl className="stacked-hint-stats">
+          <div>
+            <dt>group</dt>
+            <dd>{CONTAINER_GROUP}</dd>
           </div>
-        </div>
-      </AdDragDrop>
+          <div>
+            <dt>Matched scrollers</dt>
+            <dd>{scrollerOffset.count}</dd>
+          </div>
+          <div>
+            <dt>scrollTop</dt>
+            <dd>{scrollerOffset.scrollTop}px</dd>
+          </div>
+          <div>
+            <dt>scrollLeft</dt>
+            <dd>{scrollerOffset.scrollLeft}px</dd>
+          </div>
+        </dl>
+      </aside>
+
+      <div
+        ref={scrollerRef}
+        className="stacked-scroller"
+        data-scroller={CONTAINER_GROUP}
+      >
+        <AdDragDrop
+          droppable
+          sortable
+          group={CONTAINER_GROUP}
+          hostPreview
+          autoScroll
+          dropData={{ id: 'Container' }}
+          onSortableChange={({ current, previous }) => {
+            console.log('Container', 'onSortableChange', current, previous);
+            swap({ type: 'container' }, current, previous);
+          }}
+          onGroupChange={({ type, index, data }) => {
+            console.log('Container', 'onGroupChange', type, index, data);
+            if (type === 'enter') {
+              add({ type: 'container' }, index, data);
+            }
+            if (type === 'leave') {
+              remove({ type: 'container' }, index);
+            }
+          }}
+        >
+          <div className="stacked-container" data-test-id="Container">
+            <span className="container-label">Container</span>
+            <div className="stacked-list">
+              {rows.map((row) =>
+                row.type === 'group' ? (
+                  <GroupBlock
+                    key={row.id}
+                    name={row.id}
+                    items={row.items}
+                    swap={(current, previous) =>
+                      swap(
+                        { type: 'group', groupId: row.id },
+                        current,
+                        previous,
+                      )
+                    }
+                    add={(at, data) =>
+                      add({ type: 'group', groupId: row.id }, at, data)
+                    }
+                    remove={(at) =>
+                      remove({ type: 'group', groupId: row.id }, at)
+                    }
+                  />
+                ) : (
+                  <ItemBox key={row.id} id={row.id} label={row.id} free />
+                ),
+              )}
+            </div>
+          </div>
+        </AdDragDrop>
+      </div>
     </div>
   );
 };
