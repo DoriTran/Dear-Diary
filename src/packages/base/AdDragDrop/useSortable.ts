@@ -63,6 +63,9 @@ export interface UseSortableOptions {
   /** Closest index calculation strategy. Default `center`. */
   strategy?: SortableStrategy;
 
+  /** Extra scroll offset from an ancestor scroll container (`useScrollOffset`). */
+  extraScrollOffset?: ScrollOffset;
+
   children: ReactElement;
   motions?: Record<string, unknown>;
 }
@@ -121,6 +124,7 @@ export default function useSortable({
   motionDuration = 400,
   direction = 'vertical',
   strategy = 'vertex',
+  extraScrollOffset,
   children,
   motions,
 }: UseSortableOptions): UseSortableResult {
@@ -645,48 +649,17 @@ export default function useSortable({
   // #endregion
 
   // #region Sortable Scroll Offset
-  const getGroupScrollers = (): HTMLElement[] =>
-    Array.from(
-      document.querySelectorAll<HTMLElement>('[data-scroller]'),
-    ).filter((el) => el.getAttribute('data-scroller') === group);
-
-  const getGroupScrollOffset = (): ScrollOffset => {
-    const scrollers = getGroupScrollers();
-
-    return {
-      scrollLeft: scrollers.reduce((sum, el) => sum + el.scrollLeft, 0),
-      scrollTop: scrollers.reduce((sum, el) => sum + el.scrollTop, 0),
-    };
-  };
-
   useEffect(() => {
-    if (!sortable || !group) return;
+    if (!extraScrollOffset) return;
 
-    const updateExtraScrollOffset = () => {
-      extraScrollOffsetRef.current = getGroupScrollOffset();
-    };
-
-    updateExtraScrollOffset();
-
-    const scrollers = getGroupScrollers();
-    const listenerOptions: AddEventListenerOptions = { passive: true };
-
-    scrollers.forEach((el) => {
-      el.addEventListener('scroll', updateExtraScrollOffset, listenerOptions);
-    });
-
-    return () => {
-      scrollers.forEach((el) => {
-        el.removeEventListener('scroll', updateExtraScrollOffset);
-      });
-    };
-  }, [sortable, group]);
+    extraScrollOffsetRef.current = extraScrollOffset;
+  }, [extraScrollOffset?.scrollLeft, extraScrollOffset?.scrollTop]);
 
   useMonitor({
     enabled: Boolean(sortable) && Boolean(group),
     canMonitor: () => Boolean(sortable) && Boolean(group),
     onDragStart: () => {
-      initialScrollOffset.current = getGroupScrollOffset();
+      initialScrollOffset.current = { ...extraScrollOffsetRef.current };
     },
   });
   // #endregion

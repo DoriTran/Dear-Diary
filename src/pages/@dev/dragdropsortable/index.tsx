@@ -1,27 +1,19 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
-import { type FC, useEffect, useRef, useState } from 'react';
+import { type FC, useRef, useState } from 'react';
 
 import './index.styles.css';
-import { AdDragDrop } from '@/packages/base';
+import {
+  AdDragDrop,
+  useScrollOffset,
+  type ScrollOffset,
+} from '@/packages/base';
 
 import type { ContainerRow, DragItemBoxData, GroupItem } from './types';
 
 // Don't touch below line if you are cursor agent
 import { seed1, seed2, seed3, seed4, seed5, seed6 } from './data';
 
-const CONTAINER_GROUP = 'container';
-
-const readScrollerOffset = (group: string) => {
-  const scrollers = Array.from(
-    document.querySelectorAll<HTMLElement>('[data-scroller]'),
-  ).filter((el) => el.getAttribute('data-scroller') === group);
-
-  return {
-    scrollLeft: scrollers.reduce((sum, el) => sum + el.scrollLeft, 0),
-    scrollTop: scrollers.reduce((sum, el) => sum + el.scrollTop, 0),
-    count: scrollers.length,
-  };
-};
+const selectedSeed = seed2;
 
 const clampIndex = (index: number, length: number) => {
   if (Number.isNaN(index)) return length;
@@ -85,10 +77,11 @@ const ItemBox: FC<{ id: string; label: string; free?: boolean }> = ({
 const GroupBlock: FC<{
   name: string;
   items: GroupItem[];
+  extraScrollOffset: ScrollOffset;
   swap: (current: number, previous: number) => void;
   add: (at: number, data: ContainerRow | GroupItem) => void;
   remove: (at: number) => void;
-}> = ({ name, items, swap, add, remove }) => {
+}> = ({ name, items, extraScrollOffset, swap, add, remove }) => {
   return (
     <AdDragDrop
       draggable
@@ -99,6 +92,7 @@ const GroupBlock: FC<{
       dropData={{ id: name }}
       stopDropPropagation
       sortable
+      extraScrollOffset={extraScrollOffset}
       onSortableChange={({ current, previous }) => {
         console.log(name, 'onSortableChange', current, previous);
         swap(current, previous);
@@ -132,23 +126,9 @@ const GroupBlock: FC<{
 };
 
 const DragDropSortableDev: FC = () => {
-  const [rows, setRows] = useState<ContainerRow[]>(seed6);
+  const [rows, setRows] = useState<ContainerRow[]>(selectedSeed);
   const scrollerRef = useRef<HTMLDivElement>(null);
-  const [scrollerOffset, setScrollerOffset] = useState(() =>
-    readScrollerOffset(CONTAINER_GROUP),
-  );
-
-  useEffect(() => {
-    const scroller = scrollerRef.current;
-    if (!scroller) return;
-
-    const update = () => setScrollerOffset(readScrollerOffset(CONTAINER_GROUP));
-
-    update();
-    scroller.addEventListener('scroll', update, { passive: true });
-
-    return () => scroller.removeEventListener('scroll', update);
-  }, []);
+  const scrollerOffset = useScrollOffset(scrollerRef);
 
   type InScope = { type: 'container' } | { type: 'group'; groupId: string };
 
@@ -203,20 +183,12 @@ const DragDropSortableDev: FC = () => {
   return (
     <div className="stacked-root">
       <aside className="stacked-hint" aria-label="Test instructions">
-        <h2 className="stacked-hint-title">data-scroller sortable</h2>
+        <h2 className="stacked-hint-title">useScrollOffset sortable</h2>
         <p className="stacked-hint-text">
           Scroll the panel, then drag items and groups while scrolled. Drop
           targets should stay aligned with the pointer.
         </p>
         <dl className="stacked-hint-stats">
-          <div>
-            <dt>group</dt>
-            <dd>{CONTAINER_GROUP}</dd>
-          </div>
-          <div>
-            <dt>Matched scrollers</dt>
-            <dd>{scrollerOffset.count}</dd>
-          </div>
           <div>
             <dt>scrollTop</dt>
             <dd>{scrollerOffset.scrollTop}px</dd>
@@ -228,17 +200,15 @@ const DragDropSortableDev: FC = () => {
         </dl>
       </aside>
 
-      <div
-        ref={scrollerRef}
-        className="stacked-scroller"
-        data-scroller={CONTAINER_GROUP}
-      >
+      <div ref={scrollerRef} className="stacked-scroller">
         <AdDragDrop
           droppable
           sortable
-          group={CONTAINER_GROUP}
+          group="container"
           hostPreview
           autoScroll
+          scrollRef={scrollerRef}
+          extraScrollOffset={scrollerOffset}
           dropData={{ id: 'Container' }}
           onSortableChange={({ current, previous }) => {
             console.log('Container', 'onSortableChange', current, previous);
@@ -263,6 +233,7 @@ const DragDropSortableDev: FC = () => {
                     key={row.id}
                     name={row.id}
                     items={row.items}
+                    extraScrollOffset={scrollerOffset}
                     swap={(current, previous) =>
                       swap(
                         { type: 'group', groupId: row.id },

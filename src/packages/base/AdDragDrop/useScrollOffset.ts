@@ -1,13 +1,10 @@
 import { useEffect, useState, type RefObject } from 'react';
 
-export interface ScrollOffset {
-  scrollLeft: number;
-  scrollTop: number;
-}
+import type { ScrollOffset } from './type';
 
 /**
- * Get the scroll offset of an element.
- * @deprecated Mark scroll containers with `data-scroller="<group>"` instead; sortable tracks them internally.
+ * Track scroll offset of a scroll container element.
+ * Pass the result to AdDragDrop `extraScrollOffset` for sortable scroll compensation.
  */
 export default function useScrollOffset(
   ref: RefObject<HTMLElement | null>,

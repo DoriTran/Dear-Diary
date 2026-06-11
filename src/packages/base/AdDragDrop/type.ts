@@ -162,6 +162,7 @@ interface AdDragDropPropsBase extends Partial<AutoScrollOptions> {
   validGroups?: string[] | undefined;
   onGroupChange?: OnGroupChange;
   onSortableChange?: OnSortableChange;
+  extraScrollOffset?: ScrollOffset;
 
   /* Log Debug Options */
   logEvents?: LogDebugEvent[];

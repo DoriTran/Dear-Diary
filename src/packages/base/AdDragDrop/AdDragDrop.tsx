@@ -10,19 +10,19 @@ import {
 } from 'react';
 import { createPortal } from 'react-dom';
 
-import type { AdDragDropProps, DragClassName, DragStyle } from './type';
+import type { AdDragDropProps } from './type';
 
 import useAutoScroll from './useAutoScroll';
 import useDragging, { type UseDraggingResult } from './useDragging';
 import useDropping, { type UseDroppingResult } from './useDropping';
+import useScrollOffset from './useScrollOffset';
 import useSortable from './useSortable';
 
-export type { AdDragDropProps, DragClassName, DragStyle };
+export type { AdDragDropProps, DragClassName, DragStyle } from './type';
 
 /**
  * Custom data properties:
  * → data-handle: Boolean; whether the element is a handle
- * → data-scroller: Sortable group id; scroll offset is summed when it matches `group`
  */
 
 const AdDragDrop: FC<AdDragDropProps> = (props) => {
@@ -65,12 +65,17 @@ const AdDragDrop: FC<AdDragDropProps> = (props) => {
     validGroups,
     onGroupChange,
     onSortableChange,
+    extraScrollOffset,
 
     /* Auto scroll options */
     autoScroll,
     autoScrollWindow,
-    horizontal, // Whether to auto scroll horizontally.
-    vertical, // Whether to auto scroll vertically.
+    scrollRef,
+    allowedAxis = 'all',
+    canScroll,
+    getConfiguration,
+    canScrollWindow,
+    getWindowConfiguration,
 
     /* Log Debug Options */
     logEvents = [],
@@ -82,13 +87,14 @@ const AdDragDrop: FC<AdDragDropProps> = (props) => {
     showOrigin,
 
     children,
-  } = props as AdDragDropProps & {
-    horizontal?: boolean;
-    vertical?: boolean;
-  };
+  } = props;
 
   const ref = useRef<HTMLElement | null>(null);
   const handle = useRef<HTMLElement | null>(null);
+  const trackedScrollOffset = useScrollOffset(scrollRef ?? { current: null });
+  const resolvedExtraScrollOffset =
+    extraScrollOffset ??
+    (scrollRef ? trackedScrollOffset : { scrollLeft: 0, scrollTop: 0 });
 
   const {
     draggable: isDraggable,
@@ -133,15 +139,17 @@ const AdDragDrop: FC<AdDragDropProps> = (props) => {
     dropDeps,
   );
 
-  useAutoScroll(
-    {
-      ref,
-      autoScroll: (autoScroll || horizontal || vertical) && isDroppable,
-      autoScrollWindow,
-      allowedAxis: horizontal ? 'horizontal' : vertical ? 'vertical' : 'all',
-    },
-    // dependency array is handled inside hook
-  );
+  useAutoScroll({
+    ref,
+    scrollRef,
+    autoScroll: autoScroll && isDroppable,
+    autoScrollWindow,
+    allowedAxis,
+    canScroll,
+    getConfiguration,
+    canScrollWindow,
+    getWindowConfiguration,
+  });
 
   const { motioned, sortableGroups, sorting } = useSortable({
     ref,
@@ -156,6 +164,7 @@ const AdDragDrop: FC<AdDragDropProps> = (props) => {
     validGroups,
     onGroupChange,
     onSortableChange,
+    extraScrollOffset: resolvedExtraScrollOffset,
     children,
   });
 

@@ -12,7 +12,7 @@ export type DevTestEntry = {
 export const devTests: readonly DevTestEntry[] = [
   {
     key: 'dragdropsortable',
-    displayName: 'dragdropsortable (data-scroller)',
+    displayName: 'dragdropsortable (useScrollOffset)',
     component: DragDropSortableDev,
   },
   {
