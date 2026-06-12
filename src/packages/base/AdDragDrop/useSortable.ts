@@ -150,6 +150,12 @@ export default function useSortable({
     scrollTop: 0,
   });
 
+  const cachedRects = useRef<SortableRect[]>([]);
+  const mouse = useRef<MouseState>(DEFAULT_MOUSE_STATE);
+  const offset = useRef({ offsetX: 0, offsetY: 0, width: 0, height: 0 });
+  const index = useRef({ current: -1, previous: -1 });
+  const holding = useRef(false); // This container holds & sorts the item being dragged
+
   // #region Utility Functions
   const logCachedRects = (
     rects: readonly SortableRect[] | null | undefined,
@@ -646,13 +652,63 @@ export default function useSortable({
 
     return closestIdx;
   };
+
+  const updateSortIndex = () => {
+    if (!onSortableChange) return;
+    if (!holding.current) return;
+    if (!ref.current) return;
+    if (!cachedRects.current.length) return;
+
+    const closestIdx = closestIndex();
+    const newIndex = {
+      current: closestIdx,
+      previous: index.current.current,
+    };
+
+    if (closestIdx !== -1 && closestIdx !== index.current.current) {
+      switch (mouse.current.current.direction) {
+        case 'up':
+        case 'left':
+          if (newIndex.current > newIndex.previous) return;
+          break;
+        case 'down':
+        case 'right':
+          if (newIndex.current < newIndex.previous) return;
+          break;
+        case 'none':
+          break;
+      }
+
+      const didSortableChange = onSortableChange(newIndex);
+
+      if (didSortableChange === true || didSortableChange === undefined) {
+        index.current = newIndex;
+
+        cachedRects.current = swapCachedRect(
+          cachedRects.current,
+          index.current.previous,
+          index.current.current,
+        );
+        logCachedRects(cachedRects.current);
+      }
+    }
+  };
   // #endregion
 
   // #region Sortable Scroll Offset
   useEffect(() => {
     if (!extraScrollOffset) return;
 
+    const prev = extraScrollOffsetRef.current;
     extraScrollOffsetRef.current = extraScrollOffset;
+
+    const scrollChanged =
+      prev.scrollTop !== extraScrollOffset.scrollTop ||
+      prev.scrollLeft !== extraScrollOffset.scrollLeft;
+
+    if (scrollChanged) {
+      updateSortIndex();
+    }
   }, [extraScrollOffset?.scrollLeft, extraScrollOffset?.scrollTop]);
 
   useMonitor({
@@ -827,12 +883,6 @@ export default function useSortable({
   // #endregion
 
   // #region Sortable Index Calculation
-  const cachedRects = useRef<SortableRect[]>([]);
-  const mouse = useRef<MouseState>(DEFAULT_MOUSE_STATE);
-  const offset = useRef({ offsetX: 0, offsetY: 0, width: 0, height: 0 });
-  const index = useRef({ current: -1, previous: -1 });
-  const holding = useRef(false); // This container holds & sorts the item being dragged
-
   useMonitor(
     {
       enabled: Boolean(sortable) && Boolean(group),
@@ -882,55 +932,12 @@ export default function useSortable({
         const { pageX: currentX, pageY: currentY } = mouse.current.current;
         if (pageX !== currentX || pageY !== currentY) {
           mouse.current = calculateMouseState(mouse.current, pageX, pageY);
-        } else return;
-
-        // Early return if dragging element or container not found for any reason
-        const draggingElement = source.element as HTMLElement | null;
-        if (!draggingElement || !ref.current) return;
-
-        // Early return if cached rects not initialized
-        if (!cachedRects.current) return;
-
-        /**
-         * Dragging logic
-         */
-        const closestIdx = closestIndex();
-        const newIndex = {
-          current: closestIdx,
-          previous: index.current.current,
-        };
-
-        if (closestIdx !== -1 && closestIdx !== index.current.current) {
-          // Check if it bouncing between the same two indexes while direction not changed
-          switch (mouse.current.current.direction) {
-            case 'up':
-            case 'left':
-              if (newIndex.current > newIndex.previous) return;
-              else break;
-            case 'down':
-            case 'right':
-              if (newIndex.current < newIndex.previous) return;
-              else break;
-
-            case 'none':
-              break;
-          }
-
-          // Call the onSortableChange callback
-          const didSortableChange = onSortableChange(newIndex);
-
-          // Update cached rects if outside sortable index changed or result not returned
-          if (didSortableChange === true || didSortableChange === undefined) {
-            index.current = newIndex;
-
-            cachedRects.current = swapCachedRect(
-              cachedRects.current,
-              index.current.previous,
-              index.current.current,
-            );
-            logCachedRects(cachedRects.current);
-          }
         }
+
+        if (!source.element || !ref.current) return;
+        if (!cachedRects.current.length) return;
+
+        updateSortIndex();
       },
       onTargetChange: ({ data, source, location }) => {
         // Early return if outside logic is not implemented
