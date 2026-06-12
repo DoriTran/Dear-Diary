@@ -1,15 +1,22 @@
 import * as solidIcons from '@fortawesome/free-solid-svg-icons';
-import { faQuestion, type IconDefinition } from '@fortawesome/free-solid-svg-icons';
+import {
+  faQuestion,
+  type IconDefinition,
+} from '@fortawesome/free-solid-svg-icons';
 
 import { useDiaryStore } from '@/store';
 
 import type { ChatboxData, GroupData } from '../types';
 
-import { buildIconBackground, getMessagePreview } from './Chatbox/chatbox.utils';
+import {
+  buildIconBackground,
+  getMessagePreview,
+} from './Chatbox/chatbox.utils';
 
 const resolveFaIcon = (icon: string): IconDefinition => {
   return (
-    (solidIcons as unknown as Record<string, IconDefinition>)[icon] || faQuestion
+    (solidIcons as unknown as Record<string, IconDefinition>)[icon] ||
+    faQuestion
   );
 };
 

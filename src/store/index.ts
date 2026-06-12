@@ -1,4 +1,4 @@
-export { useDiaryStore } from './diary/store';
+export { useDiaryStore, useDiaryHydrated } from './diary/store';
 export { useAppStore, applyAppTheme } from './app/store';
 export type {
   AppMode,

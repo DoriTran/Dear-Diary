@@ -1,3 +1,4 @@
+import { useEffect, useState } from 'react';
 import { v4 as uuidv4 } from 'uuid';
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
@@ -655,6 +656,60 @@ const useDiaryStoreBase = create<DiaryStore & DiaryStoreActions>()(
             },
           },
         })),
+      syncSidebarLayout: (layout) =>
+        set((state) => {
+          const rootOrders = ensureUnique(layout.rootOrders);
+          const groupChatboxOrders: Record<string, string[]> = {};
+
+          Object.entries(layout.groupChatboxOrders).forEach(
+            ([groupId, ids]) => {
+              groupChatboxOrders[groupId] = ensureUnique(ids);
+            },
+          );
+
+          const chatboxesInGroups = new Set<string>();
+          Object.values(groupChatboxOrders).forEach((ids) => {
+            ids.forEach((id) => chatboxesInGroups.add(id));
+          });
+
+          const chatboxes = { ...state.chatboxes };
+
+          rootOrders.forEach((id) => {
+            if (!chatboxes[id]) return;
+            if (chatboxesInGroups.has(id)) return;
+
+            const current = chatboxes[id];
+            if (current.groupId === null) return;
+
+            chatboxes[id] = {
+              ...current,
+              groupId: null,
+              updatedAt: nowIso(),
+            };
+          });
+
+          Object.entries(groupChatboxOrders).forEach(([groupId, ids]) => {
+            ids.forEach((chatboxId) => {
+              const current = chatboxes[chatboxId];
+              if (!current || current.groupId === groupId) return;
+
+              chatboxes[chatboxId] = {
+                ...current,
+                groupId,
+                updatedAt: nowIso(),
+              };
+            });
+          });
+
+          return {
+            chatboxes,
+            orders: {
+              ...state.orders,
+              rootOrders,
+              groupChatboxOrders,
+            },
+          };
+        }),
       // #endregion
 
       // #region Utility
@@ -663,6 +718,10 @@ const useDiaryStoreBase = create<DiaryStore & DiaryStoreActions>()(
           ...diaryInitialState,
         })),
       seedIfEmpty: () => {
+        if (!useDiaryStoreBase.persist.hasHydrated()) {
+          return;
+        }
+
         const state = get();
 
         if (Object.keys(state.groups).length > 0) {
@@ -690,3 +749,21 @@ const useDiaryStoreBase = create<DiaryStore & DiaryStoreActions>()(
 );
 
 export const useDiaryStore = shallow(useDiaryStoreBase);
+
+export const useDiaryHydrated = () => {
+  const [hydrated, setHydrated] = useState(() =>
+    useDiaryStoreBase.persist.hasHydrated(),
+  );
+
+  useEffect(() => {
+    const unsub = useDiaryStoreBase.persist.onFinishHydration(() => {
+      setHydrated(true);
+    });
+
+    setHydrated(useDiaryStoreBase.persist.hasHydrated());
+
+    return unsub;
+  }, []);
+
+  return hydrated;
+};

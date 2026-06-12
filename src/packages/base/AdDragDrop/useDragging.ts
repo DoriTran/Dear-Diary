@@ -127,9 +127,13 @@ export default function useDragging(
 
   useEffect(() => {
     const el = drags.ref.current;
-    const handle = drags.handle?.current ?? undefined;
 
     if (!el || !drags.draggable) return;
+
+    const handle =
+      drags.handle?.current ??
+      el.querySelector<HTMLElement>('[data-handle]') ??
+      undefined;
 
     const cleanup = draggable({
       element: el,

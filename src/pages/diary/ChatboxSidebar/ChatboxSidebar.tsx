@@ -1,14 +1,17 @@
-﻿import { useEffect, type FC } from 'react';
+﻿import { useEffect, useRef, type FC } from 'react';
 
+import { AdDragDrop, useScrollOffset } from '@/packages/base';
 import LayoutCard from '@/packages/ui/LayoutCard/LayoutCard';
-import { useDiaryStore } from '@/store';
+import { useDiaryHydrated, useDiaryStore } from '@/store';
 
+import styles from './ChatboxSidebar.module.css';
 import Filter from './Filter/Filter';
-import Group from './Group/Group';
 import Header from './Header/Header';
 import Search from './Search/Search';
-import styles from './ChatboxSidebar.module.css';
-import { useSidebarGroups } from './useSidebarGroups';
+import SortableChatbox from './SortableChatbox';
+import SortableGroupBlock from './SortableGroupBlock';
+import { useSidebarDnD } from './useSidebarDnD';
+import { useSidebarRowViews } from './useSidebarRowViews';
 
 export type ChatboxSidebarProps = {
   selectedId?: string;
@@ -16,12 +19,20 @@ export type ChatboxSidebarProps = {
 };
 
 const ChatboxSidebar: FC<ChatboxSidebarProps> = ({ selectedId, onSelect }) => {
+  const hydrated = useDiaryHydrated();
   const seedIfEmpty = useDiaryStore('seedIfEmpty');
-  const groups = useSidebarGroups();
+  const { rows, swap, add, remove } = useSidebarDnD();
+  const rowViews = useSidebarRowViews(rows);
+  const scrollerRef = useRef<HTMLDivElement>(null);
+  const scrollerOffset = useScrollOffset(scrollerRef);
 
   useEffect(() => {
+    if (!hydrated) {
+      return;
+    }
+
     seedIfEmpty();
-  }, [seedIfEmpty]);
+  }, [hydrated, seedIfEmpty]);
 
   return (
     <LayoutCard
@@ -37,16 +48,58 @@ const ChatboxSidebar: FC<ChatboxSidebarProps> = ({ selectedId, onSelect }) => {
 
       <Filter />
 
-      <div className={styles.scroll}>
-        {groups.map((group) => (
-          <Group
-            key={group.id}
-            data={group}
-            selectedId={selectedId}
-            onSelect={onSelect}
-          />
-        ))}
-      </div>
+      <AdDragDrop
+        droppable
+        sortable
+        group="diary-list"
+        hostPreview
+        autoScroll
+        scrollRef={scrollerRef}
+        extraScrollOffset={scrollerOffset}
+        dropData={{ id: 'diary-list' }}
+        onSortableChange={({ current, previous }) => {
+          swap({ type: 'list' }, current, previous);
+        }}
+        onGroupChange={({ type, index, data }) => {
+          if (type === 'enter') {
+            add({ type: 'list' }, index, data);
+          }
+          if (type === 'leave') {
+            remove({ type: 'list' }, index);
+          }
+        }}
+      >
+        <div className={styles.scroll}>
+          {hydrated
+            ? rowViews.map((view) =>
+                view.type === 'group' ? (
+                  <SortableGroupBlock
+                    key={view.data.id}
+                    data={view.data}
+                    selectedId={selectedId}
+                    onSelect={onSelect}
+                    extraScrollOffset={scrollerOffset}
+                    swap={swap}
+                    add={add}
+                    remove={remove}
+                  />
+                ) : (
+                  <SortableChatbox
+                    key={view.data.id}
+                    data={view.data}
+                    itemOf="diary-list"
+                    selectedId={selectedId}
+                    onSelect={onSelect}
+                    extraScrollOffset={scrollerOffset}
+                    onSortableChange={(current, previous) => {
+                      swap({ type: 'list' }, current, previous);
+                    }}
+                  />
+                ),
+              )
+            : null}
+        </div>
+      </AdDragDrop>
     </LayoutCard>
   );
 };

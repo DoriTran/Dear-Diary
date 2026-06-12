@@ -3,6 +3,7 @@ import {
   Children,
   cloneElement,
   useEffect,
+  useLayoutEffect,
   useRef,
   type CSSProperties,
   type FC,
@@ -168,9 +169,18 @@ const AdDragDrop: FC<AdDragDropProps> = (props) => {
     children,
   });
 
-  useEffect(() => {
-    if (!ref.current || !draggable) return;
-    handle.current = ref.current.querySelector<HTMLElement>('[data-handle]');
+  useLayoutEffect(() => {
+    if (scrollRef) {
+      scrollRef.current = ref.current;
+    }
+
+    if (!ref.current || !draggable) {
+      handle.current = null;
+      return;
+    }
+
+    handle.current =
+      ref.current.querySelector<HTMLElement>('[data-handle]') ?? null;
   });
 
   useEffect(() => {

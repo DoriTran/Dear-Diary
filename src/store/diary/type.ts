@@ -51,6 +51,10 @@ export type DiaryStoreActions = {
   updateRootOrders: (ids: string[]) => void;
   updateGroupChatboxOrders: (groupId: string, ids: string[]) => void;
   updateChatboxMessageOrders: (chatboxId: string, ids: string[]) => void;
+  syncSidebarLayout: (layout: {
+    rootOrders: string[];
+    groupChatboxOrders: Record<string, string[]>;
+  }) => void;
 
   // #endregion
 

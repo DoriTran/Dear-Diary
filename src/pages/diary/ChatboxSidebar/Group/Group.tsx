@@ -1,5 +1,9 @@
-import { faChevronRight, faEllipsis } from '@fortawesome/free-solid-svg-icons';
-import { useId, useLayoutEffect, useRef, type FC } from 'react';
+import {
+  faChevronRight,
+  faEllipsis,
+  faGripVertical,
+} from '@fortawesome/free-solid-svg-icons';
+import { useId, useLayoutEffect, useRef, type FC, type ReactNode } from 'react';
 
 import { AdIcon } from '@/packages/base';
 import { BrushHighlight } from '@/packages/ui';
@@ -16,15 +20,32 @@ export type GroupProps = {
   data: GroupData;
   selectedId?: string;
   onSelect?: (id: string) => void;
+  renderChatbox?: (chatbox: GroupData['chatboxes'][number]) => ReactNode;
 };
 
-const Group: FC<GroupProps> = ({ data, selectedId, onSelect }) => {
+const Group: FC<GroupProps> = ({
+  data,
+  selectedId,
+  onSelect,
+  renderChatbox,
+}) => {
   const titleId = useId();
   const listId = useId();
   const { id, title, brushColor, groupIcon, chatboxes } = data;
 
-  const { diaryPage, toggleGroup } = useAppStore(['diaryPage', 'toggleGroup']);
-  const isExpanded = diaryPage.expandedGroupIds.has(id);
+  const { diaryPage, toggleGroup, collapseGroup } = useAppStore([
+    'diaryPage',
+    'toggleGroup',
+    'collapseGroup',
+  ]);
+  const isEmpty = chatboxes.length === 0;
+  const isExpanded = !isEmpty && diaryPage.expandedGroupIds.has(id);
+
+  useLayoutEffect(() => {
+    if (isEmpty && diaryPage.expandedGroupIds.has(id)) {
+      collapseGroup(id);
+    }
+  }, [collapseGroup, diaryPage.expandedGroupIds, id, isEmpty]);
 
   const rootRef = useRef<HTMLElement>(null);
   const listRef = useRef<HTMLDivElement>(null);
@@ -68,36 +89,45 @@ const Group: FC<GroupProps> = ({ data, selectedId, onSelect }) => {
       ref={rootRef}
       className={styles.root}
       data-expanded={isExpanded || undefined}
+      data-empty={isEmpty || undefined}
       aria-labelledby={titleId}
     >
       <header className={styles.header}>
-        <button
-          type="button"
-          className={styles.titleBtn}
-          aria-expanded={isExpanded}
-          aria-controls={listId}
-          onClick={() => toggleGroup(id)}
+        <BrushHighlight
+          color={brushColor}
+          height={GROUP_BRUSH_SIZE}
+          shadow
+          paintOpacity={0.95}
+          className={styles.brush}
+          spacing={{ left: 12, right: 30 }}
+          id={titleId}
         >
-          <BrushHighlight
-            color={brushColor}
-            height={GROUP_BRUSH_SIZE}
-            shadow
-            paintOpacity={0.95}
-            className={styles.brush}
-            spacing={{ left: 12, right: 30 }}
-            id={titleId}
-          >
-            <div className={styles.brushInner}>
-              <span className={styles.caret} aria-hidden>
-                <AdIcon icon={faChevronRight} size={10} />
+          <div data-handle className={styles.brushInner}>
+            {isEmpty ? (
+              <span className={styles.grip} aria-hidden>
+                <AdIcon icon={faGripVertical} size={10} />
               </span>
-              <span className={styles.groupIcon} aria-hidden>
-                <AdIcon icon={groupIcon} size={14} />
-              </span>
-              <span className={styles.titleText}>{title}</span>
-            </div>
-          </BrushHighlight>
-        </button>
+            ) : (
+              <button
+                type="button"
+                className={styles.caretBtn}
+                aria-expanded={isExpanded}
+                aria-controls={listId}
+                aria-label={`${isExpanded ? 'Collapse' : 'Expand'} ${title}`}
+                onClick={() => toggleGroup(id)}
+                onPointerDown={(event) => event.stopPropagation()}
+              >
+                <span className={styles.caret} aria-hidden>
+                  <AdIcon icon={faChevronRight} size={10} />
+                </span>
+              </button>
+            )}
+            <span className={styles.groupIcon} aria-hidden>
+              <AdIcon icon={groupIcon} size={14} />
+            </span>
+            <span className={styles.titleText}>{title}</span>
+          </div>
+        </BrushHighlight>
         {!isExpanded ? (
           <LayoutCard className={styles.countCard}>
             <span className={styles.count}>{chatboxes.length}</span>
@@ -119,11 +149,15 @@ const Group: FC<GroupProps> = ({ data, selectedId, onSelect }) => {
         <div className={styles.list} ref={listRef}>
           {chatboxes.map((chatbox) => (
             <div key={chatbox.id} className={styles.listItem}>
-              <Chatbox
-                data={chatbox}
-                selected={chatbox.id === selectedId}
-                onSelect={onSelect}
-              />
+              {renderChatbox ? (
+                renderChatbox(chatbox)
+              ) : (
+                <Chatbox
+                  data={chatbox}
+                  selected={chatbox.id === selectedId}
+                  onSelect={onSelect}
+                />
+              )}
             </div>
           ))}
         </div>
