@@ -115,6 +115,7 @@ const AdDragDrop: FC<AdDragDropProps> = (props) => {
       onGenerateOverlay,
       native,
       overlay: !!overlay,
+      sortable,
       logEvents,
       ...drag,
       draggable,

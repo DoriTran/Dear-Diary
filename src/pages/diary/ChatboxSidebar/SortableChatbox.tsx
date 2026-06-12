@@ -1,4 +1,4 @@
-import type { FC } from 'react';
+import { useState, type FC } from 'react';
 
 import { AdDragDrop, type ScrollOffset } from '@/packages/base';
 
@@ -25,6 +25,8 @@ const SortableChatbox: FC<SortableChatboxProps> = ({
   extraScrollOffset,
   onSortableChange,
 }) => {
+  const [suppressTooltip, setSuppressTooltip] = useState(false);
+
   return (
     <AdDragDrop
       draggable
@@ -33,6 +35,8 @@ const SortableChatbox: FC<SortableChatboxProps> = ({
       validGroups={['diary-list', 'diary-group']}
       data={{ kind: 'chatbox', id: data.id } satisfies DragChatboxData}
       extraScrollOffset={extraScrollOffset}
+      onDragStart={() => setSuppressTooltip(true)}
+      onDrop={() => setSuppressTooltip(false)}
       onSortableChange={({ current, previous }) => {
         onSortableChange(current, previous);
       }}
@@ -42,6 +46,7 @@ const SortableChatbox: FC<SortableChatboxProps> = ({
           data={data}
           selected={data.id === selectedId}
           onSelect={onSelect}
+          suppressTooltip={suppressTooltip}
         />
       </div>
     </AdDragDrop>

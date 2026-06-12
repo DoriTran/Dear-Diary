@@ -1,6 +1,8 @@
 import { monitorForElements } from '@atlaskit/pragmatic-drag-and-drop/element/adapter';
 import { useEffect } from 'react';
 
+import { useLatestRef } from './useLatestRef';
+
 /**
  * Track all elements that can be monitored
  * have applied draggable and are currently being dragged
@@ -33,25 +35,17 @@ export interface UseMonitorOptions {
   onGenerateDragPreview?: (arg: WithData<PreviewArg>) => void;
 }
 
-const useMonitor = (
-  options: UseMonitorOptions,
-  monitorDeps: unknown[] = [],
-): void => {
-  const {
-    enabled = true,
-    canMonitor,
-    onDragStart,
-    onDrag,
-    onDrop,
-    onTargetChange,
-    onGenerateDragPreview,
-  } = options;
+const useMonitor = (options: UseMonitorOptions): void => {
+  const { enabled = true } = options;
+  const optionsRef = useLatestRef(options);
 
   useEffect(() => {
     if (!enabled) return;
 
     return monitorForElements({
       canMonitor: ({ initial, source }) => {
+        const { canMonitor } = optionsRef.current;
+
         if (canMonitor === undefined) return true;
 
         return typeof canMonitor === 'function'
@@ -60,25 +54,22 @@ const useMonitor = (
       },
 
       /** arg: ({ source, location }) */
-      onDragStart: (arg) => onDragStart?.({ ...arg, data: arg.source.data }),
-      onDrag: (arg) => onDrag?.({ ...arg, data: arg.source.data }),
-      onDrop: (arg) => onDrop?.({ ...arg, data: arg.source.data }),
+      onDragStart: (arg) =>
+        optionsRef.current.onDragStart?.({ ...arg, data: arg.source.data }),
+      onDrag: (arg) =>
+        optionsRef.current.onDrag?.({ ...arg, data: arg.source.data }),
+      onDrop: (arg) =>
+        optionsRef.current.onDrop?.({ ...arg, data: arg.source.data }),
       onDropTargetChange: (arg) =>
-        onTargetChange?.({ ...arg, data: arg.source.data }),
+        optionsRef.current.onTargetChange?.({ ...arg, data: arg.source.data }),
 
       onGenerateDragPreview: (arg) =>
-        onGenerateDragPreview?.({ ...arg, data: arg.source.data }),
+        optionsRef.current.onGenerateDragPreview?.({
+          ...arg,
+          data: arg.source.data,
+        }),
     });
-  }, [
-    enabled,
-    canMonitor,
-    onDragStart,
-    onDrag,
-    onDrop,
-    onTargetChange,
-    onGenerateDragPreview,
-    ...monitorDeps,
-  ]);
+  }, [enabled]);
 };
 
 export default useMonitor;

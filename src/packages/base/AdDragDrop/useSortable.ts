@@ -723,35 +723,31 @@ export default function useSortable({
   // #region Sortable Item status
   const [sorting, setSorting] = useState<boolean | undefined>(undefined);
 
-  useMonitor(
-    {
-      // Enable and monitor all sortable items
-      enabled: Boolean(sortable) && Boolean(itemOf),
-      canMonitor: () => Boolean(sortable) && Boolean(itemOf),
-      onDrag: (args: WithData<DragArgs>) => {
-        if (sorting !== undefined) return;
+  useMonitor({
+    // Enable and monitor all sortable items
+    enabled: Boolean(sortable) && Boolean(itemOf),
+    canMonitor: () => Boolean(sortable) && Boolean(itemOf),
+    onDrag: (args: WithData<DragArgs>) => {
+      if (sorting !== undefined) return;
 
-        const { source, location } = args;
+      const { source, location } = args;
 
-        if (typeof data === 'function') {
-          const local = data({
-            element: source.element,
-            input: location.initial.input,
-            dragHandle:
-              (source as { dragHandle?: HTMLElement | null }).dragHandle ??
-              null,
-          });
-          setSorting(local.id === source.data?.id);
-        } else {
-          setSorting(data?.id === source.data?.id);
-        }
-      },
-      onDrop: () => {
-        setSorting(undefined);
-      },
+      if (typeof data === 'function') {
+        const local = data({
+          element: source.element,
+          input: location.initial.input,
+          dragHandle:
+            (source as { dragHandle?: HTMLElement | null }).dragHandle ?? null,
+        });
+        setSorting(local.id === source.data?.id);
+      } else {
+        setSorting(data?.id === source.data?.id);
+      }
     },
-    [sortable, itemOf, data],
-  );
+    onDrop: () => {
+      setSorting(undefined);
+    },
+  });
   // #endregion
 
   // #region Sortable Host Preview
@@ -792,6 +788,7 @@ export default function useSortable({
       node.removeAttribute('data-sortable-item-of');
       node.removeAttribute('data-sortable-valid-groups');
       node.removeAttribute('data-stop-drop-propagation');
+      node.style.pointerEvents = 'none';
     });
   };
 
@@ -803,77 +800,74 @@ export default function useSortable({
     node.style.top = `${pageY - offsetRef.current.y}px`;
   };
 
-  useMonitor(
-    {
-      enabled: Boolean(sortable) && Boolean(hostPreview),
-      canMonitor: ({ source }) =>
-        monitorGroupsHavingItemSorting(source.element, group),
+  useMonitor({
+    enabled: Boolean(sortable) && Boolean(hostPreview),
+    canMonitor: ({ source }) =>
+      monitorGroupsHavingItemSorting(source.element, group),
 
-      onGenerateDragPreview: ({ location, source }: DragPreviewArgs) => {
-        const rect = source.element.getBoundingClientRect();
-        const { input } = location.current;
+    onGenerateDragPreview: ({ location, source }: DragPreviewArgs) => {
+      const rect = source.element.getBoundingClientRect();
+      const { input } = location.current;
 
-        previewSourceRef.current = source.element;
+      previewSourceRef.current = source.element;
 
-        offsetRef.current = {
-          x: input.clientX - rect.left,
-          y: input.clientY - rect.top,
-        };
+      offsetRef.current = {
+        x: input.clientX - rect.left,
+        y: input.clientY - rect.top,
+      };
 
-        sizeRef.current = {
-          width: rect.width,
-          height: rect.height,
-        };
-      },
-
-      onDragStart: ({ source, location }: DragStartArgs) => {
-        cleanupPreview();
-
-        previewSourceRef.current = source.element;
-
-        const overlayContainer = document.createElement('div');
-        overlayContainer.style.position = 'fixed';
-        overlayContainer.style.left = '0';
-        overlayContainer.style.top = '0';
-        overlayContainer.style.width = '0';
-        overlayContainer.style.height = '0';
-        overlayContainer.style.pointerEvents = 'none';
-        overlayContainer.style.zIndex = '2147483647';
-
-        const cloned = source.element.cloneNode(true) as HTMLElement;
-        stripDragDropAttributes(cloned);
-
-        cloned.style.position = 'fixed';
-        cloned.style.pointerEvents = 'none';
-        cloned.style.margin = '0';
-        cloned.style.zIndex = '2147483647';
-        cloned.style.boxSizing = 'border-box';
-        cloned.style.width = `${sizeRef.current.width}px`;
-        cloned.style.height = `${sizeRef.current.height}px`;
-
-        overlayContainer.appendChild(cloned);
-        document.body.appendChild(overlayContainer);
-
-        previewContainerRef.current = overlayContainer;
-        previewCloneRef.current = cloned;
-
-        const { pageX, pageY } = location.initial.input;
-        updatePreviewPosition(pageX, pageY);
-      },
-
-      onDrag: ({ location }: DragArgs) => {
-        updatePreviewPosition(
-          location.current.input.pageX,
-          location.current.input.pageY,
-        );
-      },
-
-      onDrop: () => {
-        cleanupPreview();
-      },
+      sizeRef.current = {
+        width: rect.width,
+        height: rect.height,
+      };
     },
-    [sortable, hostPreview, group, itemOf, validGroups],
-  );
+
+    onDragStart: ({ source, location }: DragStartArgs) => {
+      cleanupPreview();
+
+      previewSourceRef.current = source.element;
+
+      const overlayContainer = document.createElement('div');
+      overlayContainer.style.position = 'fixed';
+      overlayContainer.style.left = '0';
+      overlayContainer.style.top = '0';
+      overlayContainer.style.width = '0';
+      overlayContainer.style.height = '0';
+      overlayContainer.style.pointerEvents = 'none';
+      overlayContainer.style.zIndex = '2147483647';
+
+      const cloned = source.element.cloneNode(true) as HTMLElement;
+      stripDragDropAttributes(cloned);
+
+      cloned.style.position = 'fixed';
+      cloned.style.pointerEvents = 'none';
+      cloned.style.margin = '0';
+      cloned.style.zIndex = '2147483647';
+      cloned.style.boxSizing = 'border-box';
+      cloned.style.width = `${sizeRef.current.width}px`;
+      cloned.style.height = `${sizeRef.current.height}px`;
+
+      overlayContainer.appendChild(cloned);
+      document.body.appendChild(overlayContainer);
+
+      previewContainerRef.current = overlayContainer;
+      previewCloneRef.current = cloned;
+
+      const { pageX, pageY } = location.initial.input;
+      updatePreviewPosition(pageX, pageY);
+    },
+
+    onDrag: ({ location }: DragArgs) => {
+      updatePreviewPosition(
+        location.current.input.pageX,
+        location.current.input.pageY,
+      );
+    },
+
+    onDrop: () => {
+      cleanupPreview();
+    },
+  });
 
   useLayoutEffect(() => {
     return () => {
@@ -883,160 +877,144 @@ export default function useSortable({
   // #endregion
 
   // #region Sortable Index Calculation
-  useMonitor(
-    {
-      enabled: Boolean(sortable) && Boolean(group),
-      canMonitor: ({ source }) =>
-        monitorGroupsHavingItemSorting(source.element, group),
-      onDragStart: ({ source, location }) => {
-        // Cached all rects inside this container
-        cachedRects.current = getCachedRects();
-        logCachedRects(cachedRects.current);
+  useMonitor({
+    enabled: Boolean(sortable) && Boolean(group),
+    canMonitor: ({ source }) =>
+      monitorGroupsHavingItemSorting(source.element, group),
+    onDragStart: ({ source, location }) => {
+      // Cached all rects inside this container
+      cachedRects.current = getCachedRects();
+      logCachedRects(cachedRects.current);
 
-        // Init mouse position
+      // Init mouse position
+      const { pageX, pageY } = getMousePosition(location);
+      mouse.current = calculateMouseState(mouse.current, pageX, pageY, {
+        resetPrevious: true,
+      });
+
+      // Init target sortable rect offset
+      const rect = source.element.getBoundingClientRect();
+      offset.current = {
+        offsetX: mouse.current.current.pageX - rect.left + scrollX,
+        offsetY: mouse.current.current.pageY - rect.top + scrollY,
+        width: rect.width,
+        height: rect.height,
+      };
+
+      // Init start index
+      const elements = getSortableElements();
+      const targetIndex = elements.findIndex((el) => el === source.element);
+      index.current = {
+        current: targetIndex,
+        previous: -1,
+      };
+
+      holding.current =
+        source.element.getAttribute('data-sortable-item-of') === group &&
+        elements.includes(source.element);
+    },
+    onDrag: ({ source, location }) => {
+      // Early return if outside logic is not implemented
+      if (!onSortableChange) return;
+
+      // Early return for container not holding the dragged item
+      if (!holding.current) return;
+
+      // Early return if position not change
+      const { pageX, pageY } = getMousePosition(location);
+      const { pageX: currentX, pageY: currentY } = mouse.current.current;
+      if (pageX !== currentX || pageY !== currentY) {
+        mouse.current = calculateMouseState(mouse.current, pageX, pageY);
+      }
+
+      if (!source.element || !ref.current) return;
+      if (!cachedRects.current.length) return;
+
+      updateSortIndex();
+    },
+    onTargetChange: ({ data, source, location }) => {
+      // Early return if outside logic is not implemented
+      if (!onGroupChange) return;
+
+      // Early return if no valid drop targets
+      const validGroups =
+        source.element.getAttribute('data-sortable-valid-groups')?.split(',') ??
+        [];
+      const dropTargets = location.current.dropTargets.filter(
+        (target: DropTargetRecord) => {
+          const groupId = target.element.getAttribute('data-sortable-group');
+          return (
+            groupId !== undefined &&
+            groupId !== null &&
+            validGroups.includes(groupId)
+          );
+        },
+      );
+      if (dropTargets.length === 0) return;
+
+      // Early return if item not change group container but target change event triggered
+      const topDropTarget = dropTargets[0];
+      if (ref.current === topDropTarget?.element && holding.current) return;
+
+      /**
+       * Group change logic
+       */
+
+      const isEntering = ref.current === topDropTarget?.element;
+      const isLeaving = holding.current;
+      holding.current = isEntering;
+
+      // [Enter] Check if item is entering this container
+      if (isEntering) {
+        // Find closest index to the mouse position
         const { pageX, pageY } = getMousePosition(location);
-        mouse.current = calculateMouseState(mouse.current, pageX, pageY, {
-          resetPrevious: true,
+        mouse.current = calculateMouseState(mouse.current, pageX, pageY);
+        const closestIdx = closestIndex();
+        const insertIdx = insertIndex(closestIdx);
+        const didGroupChange = onGroupChange?.({
+          type: 'enter',
+          index: insertIdx,
+          data,
         });
 
-        // Init target sortable rect offset
-        const rect = source.element.getBoundingClientRect();
-        offset.current = {
-          offsetX: mouse.current.current.pageX - rect.left + scrollX,
-          offsetY: mouse.current.current.pageY - rect.top + scrollY,
-          width: rect.width,
-          height: rect.height,
-        };
-
-        // Init start index
-        const elements = getSortableElements();
-        const targetIndex = elements.findIndex((el) => el === source.element);
-        index.current = {
-          current: targetIndex,
-          previous: -1,
-        };
-
-        holding.current =
-          source.element.getAttribute('data-sortable-item-of') === group &&
-          elements.includes(source.element);
-      },
-      onDrag: ({ source, location }) => {
-        // Early return if outside logic is not implemented
-        if (!onSortableChange) return;
-
-        // Early return for container not holding the dragged item
-        if (!holding.current) return;
-
-        // Early return if position not change
-        const { pageX, pageY } = getMousePosition(location);
-        const { pageX: currentX, pageY: currentY } = mouse.current.current;
-        if (pageX !== currentX || pageY !== currentY) {
-          mouse.current = calculateMouseState(mouse.current, pageX, pageY);
+        // Update cached rects if outside group changed or result not returned
+        if (didGroupChange === true || didGroupChange === undefined) {
+          index.current = { current: insertIdx, previous: -1 };
+          insertTemplateToCachedRects(insertIdx);
         }
 
-        if (!source.element || !ref.current) return;
-        if (!cachedRects.current.length) return;
+        return;
+      }
 
-        updateSortIndex();
-      },
-      onTargetChange: ({ data, source, location }) => {
-        // Early return if outside logic is not implemented
-        if (!onGroupChange) return;
+      // [Leave] Check if item is leaving this container
+      if (isLeaving) {
+        if (debug) {
+          console.log('debug');
+        }
+        debug = true;
+        const leaveIndex = index.current.current;
+        const didGroupChange = onGroupChange?.({
+          type: 'leave',
+          index: leaveIndex,
+          data,
+        });
 
-        // Early return if no valid drop targets
-        const validGroups =
-          source.element
-            .getAttribute('data-sortable-valid-groups')
-            ?.split(',') ?? [];
-        const dropTargets = location.current.dropTargets.filter(
-          (target: DropTargetRecord) => {
-            const groupId = target.element.getAttribute('data-sortable-group');
-            return (
-              groupId !== undefined &&
-              groupId !== null &&
-              validGroups.includes(groupId)
-            );
-          },
-        );
-        if (dropTargets.length === 0) return;
-
-        // Early return if item not change group container but target change event triggered
-        const topDropTarget = dropTargets[0];
-        if (ref.current === topDropTarget?.element && holding.current) return;
-
-        /**
-         * Group change logic
-         */
-
-        const isEntering = ref.current === topDropTarget?.element;
-        const isLeaving = holding.current;
-        holding.current = isEntering;
-
-        // [Enter] Check if item is entering this container
-        if (isEntering) {
-          // Find closest index to the mouse position
-          const { pageX, pageY } = getMousePosition(location);
-          mouse.current = calculateMouseState(mouse.current, pageX, pageY);
-          const closestIdx = closestIndex();
-          const insertIdx = insertIndex(closestIdx);
-          const didGroupChange = onGroupChange?.({
-            type: 'enter',
-            index: insertIdx,
-            data,
-          });
-
-          // Update cached rects if outside group changed or result not returned
-          if (didGroupChange === true || didGroupChange === undefined) {
-            index.current = { current: insertIdx, previous: -1 };
-            insertTemplateToCachedRects(insertIdx);
-          }
-
-          return;
+        // Update cached rects if outside group changed or result not returned
+        if (didGroupChange === true || didGroupChange === undefined) {
+          removeRectFromCachedRects(leaveIndex);
         }
 
-        // [Leave] Check if item is leaving this container
-        if (isLeaving) {
-          if (debug) {
-            console.log('debug');
-          }
-          debug = true;
-          const leaveIndex = index.current.current;
-          const didGroupChange = onGroupChange?.({
-            type: 'leave',
-            index: leaveIndex,
-            data,
-          });
-
-          // Update cached rects if outside group changed or result not returned
-          if (didGroupChange === true || didGroupChange === undefined) {
-            removeRectFromCachedRects(leaveIndex);
-          }
-
-          return;
-        }
-      },
-      onDrop: () => {
-        // Reset the mouse, offset, index, and holding refs to their default states after dropping
-        mouse.current = DEFAULT_MOUSE_STATE;
-        offset.current = { offsetX: 0, offsetY: 0, width: 0, height: 0 };
-        index.current = { current: -1, previous: -1 };
-        holding.current = false;
-      },
+        return;
+      }
     },
-    [
-      ref,
-      sortable,
-      hostPreview,
-      group,
-      itemOf,
-      onGroupChange,
-      onSortableChange,
-      motionDuration,
-      direction,
-      strategy,
-      motions,
-    ],
-  );
+    onDrop: () => {
+      // Reset the mouse, offset, index, and holding refs to their default states after dropping
+      mouse.current = DEFAULT_MOUSE_STATE;
+      offset.current = { offsetX: 0, offsetY: 0, width: 0, height: 0 };
+      index.current = { current: -1, previous: -1 };
+      holding.current = false;
+    },
+  });
 
   // #endregion
 

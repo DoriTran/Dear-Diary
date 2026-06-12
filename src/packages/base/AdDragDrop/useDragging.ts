@@ -2,7 +2,14 @@ import { draggable } from '@atlaskit/pragmatic-drag-and-drop/element/adapter';
 import { disableNativeDragPreview } from '@atlaskit/pragmatic-drag-and-drop/element/disable-native-drag-preview';
 import { preserveOffsetOnSource } from '@atlaskit/pragmatic-drag-and-drop/element/preserve-offset-on-source';
 import { setCustomNativeDragPreview } from '@atlaskit/pragmatic-drag-and-drop/element/set-custom-native-drag-preview';
-import { useEffect, useMemo, useRef, useState, type RefObject } from 'react';
+import {
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+  type RefObject,
+} from 'react';
 
 import type { LogDebugEvent } from './logEvents';
 import type {
@@ -13,6 +20,7 @@ import type {
 } from './type';
 
 import { logEvents } from './logEvents';
+import { useLatestRef } from './useLatestRef';
 import useMonitor from './useMonitor';
 
 /** Args passed to `data` when it is a function (same as draggable `getInitialData`). */
@@ -31,6 +39,9 @@ export interface UseDraggingOptions extends Record<string, unknown> {
 
   /** When false, drag behavior is not registered. */
   draggable?: boolean;
+
+  /** When true, skip custom body overlay (sortable handles preview separately). */
+  sortable?: boolean;
 
   data?:
     | Record<string, unknown>
@@ -76,6 +87,7 @@ export default function useDragging(
   const [container, setContainer] = useState<HTMLElement | null>(null);
   const offsetRef = useRef({ x: 0, y: 0 });
   const overlayElRef = useRef<HTMLElement | null>(null);
+  const dragsRef = useLatestRef(drags);
 
   const [style, setStyle] = useState({
     width: 0,
@@ -96,34 +108,42 @@ export default function useDragging(
     payload: unknown,
   ) => void = logEvents;
 
-  useMonitor(
-    {
-      enabled: Boolean(drags.draggable) || logEnabled,
-      canMonitor: ({ source }) => {
-        const root = drags.ref.current;
-        if (!root) return false;
-        return source.element === root;
-      },
-      onDragStart: (arg) => {
-        logEvent(log, 'dragStart', arg);
-      },
-      onDrag: (arg) => {
-        setDragging(true);
-        logEvent(log, 'drag', arg);
-      },
-      onTargetChange: (arg) => {
-        logEvent(log, 'targetChange', arg);
-      },
-      onDrop: (arg) => {
-        setDragging(false);
-        logEvent(log, 'drop', arg);
-      },
-      onGenerateDragPreview: (arg) => {
-        logEvent(log, 'preview', arg);
-      },
+  const removeOverlay = useCallback(() => {
+    const node = overlayElRef.current;
+    if (node?.parentNode) {
+      node.parentNode.removeChild(node);
+    }
+    overlayElRef.current = null;
+    setContainer(null);
+  }, []);
+
+  const monitorEnabled = Boolean(drags.draggable) || logEnabled;
+
+  useMonitor({
+    enabled: monitorEnabled,
+    canMonitor: ({ source }) => {
+      const root = dragsRef.current.ref.current;
+      if (!root) return false;
+      return source.element === root;
     },
-    [drags.ref, drags.draggable, logEnabled, log],
-  );
+    onDragStart: (arg) => {
+      logEvent(log, 'dragStart', arg);
+    },
+    onDrag: (arg) => {
+      logEvent(log, 'drag', arg);
+    },
+    onTargetChange: (arg) => {
+      logEvent(log, 'targetChange', arg);
+    },
+    onDrop: (arg) => {
+      setDragging(false);
+      removeOverlay();
+      logEvent(log, 'drop', arg);
+    },
+    onGenerateDragPreview: (arg) => {
+      logEvent(log, 'preview', arg);
+    },
+  });
 
   useEffect(() => {
     const el = drags.ref.current;
@@ -139,21 +159,24 @@ export default function useDragging(
       element: el,
       dragHandle: handle,
 
-      getInitialData: (args: any) =>
-        typeof drags.data === 'function'
-          ? drags.data(args)
-          : (drags.data ?? {}),
+      getInitialData: (args: any) => {
+        const current = dragsRef.current;
+        return typeof current.data === 'function'
+          ? current.data(args)
+          : (current.data ?? {});
+      },
 
       canDrag: (args: any) => {
-        if (drags.canDrag === undefined) return true;
+        const { canDrag } = dragsRef.current;
+        if (canDrag === undefined) return true;
 
-        return typeof drags.canDrag === 'function'
-          ? drags.canDrag(args)
-          : Boolean(drags.canDrag);
+        return typeof canDrag === 'function' ? canDrag(args) : Boolean(canDrag);
       },
 
       onDragStart: ({ source, location }: DragStartArgs) => {
-        drags.onDragStart?.({
+        const current = dragsRef.current;
+
+        current.onDragStart?.({
           data: source.data,
           source,
           location,
@@ -161,7 +184,7 @@ export default function useDragging(
 
         setDragging(true);
 
-        if (!drags.native) {
+        if (!current.native && !current.sortable) {
           const { pageX, pageY } = location.initial.input;
 
           setStyle((prev) => ({
@@ -186,13 +209,15 @@ export default function useDragging(
       /* -------------------------------- DRAG ------------------------------- */
 
       onDrag: ({ source, location }: DragArgs) => {
-        drags.onDrag?.({
+        const current = dragsRef.current;
+
+        current.onDrag?.({
           data: source.data,
           source,
           location,
         });
 
-        if (!drags.native) {
+        if (!current.native && !current.sortable) {
           setStyle((prev) => ({
             ...prev,
             left: location.current.input.pageX - offsetRef.current.x,
@@ -204,7 +229,9 @@ export default function useDragging(
       /* -------------------------------- DROP ------------------------------- */
 
       onDrop: ({ source, location }: DragDropArgs) => {
-        drags.onDrop?.({
+        const current = dragsRef.current;
+
+        current.onDrop?.({
           data: source.data,
           source,
           location,
@@ -212,21 +239,17 @@ export default function useDragging(
 
         setDragging(false);
 
-        if (!drags.native) {
-          const node = overlayElRef.current;
-          if (node?.parentNode) {
-            node.parentNode.removeChild(node);
-          }
-          overlayElRef.current = null;
+        if (!current.native) {
+          removeOverlay();
         }
-
-        setContainer(null);
       },
 
       /* -------------------------- TARGET CHANGE --------------------------- */
 
       onDropTargetChange: ({ source, location }: DragDropArgs) => {
-        drags.onTargetChange?.({
+        const current = dragsRef.current;
+
+        current.onTargetChange?.({
           data: source.data,
           source,
           location,
@@ -244,7 +267,9 @@ export default function useDragging(
           return;
         }
 
-        if (drags.overlay) {
+        const current = dragsRef.current;
+
+        if (current.overlay) {
           setCustomNativeDragPreview({
             nativeSetDragImage,
             getOffset: preserveOffsetOnSource({
@@ -259,7 +284,7 @@ export default function useDragging(
           return;
         }
 
-        if (!drags.native) {
+        if (!current.native) {
           const rect = source.element.getBoundingClientRect();
           const { input } = location.current;
 
@@ -268,17 +293,19 @@ export default function useDragging(
             y: input.clientY - rect.y,
           };
 
-          setStyle((prev) => ({
-            ...prev,
-            width: rect.width,
-            height: rect.height,
-          }));
+          if (!current.sortable) {
+            setStyle((prev) => ({
+              ...prev,
+              width: rect.width,
+              height: rect.height,
+            }));
+          }
 
           disableNativeDragPreview({ nativeSetDragImage });
           return;
         }
 
-        drags.onGenerateOverlay?.({
+        current.onGenerateOverlay?.({
           data: source.data,
           nativeSetDragImage,
           location,
@@ -289,13 +316,19 @@ export default function useDragging(
 
     return () => {
       cleanup?.();
-      const orphan = overlayElRef.current;
-      if (orphan?.parentNode) {
-        orphan.parentNode.removeChild(orphan);
-      }
-      overlayElRef.current = null;
+      removeOverlay();
+      setDragging(false);
     };
-  }, [...Object.values(drags), ...dependencies]);
+  }, [
+    drags.ref,
+    drags.draggable,
+    drags.native,
+    drags.overlay,
+    drags.sortable,
+    log,
+    removeOverlay,
+    ...dependencies,
+  ]);
 
   return {
     draggable: Boolean(drags.draggable),

@@ -12,6 +12,7 @@ import type {
 } from './type';
 
 import { logEvents } from './logEvents';
+import { useLatestRef } from './useLatestRef';
 
 const dropKeys = [
   'ref',
@@ -84,6 +85,7 @@ export default function useDropping(
   dependencies: unknown[] = [],
 ): UseDroppingResult {
   const [hovering, setHovering] = useState(false);
+  const dropsRef = useLatestRef(drops);
 
   const log = useMemo(
     () => new Set<LogDebugEvent>(drops.logEvents ?? []),
@@ -101,37 +103,43 @@ export default function useDropping(
     if (!el || !drops.droppable) return;
 
     const otherDrops: Record<string, unknown> = Object.fromEntries(
-      Object.entries(drops).filter(
+      Object.entries(dropsRef.current).filter(
         ([key]) => !dropKeys.includes(key as DropKey),
       ),
     );
 
     return dropTargetForElements({
       element: el,
+      ...otherDrops,
 
       /* ------------------------------ GET DATA ----------------------------- */
 
-      getData: (args: any) =>
-        typeof drops.data === 'function'
-          ? drops.data(args)
-          : (drops.data ?? {}),
+      getData: (args: any) => {
+        const current = dropsRef.current;
+        return typeof current.data === 'function'
+          ? current.data(args)
+          : (current.data ?? {});
+      },
 
       /* ------------------------------ CAN DROP ----------------------------- */
 
       canDrop: (args: CanDropArgs) => {
-        if (drops.canDrop === undefined) return true;
+        const { canDrop } = dropsRef.current;
+        if (canDrop === undefined) return true;
 
-        return typeof drops.canDrop === 'function'
-          ? drops.canDrop({
+        return typeof canDrop === 'function'
+          ? canDrop({
               data: args.source.data,
               ...args,
             })
-          : Boolean(drops.canDrop);
+          : Boolean(canDrop);
       },
 
       /* -------------------------------- DROP ------------------------------- */
 
       onDrop: ({ source, location, self }: DropArgs) => {
+        const current = dropsRef.current;
+
         if (el.querySelector('[data-stop-drop-propagation]') !== null) {
           const topMostElement = location.current?.dropTargets?.[0]?.element;
 
@@ -141,7 +149,7 @@ export default function useDropping(
           }
         }
 
-        drops.onCatch?.({
+        current.onCatch?.({
           data: source.data,
           source,
           location,
@@ -161,7 +169,9 @@ export default function useDropping(
       /* ----------------------------- DRAG ENTER ---------------------------- */
 
       onDragEnter: ({ source, location, self }: DragEnterArgs) => {
-        drops.onDragEnter?.({
+        const current = dropsRef.current;
+
+        current.onDragEnter?.({
           data: source.data,
           source,
           location,
@@ -181,7 +191,9 @@ export default function useDropping(
       /* ----------------------------- DRAG LEAVE ---------------------------- */
 
       onDragLeave: ({ source, location, self }: DragLeaveArgs) => {
-        drops.onDragLeave?.({
+        const current = dropsRef.current;
+
+        current.onDragLeave?.({
           data: source.data,
           source,
           location,
@@ -204,19 +216,20 @@ export default function useDropping(
 
       /* ------------------------------- STICKY ------------------------------ */
 
-      getIsSticky: ({ input, source, element }: StickyArgs) =>
-        typeof drops.sticky === 'function'
-          ? drops.sticky({
+      getIsSticky: ({ input, source, element }: StickyArgs) => {
+        const { sticky } = dropsRef.current;
+
+        return typeof sticky === 'function'
+          ? sticky({
               data: source.data,
               input,
               source,
               element,
             })
-          : (drops.sticky ?? false),
-
-      ...otherDrops,
+          : (sticky ?? false);
+      },
     });
-  }, [...Object.values(drops), ...dependencies]);
+  }, [drops.ref, drops.droppable, log, ...dependencies]);
 
   return {
     droppable: Boolean(drops.droppable),

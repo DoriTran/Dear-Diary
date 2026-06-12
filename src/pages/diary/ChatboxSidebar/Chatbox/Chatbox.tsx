@@ -34,6 +34,8 @@ export type ChatboxProps = {
   data: ChatboxData;
   selected?: boolean;
   onSelect?: (id: string) => void;
+  /** Suppress hover tooltip (e.g. while dragging). */
+  suppressTooltip?: boolean;
 };
 
 const TAG_GAP_PX = 4.8;
@@ -49,7 +51,12 @@ const applyTagLayout = (prev: TagLayout, next: TagLayout): TagLayout =>
     ? prev
     : next;
 
-const Chatbox: FC<ChatboxProps> = ({ data, selected, onSelect }) => {
+const Chatbox: FC<ChatboxProps> = ({
+  data,
+  selected,
+  onSelect,
+  suppressTooltip = false,
+}) => {
   const {
     id,
     name,
@@ -165,6 +172,7 @@ const Chatbox: FC<ChatboxProps> = ({ data, selected, onSelect }) => {
       position="right"
       withArrow={false}
       multiline
+      disabled={suppressTooltip}
       classNames={{
         tooltip: styles.tooltip,
       }}
