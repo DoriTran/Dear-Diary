@@ -11,6 +11,7 @@ import { useState, type FC } from 'react';
 import { AdIcon } from '@/packages/base';
 
 import type { DetailPanelData, MediaFilter } from '../../types';
+
 import styles from './MediaSection.module.css';
 
 export type MediaSectionProps = {

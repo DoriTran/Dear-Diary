@@ -15,14 +15,13 @@ import {
   type FC,
 } from 'react';
 
-import { AdIcon } from '@/packages/base';
+import { AdChip, AdIcon } from '@/packages/base';
 import LayoutCard from '@/packages/ui/LayoutCard/LayoutCard';
 
 import type { ChatboxData } from '../../types';
 
 import styles from './Chatbox.module.css';
 import {
-  buildTagBackground,
   calculateFittingTagCount,
   formatChatboxTime,
   formatTotalMessages,
@@ -155,14 +154,13 @@ const Chatbox: FC<ChatboxProps> = ({
   );
 
   const renderTagChip = (tag: ResolvedChatboxTag, measure = false) => (
-    <span
+    <AdChip
       key={measure ? `measure-${tag.label}` : tag.label}
-      className={styles.tag}
-      data-tag-measure={measure || undefined}
-      style={{ background: buildTagBackground(tag.color) }}
-    >
-      {tag.count} #{tag.label}
-    </span>
+      label={tag.label}
+      color={tag.color}
+      count={tag.count}
+      data-tag-measure={measure}
+    />
   );
 
   return (

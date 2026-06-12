@@ -3,13 +3,13 @@ import type { FC } from 'react';
 import LayoutCard from '@/packages/ui/LayoutCard/LayoutCard';
 
 import { diaryDetailPanels } from '../data';
+import styles from './DetailPanel.module.css';
 import Header from './Header/Header';
 import MediaSection from './MediaSection/MediaSection';
 import PinnedSection from './PinnedSection/PinnedSection';
 import SummarySection from './SummarySection/SummarySection';
 import Tabs from './Tabs/Tabs';
 import TagsSection from './TagsSection/TagsSection';
-import styles from './DetailPanel.module.css';
 
 export type DetailPanelProps = {
   chatboxId: string;

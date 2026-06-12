@@ -1,5 +1,6 @@
-import { faEllipsis, faThumbtack } from '@fortawesome/free-solid-svg-icons';
 import type { FC } from 'react';
+
+import { faEllipsis, faThumbtack } from '@fortawesome/free-solid-svg-icons';
 
 import { AdIcon } from '@/packages/base';
 
@@ -13,7 +14,11 @@ const Header: FC = () => {
         <button type="button" className={styles.iconBtn} aria-label="Pin panel">
           <AdIcon icon={faThumbtack} size={14} />
         </button>
-        <button type="button" className={styles.iconBtn} aria-label="More options">
+        <button
+          type="button"
+          className={styles.iconBtn}
+          aria-label="More options"
+        >
           <AdIcon icon={faEllipsis} size={14} />
         </button>
       </div>

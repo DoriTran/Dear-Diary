@@ -224,7 +224,7 @@ const useDiaryStoreBase = create<DiaryStore & DiaryStoreActions>()(
           archived: false,
           hasUnread: false,
           notificationEnabled: false,
-          tags: [],
+          tags: data.tags ?? [],
           totalMessage: 0,
           lastMessageId: null,
           lastMessageAt: null,

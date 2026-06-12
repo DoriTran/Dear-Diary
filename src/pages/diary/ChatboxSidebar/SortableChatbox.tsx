@@ -7,6 +7,7 @@ import type { DragChatboxData } from './sidebar.types';
 
 import Chatbox from './Chatbox/Chatbox';
 import styles from './SortableChatbox.module.css';
+import { useDragBlockedNotice } from './useDragBlockedNotice';
 
 export type SortableChatboxProps = {
   data: ChatboxData;
@@ -15,6 +16,8 @@ export type SortableChatboxProps = {
   onSelect?: (id: string) => void;
   extraScrollOffset?: ScrollOffset;
   onSortableChange: (current: number, previous: number) => void;
+  dndEnabled?: boolean;
+  listLocked?: boolean;
 };
 
 const SortableChatbox: FC<SortableChatboxProps> = ({
@@ -24,13 +27,17 @@ const SortableChatbox: FC<SortableChatboxProps> = ({
   onSelect,
   extraScrollOffset,
   onSortableChange,
+  dndEnabled = true,
+  listLocked = false,
 }) => {
   const [suppressTooltip, setSuppressTooltip] = useState(false);
+  const dragBlockedNotice = useDragBlockedNotice(listLocked);
 
   return (
     <AdDragDrop
-      draggable
-      sortable
+      draggable={dndEnabled}
+      {...(dndEnabled ? ({ sortable: true } as const) : {})}
+      dragDeps={[dndEnabled]}
       itemOf={itemOf}
       validGroups={['diary-list', 'diary-group']}
       data={{ kind: 'chatbox', id: data.id } satisfies DragChatboxData}
@@ -41,7 +48,11 @@ const SortableChatbox: FC<SortableChatboxProps> = ({
         onSortableChange(current, previous);
       }}
     >
-      <div className={styles.item} data-test-id={data.id}>
+      <div
+        className={styles.item}
+        data-test-id={data.id}
+        {...dragBlockedNotice}
+      >
         <Chatbox
           data={data}
           selected={data.id === selectedId}

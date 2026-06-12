@@ -11,7 +11,12 @@ const TABS: { id: DiaryFilterTab; label: string }[] = [
   { id: 'archived', label: 'Archived' },
 ];
 
-const Filter: FC = () => {
+export type FilterProps = {
+  activeTab: DiaryFilterTab;
+  onTabChange: (tab: DiaryFilterTab) => void;
+};
+
+const Filter: FC<FilterProps> = ({ activeTab, onTabChange }) => {
   return (
     <div className={styles.root} role="tablist" aria-label="Filter chatboxes">
       {TABS.map((tab) => (
@@ -20,8 +25,9 @@ const Filter: FC = () => {
           className={styles.tab}
           type="button"
           role="tab"
-          data-active={tab.id === 'all' || undefined}
-          aria-selected={tab.id === 'all'}
+          data-active={tab.id === activeTab || undefined}
+          aria-selected={tab.id === activeTab}
+          onClick={() => onTabChange(tab.id)}
         >
           {tab.label}
         </button>

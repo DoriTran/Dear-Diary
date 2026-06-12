@@ -9,6 +9,7 @@ import type { DragGroupData, SidebarScope } from './sidebar.types';
 import Group from './Group/Group';
 import SortableChatbox from './SortableChatbox';
 import styles from './SortableGroupBlock.module.css';
+import { useDragBlockedNotice } from './useDragBlockedNotice';
 
 export type SortableGroupBlockProps = {
   data: GroupData;
@@ -18,6 +19,8 @@ export type SortableGroupBlockProps = {
   swap: (scope: SidebarScope, current: number, previous: number) => void;
   add: (scope: SidebarScope, at: number, data: unknown) => void;
   remove: (scope: SidebarScope, at: number) => void;
+  dndEnabled?: boolean;
+  listLocked?: boolean;
 };
 
 const SortableGroupBlock: FC<SortableGroupBlockProps> = ({
@@ -28,16 +31,22 @@ const SortableGroupBlock: FC<SortableGroupBlockProps> = ({
   swap,
   add,
   remove,
+  dndEnabled = true,
+  listLocked = false,
 }) => {
   const groupScope: SidebarScope = { type: 'group', groupId: data.id };
   const isExpanded =
     useAppStore('diaryPage').expandedGroupIds.has(data.id) &&
     data.chatboxes.length > 0;
+  const dragBlockedNotice = useDragBlockedNotice(listLocked);
+
   return (
     <AdDragDrop
-      draggable
-      droppable
-      sortable
+      draggable={dndEnabled}
+      droppable={dndEnabled}
+      {...(dndEnabled ? ({ sortable: true } as const) : {})}
+      dragDeps={[dndEnabled]}
+      dropDeps={[dndEnabled]}
       group="diary-group"
       itemOf="diary-list"
       data={{ kind: 'group', id: data.id } satisfies DragGroupData}
@@ -57,7 +66,11 @@ const SortableGroupBlock: FC<SortableGroupBlockProps> = ({
         }
       }}
     >
-      <div className={styles.root} data-test-id={data.id}>
+      <div
+        className={styles.root}
+        data-test-id={data.id}
+        {...dragBlockedNotice}
+      >
         <Group
           data={data}
           selectedId={selectedId}
@@ -70,6 +83,8 @@ const SortableGroupBlock: FC<SortableGroupBlockProps> = ({
               selectedId={selectedId}
               onSelect={onSelect}
               extraScrollOffset={extraScrollOffset}
+              dndEnabled={dndEnabled}
+              listLocked={listLocked}
               onSortableChange={(current, previous) => {
                 swap(groupScope, current, previous);
               }}

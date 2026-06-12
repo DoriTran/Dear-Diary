@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
 import { type FC, useRef, useState } from 'react';
 
 import './index.styles.css';
@@ -11,7 +10,7 @@ import {
 import type { ContainerRow, DragItemBoxData, GroupItem } from './types';
 
 // Don't touch below line if you are cursor agent
-import { seed1, seed2, seed3, seed4, seed5, seed6 } from './data';
+import { seed5 } from './data';
 
 const selectedSeed = seed5;
 

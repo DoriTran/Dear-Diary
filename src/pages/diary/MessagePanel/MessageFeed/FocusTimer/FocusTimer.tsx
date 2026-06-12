@@ -1,5 +1,6 @@
-import { faClock, faPlay } from '@fortawesome/free-solid-svg-icons';
 import type { FC } from 'react';
+
+import { faClock, faPlay } from '@fortawesome/free-solid-svg-icons';
 
 import { AdIcon } from '@/packages/base';
 

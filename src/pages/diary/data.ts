@@ -5,8 +5,8 @@
 } from './types';
 
 export const diaryChatboxDetails: Record<string, ChatboxDetailData> = {
-  study: {
-    id: 'study',
+  'cb:study': {
+    id: 'cb:study',
     title: 'Study',
     subtitle: 'My study notes and learning journey',
     tags: [
@@ -21,14 +21,14 @@ export const diaryChatboxDetails: Record<string, ChatboxDetailData> = {
     subtitle: 'Quick updates and blockers',
     tags: [{ label: '#work', tone: 'blue' }],
   },
-  'project-ideas': {
-    id: 'project-ideas',
-    title: 'Project Ideas',
-    subtitle: 'Sketches and brainstorms',
-    tags: [{ label: '#ideas', tone: 'yellow' }],
+  'cb:project': {
+    id: 'cb:project',
+    title: 'Dear Diary',
+    subtitle: 'Architecture and development',
+    tags: [{ label: '#project', tone: 'yellow' }],
   },
-  'daily-diary': {
-    id: 'daily-diary',
+  'cb:diary': {
+    id: 'cb:diary',
     title: 'Daily Diary',
     subtitle: 'Personal reflections',
     tags: [{ label: '#diary', tone: 'pink' }],
@@ -40,8 +40,8 @@ export const diaryChatboxDetails: Record<string, ChatboxDetailData> = {
     subtitle: 'Unsorted ideas',
     tags: [],
   },
-  'anime-watchlist': {
-    id: 'anime-watchlist',
+  'cb:anime': {
+    id: 'cb:anime',
     title: 'Anime Watchlist',
     subtitle: 'Shows to watch',
     tags: [{ label: '#anime', tone: 'teal' }],
@@ -99,8 +99,8 @@ const placeholderThread = (
 });
 
 export const diaryMessageThreads: Record<string, MessageThreadData> = {
-  study: {
-    chatboxId: 'study',
+  'cb:study': {
+    chatboxId: 'cb:study',
     groups: [
       {
         date: 'May 20, 2026',
@@ -198,22 +198,19 @@ export const diaryMessageThreads: Record<string, MessageThreadData> = {
     'daily-standup',
     'Blocked on design review for icons.',
   ),
-  'project-ideas': placeholderThread(
-    'project-ideas',
+  'cb:project': placeholderThread(
+    'cb:project',
     'Sketch sidebar layout with brush highlights.',
   ),
-  'daily-diary': placeholderThread(
-    'daily-diary',
+  'cb:diary': placeholderThread(
+    'cb:diary',
     'Had a quiet morning with coffee and notes.',
   ),
   'random-thoughts': placeholderThread(
     'random-thoughts',
     'Maybe reorganize tags by mood next week.',
   ),
-  'anime-watchlist': placeholderThread(
-    'anime-watchlist',
-    'Finish season 2 this weekend.',
-  ),
+  'cb:anime': placeholderThread('cb:anime', 'Finish season 2 this weekend.'),
   'music-playlist': placeholderThread(
     'music-playlist',
     'Lo-fi beats for focus sessions.',
@@ -229,14 +226,31 @@ export const diaryMessageThreads: Record<string, MessageThreadData> = {
 };
 
 export const diaryDetailPanels: Record<string, DetailPanelData> = {
-  study: {
-    chatboxId: 'study',
+  'cb:study': {
+    chatboxId: 'cb:study',
     media: [
-      { id: 'm1', type: 'image', thumbnail: 'https://picsum.photos/seed/study1/120/120' },
-      { id: 'm2', type: 'image', thumbnail: 'https://picsum.photos/seed/study2/120/120' },
-      { id: 'm3', type: 'video', duration: '12:30', thumbnail: 'https://picsum.photos/seed/study3/120/120' },
+      {
+        id: 'm1',
+        type: 'image',
+        thumbnail: 'https://picsum.photos/seed/study1/120/120',
+      },
+      {
+        id: 'm2',
+        type: 'image',
+        thumbnail: 'https://picsum.photos/seed/study2/120/120',
+      },
+      {
+        id: 'm3',
+        type: 'video',
+        duration: '12:30',
+        thumbnail: 'https://picsum.photos/seed/study3/120/120',
+      },
       { id: 'm4', type: 'file', label: 'grammar_notes.pdf' },
-      { id: 'm5', type: 'image', thumbnail: 'https://picsum.photos/seed/study5/120/120' },
+      {
+        id: 'm5',
+        type: 'image',
+        thumbnail: 'https://picsum.photos/seed/study5/120/120',
+      },
       { id: 'm6', type: 'add' },
     ],
     mediaTotal: 12,
@@ -289,18 +303,18 @@ export const diaryDetailPanels: Record<string, DetailPanelData> = {
     pinnedLinks: [],
     pinnedTotal: 0,
   },
-  'project-ideas': {
-    chatboxId: 'project-ideas',
+  'cb:project': {
+    chatboxId: 'cb:project',
     media: [{ id: 'm-add', type: 'add' }],
     mediaTotal: 2,
-    tags: [{ label: '#ideas', count: 4, tone: 'yellow' }],
+    tags: [{ label: '#project', count: 2, tone: 'yellow' }],
     summary: 'Sidebar layout sketches and UI ideas.',
     pinnedTodos: [],
     pinnedLinks: [],
     pinnedTotal: 0,
   },
-  'daily-diary': {
-    chatboxId: 'daily-diary',
+  'cb:diary': {
+    chatboxId: 'cb:diary',
     media: [{ id: 'm-add', type: 'add' }],
     mediaTotal: 1,
     tags: [{ label: '#diary', count: 8, tone: 'pink' }],
@@ -319,8 +333,8 @@ export const diaryDetailPanels: Record<string, DetailPanelData> = {
     pinnedLinks: [],
     pinnedTotal: 0,
   },
-  'anime-watchlist': {
-    chatboxId: 'anime-watchlist',
+  'cb:anime': {
+    chatboxId: 'cb:anime',
     media: [{ id: 'm-add', type: 'add' }],
     mediaTotal: 3,
     tags: [{ label: '#anime', count: 6, tone: 'teal' }],

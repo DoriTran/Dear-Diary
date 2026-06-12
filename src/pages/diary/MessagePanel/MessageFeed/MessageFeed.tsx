@@ -1,10 +1,11 @@
 import type { FC } from 'react';
 
 import type { MessageDayGroup } from '../../types';
+
 import AIMessage from './AIMessage/AIMessage';
 import DateSeparator from './DateSeparator/DateSeparator';
-import UserMessage from './UserMessage/UserMessage';
 import styles from './MessageFeed.module.css';
+import UserMessage from './UserMessage/UserMessage';
 
 export type MessageFeedProps = {
   groups: MessageDayGroup[];

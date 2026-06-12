@@ -2,10 +2,7 @@ import type { FC } from 'react';
 
 import LayoutCard from '@/packages/ui/LayoutCard/LayoutCard';
 
-import {
-  diaryChatboxDetails,
-  diaryMessageThreads,
-} from '../data';
+import { diaryChatboxDetails, diaryMessageThreads } from '../data';
 import Header from './Header/Header';
 import InputFooter from './InputFooter/InputFooter';
 import MessageFeed from './MessageFeed/MessageFeed';

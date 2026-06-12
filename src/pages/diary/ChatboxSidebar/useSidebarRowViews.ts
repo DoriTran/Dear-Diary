@@ -71,6 +71,7 @@ const mapChatbox = (
     notificationEnabled: chatbox.notificationEnabled,
     totalMessage: chatbox.totalMessage,
     lastMessageAt: chatbox.lastMessageAt,
+    createdAt: chatbox.createdAt,
   };
 };
 

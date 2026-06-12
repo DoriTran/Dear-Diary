@@ -1,4 +1,4 @@
-﻿import type { FC } from 'react';
+﻿import type { ChangeEvent, FC } from 'react';
 
 import {
   faMagnifyingGlass,
@@ -9,7 +9,16 @@ import { AdIcon } from '@/packages/base';
 
 import styles from './Search.module.css';
 
-const Search: FC = () => {
+export type SearchProps = {
+  value: string;
+  onChange: (value: string) => void;
+};
+
+const Search: FC<SearchProps> = ({ value, onChange }) => {
+  const handleChange = (event: ChangeEvent<HTMLInputElement>) => {
+    onChange(event.target.value);
+  };
+
   return (
     <div className={styles.root}>
       <span className={styles.leadingIcon} aria-hidden>
@@ -19,7 +28,8 @@ const Search: FC = () => {
         className={styles.input}
         type="search"
         placeholder="Search chatboxes..."
-        readOnly
+        value={value}
+        onChange={handleChange}
         aria-label="Search chatboxes"
       />
       <button

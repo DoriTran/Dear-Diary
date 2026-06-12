@@ -1,17 +1,20 @@
-﻿import { useEffect, useRef, type FC } from 'react';
+﻿import { useEffect, useRef, useState, type FC } from 'react';
 
 import { AdDragDrop, useScrollOffset } from '@/packages/base';
 import LayoutCard from '@/packages/ui/LayoutCard/LayoutCard';
 import { useDiaryHydrated, useDiaryStore } from '@/store';
 
+import type { DiaryFilterTab } from '../types';
+
 import styles from './ChatboxSidebar.module.css';
 import Filter from './Filter/Filter';
 import Header from './Header/Header';
 import Search from './Search/Search';
+import { hasActiveSidebarQuery } from './sidebarFilter.utils';
 import SortableChatbox from './SortableChatbox';
 import SortableGroupBlock from './SortableGroupBlock';
+import { useFilteredSidebarRowViews } from './useFilteredSidebarRowViews';
 import { useSidebarDnD } from './useSidebarDnD';
-import { useSidebarRowViews } from './useSidebarRowViews';
 
 export type ChatboxSidebarProps = {
   selectedId?: string;
@@ -22,7 +25,11 @@ const ChatboxSidebar: FC<ChatboxSidebarProps> = ({ selectedId, onSelect }) => {
   const hydrated = useDiaryHydrated();
   const seedIfEmpty = useDiaryStore('seedIfEmpty');
   const { rows, swap, add, remove } = useSidebarDnD();
-  const rowViews = useSidebarRowViews(rows);
+  const [searchQuery, setSearchQuery] = useState('');
+  const [filterTab, setFilterTab] = useState<DiaryFilterTab>('all');
+  const isListLocked = hasActiveSidebarQuery(searchQuery, filterTab);
+  const dndEnabled = !isListLocked;
+  const rowViews = useFilteredSidebarRowViews(rows, searchQuery, filterTab);
   const scrollerRef = useRef<HTMLDivElement>(null);
   const scrollerOffset = useScrollOffset(scrollerRef);
 
@@ -43,17 +50,19 @@ const ChatboxSidebar: FC<ChatboxSidebarProps> = ({ selectedId, onSelect }) => {
       <Header />
 
       <div className={styles.searchRow}>
-        <Search />
+        <Search value={searchQuery} onChange={setSearchQuery} />
       </div>
 
-      <Filter />
+      <Filter activeTab={filterTab} onTabChange={setFilterTab} />
 
       <AdDragDrop
-        droppable
-        sortable
+        {...(dndEnabled
+          ? ({ droppable: true, sortable: true } as const)
+          : ({ droppable: false } as const))}
+        dropDeps={[dndEnabled]}
         group="diary-list"
         hostPreview
-        autoScroll
+        autoScroll={dndEnabled}
         scrollRef={scrollerRef}
         extraScrollOffset={scrollerOffset}
         dropData={{ id: 'diary-list' }}
@@ -79,6 +88,8 @@ const ChatboxSidebar: FC<ChatboxSidebarProps> = ({ selectedId, onSelect }) => {
                     selectedId={selectedId}
                     onSelect={onSelect}
                     extraScrollOffset={scrollerOffset}
+                    dndEnabled={dndEnabled}
+                    listLocked={isListLocked}
                     swap={swap}
                     add={add}
                     remove={remove}
@@ -91,6 +102,8 @@ const ChatboxSidebar: FC<ChatboxSidebarProps> = ({ selectedId, onSelect }) => {
                     selectedId={selectedId}
                     onSelect={onSelect}
                     extraScrollOffset={scrollerOffset}
+                    dndEnabled={dndEnabled}
+                    listLocked={isListLocked}
                     onSortableChange={(current, previous) => {
                       swap({ type: 'list' }, current, previous);
                     }}

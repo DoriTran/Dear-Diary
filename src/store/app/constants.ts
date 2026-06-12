@@ -16,7 +16,7 @@ export const DEFAULT_NAV_PANEL: NavPanelState = {
 };
 
 export const DEFAULT_DIARY_PAGE: DiaryPageUIState = {
-  selectedChatboxId: null,
+  selectedChatboxId: 'cb:study',
   expandedGroupIds: new Set<string>(),
 };
 

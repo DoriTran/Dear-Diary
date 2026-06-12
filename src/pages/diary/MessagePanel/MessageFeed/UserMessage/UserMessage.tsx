@@ -1,9 +1,11 @@
-import { faCheck } from '@fortawesome/free-solid-svg-icons';
 import type { FC } from 'react';
+
+import { faCheck } from '@fortawesome/free-solid-svg-icons';
 
 import { AdIcon } from '@/packages/base';
 
 import type { MessageItem } from '../../../types';
+
 import styles from './UserMessage.module.css';
 
 export type UserMessageProps = {

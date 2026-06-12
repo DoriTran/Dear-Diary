@@ -1,6 +1,7 @@
 import { useState, type FC } from 'react';
 
 import type { DetailPanelTab } from '../../types';
+
 import styles from './Tabs.module.css';
 
 const TAB_ITEMS: { id: DetailPanelTab; label: string; sectionId: string }[] = [
@@ -15,7 +16,9 @@ const Tabs: FC = () => {
 
   const handleTabClick = (tab: DetailPanelTab, sectionId: string) => {
     setActiveTab(tab);
-    document.getElementById(sectionId)?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    document
+      .getElementById(sectionId)
+      ?.scrollIntoView({ behavior: 'smooth', block: 'start' });
   };
 
   return (

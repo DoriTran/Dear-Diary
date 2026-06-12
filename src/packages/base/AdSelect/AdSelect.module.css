@@ -1,0 +1,104 @@
+.label {
+  font-size: var(--font-xs);
+  font-weight: var(--font-semibold);
+  color: var(--text-muted);
+  margin-bottom: 0.375rem;
+}
+
+.input {
+  border-color: var(--border-soft);
+  border-radius: var(--radius-md);
+  background: var(--surface-soft);
+  color: var(--text);
+  font-size: var(--font-sm);
+  min-height: 2.5rem;
+}
+
+.input:focus,
+.input:focus-within {
+  border-color: color-mix(in srgb, var(--accent-purple) 40%, var(--border-soft));
+  box-shadow: 0 0 0 3px
+    color-mix(in srgb, var(--accent-purple) 15%, transparent);
+}
+
+.dropdown {
+  border: 1px solid var(--border-soft);
+  border-radius: var(--radius-md);
+  background: var(--surface);
+  box-shadow: var(--shadow-md);
+}
+
+.option {
+  font-size: var(--font-sm);
+  color: var(--text);
+  border-radius: var(--radius-sm);
+}
+
+.option[data-combobox-selected] {
+  background: color-mix(in srgb, var(--accent-purple) 12%, var(--surface-soft));
+  color: var(--text);
+}
+
+.option[data-combobox-active] {
+  background: var(--surface-soft);
+}
+
+.multiField {
+  display: flex;
+  min-height: 2.5rem;
+  padding: 0.375rem 0.5rem;
+  border: 1px solid var(--border-soft);
+  border-radius: var(--radius-md);
+  background: var(--surface-soft);
+  cursor: text;
+  transition:
+    border-color var(--transition-fast),
+    box-shadow var(--transition-fast);
+}
+
+.multiField:focus-within {
+  border-color: color-mix(in srgb, var(--accent-purple) 40%, var(--border-soft));
+  box-shadow: 0 0 0 3px
+    color-mix(in srgb, var(--accent-purple) 15%, transparent);
+}
+
+.pillsRow {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.25rem;
+  width: 100%;
+  min-width: 0;
+}
+
+.pillWrap {
+  display: inline-flex;
+  max-width: 100%;
+}
+
+.multiInput {
+  flex: 1;
+  min-width: 4rem;
+  padding: 0.125rem 0.25rem;
+  border: none;
+  background: transparent;
+  color: var(--text);
+  font: inherit;
+  font-size: var(--font-sm);
+  outline: none;
+}
+
+.multiInput::placeholder {
+  color: var(--text-muted);
+}
+
+.createOptionLabel {
+  color: var(--accent-purple);
+  font-weight: var(--font-semibold);
+}
+
+.empty {
+  padding: 0.5rem 0.625rem;
+  color: var(--text-muted);
+  font-size: var(--font-sm);
+}

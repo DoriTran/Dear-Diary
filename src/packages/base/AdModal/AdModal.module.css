@@ -1,0 +1,35 @@
+.content {
+  border: 1px solid var(--border-soft);
+  border-radius: var(--radius-lg);
+  background: var(--surface);
+  box-shadow: var(--shadow-md);
+}
+
+.header {
+  padding: 1rem 1.25rem 0.75rem;
+  background: var(--surface);
+}
+
+.title {
+  font-size: var(--font-lg);
+  font-weight: var(--font-bold);
+  color: var(--text);
+}
+
+.body {
+  padding: 0.75rem 1.25rem 1.25rem;
+  color: var(--text);
+}
+
+.overlay {
+  background: var(--overlay);
+}
+
+.close {
+  color: var(--text-muted);
+}
+
+.close:hover {
+  background: color-mix(in srgb, var(--accent-purple) 12%, transparent);
+  color: var(--text);
+}

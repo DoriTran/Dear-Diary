@@ -1,6 +1,7 @@
 import type { FC } from 'react';
 
 import type { MessageBlock, MessageItem } from '../../../types';
+
 import FocusTimer from '../FocusTimer/FocusTimer';
 import styles from './AIMessage.module.css';
 

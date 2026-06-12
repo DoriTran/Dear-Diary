@@ -84,6 +84,7 @@ export const useSidebarGroups = (): GroupData[] => {
             notificationEnabled: chatbox.notificationEnabled,
             totalMessage: chatbox.totalMessage,
             lastMessageAt: chatbox.lastMessageAt,
+            createdAt: chatbox.createdAt,
           };
         })
         .filter((chatbox): chatbox is ChatboxData => chatbox !== null);

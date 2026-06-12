@@ -1,6 +1,7 @@
 import type { FC } from 'react';
 
 import type { DetailPanelData } from '../../types';
+
 import styles from './PinnedSection.module.css';
 
 export type PinnedSectionProps = {
@@ -8,8 +9,7 @@ export type PinnedSectionProps = {
 };
 
 const PinnedSection: FC<PinnedSectionProps> = ({ data }) => {
-  const hasContent =
-    data.pinnedTodos.length > 0 || data.pinnedLinks.length > 0;
+  const hasContent = data.pinnedTodos.length > 0 || data.pinnedLinks.length > 0;
 
   return (
     <section id="detail-pinned" className={styles.root}>

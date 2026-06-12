@@ -1,0 +1,48 @@
+.root {
+  display: inline-flex;
+  flex-shrink: 0;
+  align-items: center;
+  gap: 0.2rem;
+  padding: 0.08rem 0.35rem;
+  border: none;
+  border-radius: 999px;
+  font-size: var(--font-2xs);
+  font-weight: var(--font-medium);
+  line-height: 1;
+  color: var(--text);
+  white-space: nowrap;
+  vertical-align: top;
+}
+
+.removable {
+  padding-right: 0.2rem;
+}
+
+.label {
+  display: inline-flex;
+  align-items: center;
+}
+
+.removeBtn {
+  display: inline-flex;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: center;
+  width: 0.9rem;
+  height: 0.9rem;
+  padding: 0;
+  border: none;
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--text) 10%, transparent);
+  color: var(--text-muted);
+  font: inherit;
+  font-size: 0.65rem;
+  line-height: 1;
+  cursor: pointer;
+  transition: background var(--transition-fast);
+}
+
+.removeBtn:hover {
+  background: color-mix(in srgb, var(--text) 18%, transparent);
+  color: var(--text);
+}

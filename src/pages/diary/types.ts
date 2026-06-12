@@ -28,6 +28,7 @@ export type ChatboxData = {
   notificationEnabled: boolean;
   totalMessage: number;
   lastMessageAt: string | null;
+  createdAt: string;
 };
 
 export type GroupData = {

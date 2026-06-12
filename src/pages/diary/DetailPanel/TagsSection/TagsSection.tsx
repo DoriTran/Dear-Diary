@@ -1,10 +1,12 @@
+import type { FC } from 'react';
+
 import { faPlus } from '@fortawesome/free-solid-svg-icons';
 import clsx from 'clsx';
-import type { FC } from 'react';
 
 import { AdIcon } from '@/packages/base';
 
 import type { DetailPanelData } from '../../types';
+
 import styles from './TagsSection.module.css';
 
 export type TagsSectionProps = {

@@ -4,8 +4,7 @@ export const BRUSH_MIDDLE_TILE_WIDTH = 84;
 
 /** Shared vertical ink bounds (all three pieces align on these Y coords). */
 export const BRUSH_INK_BOUNDS = { minY: -6, maxY: 55 } as const;
-export const BRUSH_INK_HEIGHT =
-  BRUSH_INK_BOUNDS.maxY - BRUSH_INK_BOUNDS.minY;
+export const BRUSH_INK_HEIGHT = BRUSH_INK_BOUNDS.maxY - BRUSH_INK_BOUNDS.minY;
 
 export const BRUSH_MIDDLE_TILE_VIEWBOX = `0 ${BRUSH_INK_BOUNDS.minY} ${BRUSH_MIDDLE_TILE_WIDTH} ${BRUSH_INK_HEIGHT}`;
 
