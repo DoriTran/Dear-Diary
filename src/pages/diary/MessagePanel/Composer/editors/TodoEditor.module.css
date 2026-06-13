@@ -1,0 +1,77 @@
+.root {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.row {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+
+.rowMain {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+.uploadBtn,
+.removeBtn {
+  display: inline-flex;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: center;
+  width: 1.75rem;
+  height: 1.75rem;
+  border: 1px solid var(--border-soft);
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--success) 12%, var(--surface));
+  color: var(--success);
+  cursor: pointer;
+}
+
+.removeBtn {
+  background: var(--surface-soft);
+  color: var(--text-muted);
+}
+
+.input {
+  flex: 1;
+  min-width: 0;
+  padding: 0.45rem 0.55rem;
+  border: 1px solid var(--border-soft);
+  border-radius: var(--radius-md);
+  font-family: inherit;
+  font-size: var(--font-sm);
+  color: var(--text);
+  background: var(--surface);
+  outline: none;
+}
+
+.rowAttachments {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem;
+  padding-left: 2.15rem;
+}
+
+.addRowBtn {
+  align-self: flex-start;
+  padding: 0.25rem 0.35rem;
+  border: none;
+  border-radius: var(--radius-md);
+  font-size: var(--font-sm);
+  color: var(--text-muted);
+  background: transparent;
+  cursor: pointer;
+}
+
+.addRowBtn:hover {
+  color: var(--text);
+  background: var(--surface-soft);
+}
+
+.hiddenInput {
+  display: none;
+}

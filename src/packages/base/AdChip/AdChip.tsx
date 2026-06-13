@@ -1,4 +1,4 @@
-import type { HTMLAttributes, FC } from 'react';
+import type { HTMLAttributes, FC, CSSProperties } from 'react';
 
 import clsx from 'clsx';
 
@@ -7,20 +7,32 @@ import styles from './AdChip.module.css';
 const buildTagBackground = (color: string) =>
   `color-mix(in srgb, ${color} 26%, var(--surface))`;
 
+export type AdChipSize = 'small' | 'medium' | 'large' | number;
+
 export type AdChipProps = {
   label: string;
   color?: string;
   count?: number;
+  size?: AdChipSize;
   onRemove?: () => void;
   reorderProps?: HTMLAttributes<HTMLElement>;
   className?: string;
   'data-tag-measure'?: boolean;
 };
 
+const resolveSizeClass = (size: AdChipSize): string | undefined => {
+  if (typeof size === 'number') {
+    return undefined;
+  }
+
+  return styles[`size_${size}`];
+};
+
 const AdChip: FC<AdChipProps> = ({
   label,
   color,
   count,
+  size = 'small',
   onRemove,
   reorderProps,
   className,
@@ -29,12 +41,29 @@ const AdChip: FC<AdChipProps> = ({
   const showCount = count !== undefined && count > 0;
   const display = showCount ? `${count} #${label}` : `#${label}`;
 
+  const sizeStyle: CSSProperties | undefined =
+    typeof size === 'number'
+      ? {
+          height: size,
+          paddingInline: Math.round(size * 0.42),
+          fontSize: Math.max(10, Math.round(size * 0.52)),
+        }
+      : undefined;
+
   return (
     <span
       {...reorderProps}
-      className={clsx(styles.root, onRemove && styles.removable, className)}
+      className={clsx(
+        styles.root,
+        resolveSizeClass(size),
+        onRemove && styles.removable,
+        className,
+      )}
       data-tag-measure={dataTagMeasure || undefined}
-      style={color ? { background: buildTagBackground(color) } : undefined}
+      style={{
+        ...(color ? { background: buildTagBackground(color) } : undefined),
+        ...sizeStyle,
+      }}
     >
       <span className={styles.label}>{display}</span>
       {onRemove ? (

@@ -1,0 +1,44 @@
+.attachmentList {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem;
+  margin-bottom: 0.45rem;
+}
+
+.imageLink {
+  display: block;
+  overflow: hidden;
+  border-radius: var(--radius-md);
+}
+
+.image {
+  display: block;
+  max-width: 100%;
+  max-height: 12rem;
+  object-fit: cover;
+}
+
+.fileCard {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.35rem 0.55rem;
+  border: 1px solid var(--border-soft);
+  border-radius: var(--radius-md);
+  font-size: var(--font-2xs);
+  color: var(--text);
+  background: var(--surface);
+  text-decoration: none;
+}
+
+.videoCard {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.35rem 0.55rem;
+  border: 1px solid var(--border-soft);
+  border-radius: var(--radius-md);
+  font-size: var(--font-2xs);
+  color: var(--text);
+  background: var(--surface);
+}

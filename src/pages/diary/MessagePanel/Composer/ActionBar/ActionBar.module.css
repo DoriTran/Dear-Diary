@@ -1,0 +1,95 @@
+.root {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.35rem 0.5rem;
+  border: 1px solid var(--border-soft);
+  border-radius: var(--radius-lg);
+  background: var(--surface);
+  box-shadow: var(--shadow-sm);
+}
+
+.group {
+  display: flex;
+  align-items: center;
+  gap: 0.1rem;
+}
+
+.divider {
+  width: 1px;
+  height: 1.35rem;
+  background: var(--border-soft);
+}
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 1.85rem;
+  height: 1.85rem;
+  border: none;
+  border-radius: var(--radius-md);
+  color: var(--text-muted);
+  background: transparent;
+  cursor: pointer;
+  transition: var(--transition-fast);
+}
+
+.btn:hover {
+  color: var(--text);
+  background: color-mix(in srgb, var(--diary) 6%, var(--surface));
+}
+
+.btnActiveTicket {
+  color: color-mix(in srgb, #6d28d9 85%, var(--text));
+  background: color-mix(in srgb, #c4b5fd 35%, var(--surface));
+}
+
+.btnActiveCountdown {
+  color: color-mix(in srgb, #c2410c 85%, var(--text));
+  background: color-mix(in srgb, #fdba74 35%, var(--surface));
+}
+
+.btnActiveTodo {
+  color: color-mix(in srgb, var(--success) 85%, var(--text));
+  background: color-mix(in srgb, var(--success) 18%, var(--surface));
+}
+
+.btnActiveAi {
+  color: color-mix(in srgb, var(--primary) 85%, var(--text));
+  background: color-mix(in srgb, var(--primary) 18%, var(--surface));
+}
+
+.aiLabel {
+  font-size: 0.62rem;
+  font-weight: var(--font-bold);
+  letter-spacing: 0.04em;
+}
+
+.sendBtn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.25rem;
+  height: 2.25rem;
+  margin-left: auto;
+  border: none;
+  border-radius: var(--radius-md);
+  color: var(--text-contrast);
+  background: color-mix(in srgb, #78350f 85%, var(--primary-dark));
+  cursor: pointer;
+  box-shadow: var(--shadow-sm);
+}
+
+.sendBtn:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+.hiddenInput {
+  display: none;
+}
+
+.spacer {
+  flex: 1;
+}

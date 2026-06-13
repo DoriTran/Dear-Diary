@@ -1,0 +1,81 @@
+.root {
+  display: flex;
+  flex-direction: column;
+  gap: 1.1rem;
+}
+
+.section {
+  display: flex;
+  flex-direction: column;
+}
+
+.heading {
+  margin: 0 0 0.6rem;
+  font-size: var(--font-sm);
+  font-weight: var(--font-bold);
+  color: var(--text);
+}
+
+.statGrid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.45rem;
+}
+
+.progressList {
+  display: flex;
+  flex-direction: column;
+  gap: 0.65rem;
+}
+
+.tagList {
+  display: flex;
+  flex-direction: column;
+  gap: 0.45rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.tagRow {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 2fr) auto;
+  align-items: center;
+  gap: 0.45rem;
+  width: 100%;
+  padding: 0.35rem 0.2rem;
+  border: none;
+  border-radius: var(--radius-sm);
+  background: transparent;
+  cursor: pointer;
+  transition: var(--transition-fast);
+}
+
+.tagRow:hover {
+  background: color-mix(in srgb, var(--primary) 6%, var(--surface));
+}
+
+.tagLabel {
+  font-size: var(--font-2xs);
+  font-weight: var(--font-medium);
+  color: var(--text);
+  text-align: left;
+}
+
+.tagTrack {
+  height: 0.35rem;
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--border-soft) 70%, var(--surface));
+  overflow: hidden;
+}
+
+.tagFill {
+  display: block;
+  height: 100%;
+  border-radius: inherit;
+}
+
+.tagCount {
+  font-size: var(--font-2xs);
+  color: var(--text-muted);
+}

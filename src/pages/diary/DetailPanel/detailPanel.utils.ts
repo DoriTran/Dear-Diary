@@ -1,0 +1,270 @@
+import type { IconDefinition } from '@fortawesome/fontawesome-svg-core';
+import {
+  faQuestion,
+  type IconDefinition as FaIconDefinition,
+} from '@fortawesome/free-solid-svg-icons';
+import * as solidIcons from '@fortawesome/free-solid-svg-icons';
+
+import type {
+  Attachment,
+  Chatbox,
+  Message,
+  Orders,
+  Tag,
+} from '@/store/diary/type';
+
+import {
+  formatChatboxTime,
+  formatHeaderUpdatedAt,
+  buildIconBackground,
+  type ResolvedChatboxTag,
+} from '../ChatboxSidebar/Chatbox/chatbox.utils';
+import type { MediaFilter } from '../types';
+
+export type DetailPanelStats = {
+  totalMessages: number;
+  totalAttachments: number;
+  imageCount: number;
+  videoCount: number;
+  fileCount: number;
+  linkCount: number;
+  updatedLabel: string;
+  pinnedCount: number;
+  archivedCount: number;
+};
+
+export type DetailPanelMediaItem = {
+  id: string;
+  messageId: string;
+  attachment: Attachment;
+  createdAt: string;
+  timeLabel: string;
+};
+
+export type DetailPanelTag = ResolvedChatboxTag & {
+  tagId: string;
+};
+
+export type DetailPanelIdentity = {
+  id: string;
+  name: string;
+  description: string;
+  icon: IconDefinition;
+  color: string;
+  iconBg: string;
+  notificationEnabled: boolean;
+};
+
+const resolveFaIcon = (icon: string): FaIconDefinition => {
+  return (
+    (solidIcons as unknown as Record<string, FaIconDefinition>)[icon] ||
+    faQuestion
+  );
+};
+
+const collectMessageAttachments = (message: Message): Attachment[] => {
+  const attachments = [...message.attachments];
+
+  if (message.type === 'todo') {
+    for (const item of message.content.items) {
+      attachments.push(...item.attachments);
+    }
+  }
+
+  return attachments;
+};
+
+export const getChatboxMessages = (
+  chatboxId: string,
+  messages: Record<string, Message>,
+  orders: Orders,
+): Message[] => {
+  const messageIds = orders.chatboxMessageOrders[chatboxId] ?? [];
+
+  return messageIds
+    .map((messageId) => messages[messageId])
+    .filter((message): message is Message => Boolean(message));
+};
+
+export const resolveChatboxIdentity = (
+  chatbox: Chatbox,
+): DetailPanelIdentity => ({
+  id: chatbox.id,
+  name: chatbox.name,
+  description: chatbox.description,
+  icon: resolveFaIcon(chatbox.icon),
+  color: chatbox.color,
+  iconBg: buildIconBackground(chatbox.color),
+  notificationEnabled: chatbox.notificationEnabled,
+});
+
+export const computeDetailPanelStats = (
+  chatbox: Chatbox,
+  chatboxMessages: Message[],
+): DetailPanelStats => {
+  let totalAttachments = 0;
+  let imageCount = 0;
+  let videoCount = 0;
+  let fileCount = 0;
+  let linkCount = 0;
+  let pinnedCount = 0;
+  let archivedCount = 0;
+
+  for (const message of chatboxMessages) {
+    if (message.pinned) {
+      pinnedCount += 1;
+    }
+
+    if (message.archived) {
+      archivedCount += 1;
+    }
+
+    for (const attachment of collectMessageAttachments(message)) {
+      totalAttachments += 1;
+
+      switch (attachment.type) {
+        case 'image':
+          imageCount += 1;
+          break;
+        case 'video':
+          videoCount += 1;
+          break;
+        case 'file':
+          fileCount += 1;
+          break;
+        case 'link':
+          linkCount += 1;
+          break;
+        default:
+          break;
+      }
+    }
+  }
+
+  const activityAt =
+    chatbox.updatedAt ?? chatbox.lastMessageAt ?? chatbox.createdAt;
+
+  return {
+    totalMessages: chatbox.totalMessage,
+    totalAttachments,
+    imageCount,
+    videoCount,
+    fileCount,
+    linkCount,
+    updatedLabel: formatHeaderUpdatedAt(activityAt),
+    pinnedCount,
+    archivedCount,
+  };
+};
+
+export const resolveDetailPanelTags = (
+  chatbox: Chatbox,
+  tags: Record<string, Tag>,
+): DetailPanelTag[] => {
+  const resolved = chatbox.tags
+    .map((statistic) => {
+      const tag = tags[statistic.tagId];
+
+      if (!tag) {
+        return null;
+      }
+
+      return {
+        tagId: tag.id,
+        label: tag.label,
+        count: statistic.count,
+        color: tag.color,
+      };
+    })
+    .filter((tag): tag is DetailPanelTag => Boolean(tag));
+
+  return [...resolved].sort((a, b) => b.count - a.count);
+};
+
+export const collectDetailPanelMedia = (
+  chatboxMessages: Message[],
+): DetailPanelMediaItem[] => {
+  const items: DetailPanelMediaItem[] = [];
+
+  for (const message of chatboxMessages) {
+    for (const attachment of collectMessageAttachments(message)) {
+      items.push({
+        id: `${message.id}:${attachment.id}`,
+        messageId: message.id,
+        attachment,
+        createdAt: message.createdAt,
+        timeLabel: formatChatboxTime(message.createdAt),
+      });
+    }
+  }
+
+  return items.sort(
+    (a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime(),
+  );
+};
+
+export const filterMediaItems = (
+  items: DetailPanelMediaItem[],
+  filter: MediaFilter,
+): DetailPanelMediaItem[] => {
+  if (filter === 'all') {
+    return items;
+  }
+
+  const typeMap: Record<Exclude<MediaFilter, 'all'>, Attachment['type']> = {
+    images: 'image',
+    videos: 'video',
+    links: 'link',
+    files: 'file',
+  };
+
+  const targetType = typeMap[filter];
+
+  return items.filter((item) => item.attachment.type === targetType);
+};
+
+export const getPinnedMessages = (messages: Message[]): Message[] =>
+  messages.filter((message) => message.pinned);
+
+export const getArchivedMessages = (messages: Message[]): Message[] =>
+  messages.filter((message) => message.archived);
+
+export const filterMessagesByTags = (
+  messages: Message[],
+  selectedTagIds: string[],
+): Message[] => {
+  if (selectedTagIds.length === 0) {
+    return [];
+  }
+
+  return messages.filter((message) =>
+    message.tagIds.some((tagId) => selectedTagIds.includes(tagId)),
+  );
+};
+
+export const getMessageThumbnail = (
+  message: Message,
+): string | undefined => {
+  for (const attachment of collectMessageAttachments(message)) {
+    if (attachment.type === 'image') {
+      return attachment.url;
+    }
+
+    if (attachment.type === 'video' && attachment.thumbnail) {
+      return attachment.thumbnail;
+    }
+  }
+
+  return undefined;
+};
+
+export const formatVideoDuration = (seconds?: number): string | undefined => {
+  if (seconds === undefined) {
+    return undefined;
+  }
+
+  const mins = Math.floor(seconds / 60);
+  const secs = Math.floor(seconds % 60);
+
+  return `${String(mins).padStart(2, '0')}:${String(secs).padStart(2, '0')}`;
+};

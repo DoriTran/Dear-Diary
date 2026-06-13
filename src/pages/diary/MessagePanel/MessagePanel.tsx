@@ -1,40 +1,127 @@
-import type { FC } from 'react';
+import { useEffect, type FC, type RefObject } from 'react';
 
+import { AdConfirmDialog } from '@/packages/base';
 import LayoutCard from '@/packages/ui/LayoutCard/LayoutCard';
 
-import { diaryChatboxDetails, diaryMessageThreads } from '../data';
+import MessageComposer from './Composer/MessageComposer';
 import Header from './Header/Header';
-import InputFooter from './InputFooter/InputFooter';
+import { useMessageHeaderData } from './Header/useMessageHeaderData';
+import { useMessageActions } from './hooks/useMessageActions';
+import { useMessageScroll } from './hooks/useMessageScroll';
 import MessageFeed from './MessageFeed/MessageFeed';
+import { useChatboxMessages } from './MessageFeed/useChatboxMessages';
 import styles from './MessagePanel.module.css';
+import ForwardModal from './modals/ForwardModal';
 
 export type MessagePanelProps = {
   chatboxId: string;
   detailPanelCollapsed: boolean;
   onToggleDetailPanel: () => void;
+  onEditChatbox: (chatboxId: string) => void;
+  pendingScrollMessageId?: string | null;
+  onPendingScrollHandled?: () => void;
+  onNavigateToChatbox?: (chatboxId: string, messageId: string) => void;
+  messageSearchQuery: string;
+  timelineSearchActive: boolean;
+  searchInputRef: RefObject<HTMLInputElement | null>;
+  onMessageSearchQueryChange: (value: string) => void;
+  onTimelineSearchActiveChange: (active: boolean) => void;
+  forceVisibleMessageIds?: string[];
 };
 
 const MessagePanel: FC<MessagePanelProps> = ({
   chatboxId,
   detailPanelCollapsed,
   onToggleDetailPanel,
+  onEditChatbox,
+  pendingScrollMessageId,
+  onPendingScrollHandled,
+  onNavigateToChatbox,
+  messageSearchQuery,
+  timelineSearchActive,
+  searchInputRef,
+  onMessageSearchQueryChange,
+  onTimelineSearchActiveChange,
+  forceVisibleMessageIds = [],
 }) => {
-  const detail = diaryChatboxDetails[chatboxId];
-  const thread = diaryMessageThreads[chatboxId];
+  const headerData = useMessageHeaderData(chatboxId);
+  const { groups } = useChatboxMessages(chatboxId, {
+    searchQuery: messageSearchQuery,
+    forceVisibleMessageIds,
+  });
+  const scroll = useMessageScroll();
+  const actions = useMessageActions({
+    chatboxId,
+    scroll,
+    onNavigateToChatbox,
+  });
 
-  if (!detail || !thread) {
+  useEffect(() => {
+    if (!timelineSearchActive) {
+      return;
+    }
+
+    searchInputRef.current?.focus();
+  }, [searchInputRef, timelineSearchActive]);
+
+  useEffect(() => {
+    if (!pendingScrollMessageId) {
+      return;
+    }
+
+    const timer = window.setTimeout(() => {
+      if (scroll.scrollToMessage(pendingScrollMessageId)) {
+        onPendingScrollHandled?.();
+      }
+    }, 100);
+
+    return () => window.clearTimeout(timer);
+  }, [groups, onPendingScrollHandled, pendingScrollMessageId, scroll]);
+
+  if (!headerData) {
     return null;
   }
 
   return (
-    <LayoutCard tag="main" className={styles.root} aria-label={detail.title}>
+    <LayoutCard tag="main" className={styles.root} aria-label={headerData.name}>
       <Header
-        data={detail}
+        data={headerData}
         detailPanelCollapsed={detailPanelCollapsed}
         onToggleDetailPanel={onToggleDetailPanel}
+        onEdit={() => onEditChatbox(chatboxId)}
+        searchQuery={messageSearchQuery}
+        searchActive={timelineSearchActive}
+        searchInputRef={searchInputRef}
+        onSearchQueryChange={onMessageSearchQueryChange}
+        onSearchActiveChange={onTimelineSearchActiveChange}
       />
-      <MessageFeed groups={thread.groups} />
-      <InputFooter />
+      <MessageFeed
+        groups={groups}
+        registerRef={scroll.registerRef}
+        actions={actions}
+      />
+      <MessageComposer
+        chatboxId={chatboxId}
+        replyToMessageId={actions.replyToMessageId}
+        onCancelReply={actions.cancelReply}
+        onNavigateToMessage={actions.navigateToMessage}
+      />
+      <AdConfirmDialog
+        opened={Boolean(actions.deleteTargetId)}
+        onClose={actions.cancelDelete}
+        onConfirm={actions.confirmDelete}
+        title="Delete message?"
+        message="This message will be permanently deleted and cannot be restored."
+        confirmLabel="Delete"
+        cancelLabel="Cancel"
+        destructive
+      />
+      <ForwardModal
+        sourceMessageId={actions.forwardSourceId}
+        currentChatboxId={chatboxId}
+        onConfirm={actions.confirmForward}
+        onClose={actions.cancelForward}
+      />
     </LayoutCard>
   );
 };

@@ -22,7 +22,8 @@
     0 10px 24px rgb(86 58 34 / 10%);
 }
 
-.root:hover .menuBtn {
+.root:hover .menuBtn,
+.menuBtn[aria-expanded='true'] {
   opacity: 1;
   background: color-mix(
     in srgb,

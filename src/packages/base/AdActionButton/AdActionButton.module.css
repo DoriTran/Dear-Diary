@@ -1,0 +1,31 @@
+.root {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 2rem;
+  height: 2rem;
+  padding: 0;
+  border: none;
+  border-radius: 50%;
+  color: var(--text);
+  background: color-mix(in srgb, var(--surface) 85%, var(--text) 15%);
+  cursor: pointer;
+  transition:
+    background var(--transition-fast),
+    color var(--transition-fast),
+    transform var(--transition-fast);
+}
+
+.root:hover {
+  background: color-mix(in srgb, var(--surface) 70%, var(--text) 30%);
+}
+
+.root[data-active] {
+  color: var(--primary);
+  background: color-mix(in srgb, var(--primary) 18%, var(--surface));
+}
+
+.root:focus-visible {
+  outline: 2px solid var(--primary);
+  outline-offset: 2px;
+}

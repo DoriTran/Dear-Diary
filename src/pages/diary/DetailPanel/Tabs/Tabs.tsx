@@ -1,35 +1,32 @@
-import { useState, type FC } from 'react';
+import type { FC } from 'react';
 
 import type { DetailPanelTab } from '../../types';
 
 import styles from './Tabs.module.css';
 
-const TAB_ITEMS: { id: DetailPanelTab; label: string; sectionId: string }[] = [
-  { id: 'media', label: 'Media', sectionId: 'detail-media' },
-  { id: 'tags', label: 'Tags', sectionId: 'detail-tags' },
-  { id: 'pinned', label: 'Pinned', sectionId: 'detail-pinned' },
-  { id: 'summary', label: 'Summary', sectionId: 'detail-summary' },
+const TAB_ITEMS: { id: DetailPanelTab; label: string }[] = [
+  { id: 'overview', label: 'Overview' },
+  { id: 'media', label: 'Media' },
+  { id: 'category', label: 'Category' },
 ];
 
-const Tabs: FC = () => {
-  const [activeTab, setActiveTab] = useState<DetailPanelTab>('media');
+export type TabsProps = {
+  activeTab: DetailPanelTab;
+  onTabChange: (tab: DetailPanelTab) => void;
+};
 
-  const handleTabClick = (tab: DetailPanelTab, sectionId: string) => {
-    setActiveTab(tab);
-    document
-      .getElementById(sectionId)
-      ?.scrollIntoView({ behavior: 'smooth', block: 'start' });
-  };
-
+const Tabs: FC<TabsProps> = ({ activeTab, onTabChange }) => {
   return (
-    <nav className={styles.root} aria-label="Detail sections">
+    <nav className={styles.root} aria-label="Detail panel sections">
       {TAB_ITEMS.map((tab) => (
         <button
           key={tab.id}
           type="button"
+          role="tab"
           className={styles.tab}
+          aria-selected={activeTab === tab.id}
           data-active={activeTab === tab.id || undefined}
-          onClick={() => handleTabClick(tab.id, tab.sectionId)}
+          onClick={() => onTabChange(tab.id)}
         >
           {tab.label}
         </button>

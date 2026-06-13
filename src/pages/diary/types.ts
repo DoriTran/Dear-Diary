@@ -93,46 +93,4 @@ export type ChatboxDetailData = {
 
 export type MediaFilter = 'all' | 'images' | 'videos' | 'links' | 'files';
 
-export type MediaItemType = 'image' | 'video' | 'link' | 'file' | 'add';
-
-export type MediaItem = {
-  id: string;
-  type: MediaItemType;
-  label?: string;
-  duration?: string;
-  thumbnail?: string;
-};
-
-export type DetailTag = {
-  label: string;
-  count: number;
-  tone?: TagTone;
-};
-
-export type PinnedTodo = {
-  id: string;
-  text: string;
-  checked: boolean;
-  date?: string;
-};
-
-export type PinnedLink = {
-  id: string;
-  title: string;
-  url: string;
-  thumbnail?: string;
-  reaction?: { emoji: string; count: number };
-};
-
-export type DetailPanelData = {
-  chatboxId: string;
-  media: MediaItem[];
-  mediaTotal: number;
-  tags: DetailTag[];
-  summary: string;
-  pinnedTodos: PinnedTodo[];
-  pinnedLinks: PinnedLink[];
-  pinnedTotal: number;
-};
-
-export type DetailPanelTab = 'media' | 'tags' | 'pinned' | 'summary';
+export type DetailPanelTab = 'overview' | 'media' | 'category';

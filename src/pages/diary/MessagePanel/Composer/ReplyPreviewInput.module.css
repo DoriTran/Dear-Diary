@@ -1,0 +1,31 @@
+.root {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.5rem;
+  padding: 0.55rem 0.75rem;
+  border-bottom: 1px solid var(--border-soft);
+  background: color-mix(in srgb, var(--surface-soft) 90%, var(--primary) 4%);
+}
+
+.preview {
+  flex: 1;
+  min-width: 0;
+}
+
+.dismiss {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 1.5rem;
+  height: 1.5rem;
+  border: none;
+  border-radius: var(--radius-sm);
+  color: var(--text-muted);
+  background: transparent;
+  cursor: pointer;
+}
+
+.dismiss:hover {
+  color: var(--text);
+  background: var(--surface-soft);
+}

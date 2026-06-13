@@ -208,6 +208,7 @@
 
 .root:hover .menuBtn,
 .root:has(.list:hover) .menuBtn,
+.menuBtn[aria-expanded='true'],
 .menuBtn:focus-visible {
   opacity: 1;
 }

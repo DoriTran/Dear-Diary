@@ -1,0 +1,52 @@
+.root {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  width: 100%;
+  padding: 0;
+  border: none;
+  background: transparent;
+  text-align: left;
+  cursor: pointer;
+}
+
+.root:disabled {
+  cursor: default;
+}
+
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+}
+
+.label {
+  font-size: var(--font-xs);
+  font-weight: var(--font-semibold);
+  color: var(--text);
+}
+
+.count {
+  font-size: var(--font-2xs);
+  color: var(--text-muted);
+}
+
+.track {
+  height: 0.45rem;
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--border-soft) 70%, var(--surface));
+  overflow: hidden;
+}
+
+.fill {
+  display: block;
+  height: 100%;
+  border-radius: inherit;
+  background: var(--primary);
+  transition: width var(--transition-fast);
+}
+
+.root[data-tone='blue'] .fill {
+  background: #5b8def;
+}

@@ -1,1 +1,1 @@
-export { default, type AdChipProps } from './AdChip';
+export { default, type AdChipProps, type AdChipSize } from './AdChip';

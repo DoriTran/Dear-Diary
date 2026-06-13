@@ -37,6 +37,36 @@ const isYesterday = (date: Date, now: Date) => {
   return isSameDay(date, yesterday);
 };
 
+export const formatHeaderUpdatedAt = (iso: string | null): string => {
+  if (!iso) {
+    return '';
+  }
+
+  const date = new Date(iso);
+  const now = new Date();
+
+  if (isSameDay(date, now)) {
+    return 'Updated today';
+  }
+
+  if (isYesterday(date, now)) {
+    return 'Updated yesterday';
+  }
+
+  const diffDays = Math.floor(
+    (now.getTime() - date.getTime()) / (1000 * 60 * 60 * 24),
+  );
+
+  if (diffDays < 7) {
+    return `Updated ${date.toLocaleDateString('en-US', { weekday: 'short' })}`;
+  }
+
+  return `Updated ${date.toLocaleDateString('en-US', {
+    month: 'short',
+    day: 'numeric',
+  })}`;
+};
+
 export const formatChatboxTime = (iso: string | null): string => {
   if (!iso) {
     return '';
@@ -80,21 +110,54 @@ export const getMessagePreview = (
 
   switch (message.type) {
     case 'text':
-    case 'ai':
-      return message.content.text;
-    case 'image':
-      return 'Photo';
-    case 'video':
-      return 'Video';
+    case 'ai': {
+      const text = message.content.text.trim();
+
+      if (text) {
+        return text;
+      }
+
+      if (
+        message.attachments.some((attachment) => attachment.type === 'image')
+      ) {
+        return 'Photo';
+      }
+
+      if (
+        message.attachments.some((attachment) => attachment.type === 'video')
+      ) {
+        return 'Video';
+      }
+
+      if (
+        message.attachments.some((attachment) => attachment.type === 'file')
+      ) {
+        return 'File';
+      }
+
+      const countdown = message.decorations.find(
+        (decoration) => decoration.type === 'countdown',
+      );
+
+      if (countdown) {
+        return countdown.title;
+      }
+
+      const ticket = message.decorations.find(
+        (decoration) => decoration.type === 'ticket',
+      );
+
+      if (ticket) {
+        return ticket.title;
+      }
+
+      return '';
+    }
     case 'todo': {
       const first = message.content.items[0];
 
-      return first ? `Todo: ${first.label}` : 'Todo list';
+      return first ? `Todo: ${first.content.text}` : 'Todo list';
     }
-    case 'ticket':
-      return message.content.title;
-    case 'countdown':
-      return message.content.title;
     default:
       return '';
   }

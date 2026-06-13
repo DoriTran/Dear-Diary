@@ -15,6 +15,8 @@ export type SortableGroupBlockProps = {
   data: GroupData;
   selectedId?: string;
   onSelect?: (id: string) => void;
+  onEditGroup?: (id: string) => void;
+  onEditChatbox?: (id: string) => void;
   extraScrollOffset: ScrollOffset;
   swap: (scope: SidebarScope, current: number, previous: number) => void;
   add: (scope: SidebarScope, at: number, data: unknown) => void;
@@ -27,6 +29,8 @@ const SortableGroupBlock: FC<SortableGroupBlockProps> = ({
   data,
   selectedId,
   onSelect,
+  onEditGroup,
+  onEditChatbox,
   extraScrollOffset,
   swap,
   add,
@@ -75,6 +79,8 @@ const SortableGroupBlock: FC<SortableGroupBlockProps> = ({
           data={data}
           selectedId={selectedId}
           onSelect={onSelect}
+          onEditGroup={onEditGroup}
+          onEditChatbox={onEditChatbox}
           renderChatbox={(chatbox) => (
             <SortableChatbox
               key={chatbox.id}
@@ -82,6 +88,7 @@ const SortableGroupBlock: FC<SortableGroupBlockProps> = ({
               itemOf="diary-group"
               selectedId={selectedId}
               onSelect={onSelect}
+              onEdit={onEditChatbox}
               extraScrollOffset={extraScrollOffset}
               dndEnabled={dndEnabled}
               listLocked={listLocked}

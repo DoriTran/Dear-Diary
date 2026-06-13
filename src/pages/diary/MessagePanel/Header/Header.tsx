@@ -1,77 +1,140 @@
-import type { FC } from 'react';
+import type { FC, CSSProperties, RefObject } from 'react';
 
 import {
-  faBell,
+  faClock,
   faColumns,
-  faEllipsis,
+  faComment,
+  faFolder,
   faMagnifyingGlass,
   faPen,
-  faPlus,
   faRectangleList,
+  faThumbtack,
+  faXmark,
 } from '@fortawesome/free-solid-svg-icons';
-import clsx from 'clsx';
 
 import { AdIcon } from '@/packages/base';
 
-import type { ChatboxDetailData } from '../../types';
+import type { MessageHeaderData } from './useMessageHeaderData';
 
+import { formatTotalMessages } from '../../ChatboxSidebar/Chatbox/chatbox.utils';
 import styles from './Header.module.css';
 
 export type HeaderProps = {
-  data: ChatboxDetailData;
+  data: MessageHeaderData;
   detailPanelCollapsed: boolean;
   onToggleDetailPanel: () => void;
+  onEdit: () => void;
+  searchQuery: string;
+  searchActive: boolean;
+  searchInputRef: RefObject<HTMLInputElement | null>;
+  onSearchQueryChange: (value: string) => void;
+  onSearchActiveChange: (active: boolean) => void;
 };
 
 const Header: FC<HeaderProps> = ({
   data,
   detailPanelCollapsed,
   onToggleDetailPanel,
+  onEdit,
+  searchQuery,
+  searchActive,
+  searchInputRef,
+  onSearchQueryChange,
+  onSearchActiveChange,
 }) => {
-  const { title, subtitle, tags, notificationCount } = data;
+  const {
+    name,
+    description,
+    icon,
+    color,
+    iconBg,
+    pinned,
+    groupName,
+    totalMessage,
+    updatedLabel,
+    updatedAt,
+  } = data;
+
+  const messageLabel =
+    totalMessage === 1
+      ? '1 message'
+      : `${formatTotalMessages(totalMessage)} messages`;
 
   return (
-    <header className={styles.root}>
-      <div className={styles.main}>
-        <div className={styles.titleRow}>
-          <h1 className={styles.title}>{title}</h1>
-          <button
-            type="button"
-            className={styles.iconBtn}
-            aria-label="Edit title"
-          >
-            <AdIcon icon={faPen} size={13} />
-          </button>
-        </div>
-        <p className={styles.subtitle}>{subtitle}</p>
-        <div className={styles.tagsRow}>
-          {tags.map((tag) => (
+    <header
+      className={styles.root}
+      style={{ '--header-color': color } as CSSProperties}
+    >
+      <div className={styles.topRow}>
+        <div className={styles.identityBlock}>
+          <div className={styles.iconArea}>
             <span
-              key={tag.label}
-              className={clsx(
-                styles.tag,
-                tag.tone && styles[`tag_${tag.tone}`],
-              )}
+              className={styles.iconWrap}
+              style={{ background: iconBg }}
+              aria-hidden
             >
-              {tag.label}
+              <AdIcon icon={icon} size={26} />
             </span>
-          ))}
-          <button
-            type="button"
-            className={styles.addTagBtn}
-            aria-label="Add tag"
-          >
-            <AdIcon icon={faPlus} size={11} />
-          </button>
+            {pinned ? (
+              <span className={styles.overlayPin} aria-label="Pinned">
+                <AdIcon icon={faThumbtack} size={8} />
+              </span>
+            ) : null}
+          </div>
+
+          <div className={styles.textBlock}>
+            <div className={styles.titleRow}>
+              <h1 className={styles.name}>{name}</h1>
+              <button
+                type="button"
+                className={styles.editBtn}
+                aria-label={`Edit ${name}`}
+                onClick={onEdit}
+              >
+                <AdIcon icon={faPen} size={12} />
+              </button>
+            </div>
+
+            {description ? (
+              <p className={styles.description}>{description}</p>
+            ) : null}
+
+            <div className={styles.metadataRow}>
+              {groupName ? (
+                <>
+                  <span className={styles.metaItem}>
+                    <AdIcon icon={faFolder} size={10} />
+                    {groupName}
+                  </span>
+                  <span className={styles.metaDot} aria-hidden>
+                    •
+                  </span>
+                </>
+              ) : null}
+              <span className={styles.metaItem}>
+                <AdIcon icon={faComment} size={10} />
+                {messageLabel}
+              </span>
+              {updatedLabel ? (
+                <>
+                  <span className={styles.metaDot} aria-hidden>
+                    •
+                  </span>
+                  <span className={styles.metaItem}>
+                    <AdIcon icon={faClock} size={10} />
+                    <time dateTime={updatedAt ?? undefined}>
+                      {updatedLabel}
+                    </time>
+                  </span>
+                </>
+              ) : null}
+            </div>
+          </div>
         </div>
-      </div>
-      <div className={styles.actions}>
-        <button type="button" className={styles.iconBtn} aria-label="Search">
-          <AdIcon icon={faMagnifyingGlass} size={15} />
-        </button>
+
         <button
           type="button"
-          className={styles.iconBtn}
+          className={styles.toggleBtn}
           aria-label={
             detailPanelCollapsed ? 'Show detail panel' : 'Hide detail panel'
           }
@@ -83,24 +146,35 @@ const Header: FC<HeaderProps> = ({
             size={15}
           />
         </button>
-        <button
-          type="button"
-          className={styles.iconBtn}
-          aria-label="Notifications"
-        >
-          <AdIcon icon={faBell} size={15} />
-          {notificationCount != null && notificationCount > 0 ? (
-            <span className={styles.badge}>{notificationCount}</span>
-          ) : null}
-        </button>
-        <button
-          type="button"
-          className={styles.iconBtn}
-          aria-label="More options"
-        >
-          <AdIcon icon={faEllipsis} size={15} />
-        </button>
       </div>
+
+      {searchActive || searchQuery ? (
+        <div className={styles.searchRow}>
+          <span className={styles.searchIcon}>
+            <AdIcon icon={faMagnifyingGlass} size={12} />
+          </span>
+          <input
+            ref={searchInputRef}
+            type="search"
+            className={styles.searchInput}
+            placeholder="Search messages..."
+            value={searchQuery}
+            onChange={(event) => onSearchQueryChange(event.target.value)}
+            aria-label="Search messages in this chatbox"
+          />
+          <button
+            type="button"
+            className={styles.searchCloseBtn}
+            aria-label="Close search"
+            onClick={() => {
+              onSearchQueryChange('');
+              onSearchActiveChange(false);
+            }}
+          >
+            <AdIcon icon={faXmark} size={12} />
+          </button>
+        </div>
+      ) : null}
     </header>
   );
 };

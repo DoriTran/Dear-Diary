@@ -30,7 +30,7 @@ export {
   type AdNotificationProps,
   type AdNotificationShowOptions,
 } from './AdNotification';
-export { default as AdChip, type AdChipProps } from './AdChip';
+export { default as AdChip, type AdChipProps, type AdChipSize } from './AdChip';
 export {
   default as AdSelect,
   type AdSelectProps,
@@ -38,3 +38,44 @@ export {
   type AdSelectMultipleProps,
   type AdSelectSingleProps,
 } from './AdSelect';
+export { default as AdTooltip, type AdTooltipProps } from './AdTooltip';
+export {
+  default as AdIconPicker,
+  AD_ICON_KEYS,
+  resolveAdIcon,
+  type AdIconPickerProps,
+  type AdIconKey,
+} from './AdIconPicker';
+export {
+  default as AdColorPicker,
+  AD_COLOR_SWATCHES,
+  type AdColorPickerProps,
+} from './AdColorPicker';
+export {
+  default as AdMenu,
+  AdMenuItem,
+  type AdMenuProps,
+  type AdMenuItemProps,
+} from './AdMenu';
+export {
+  default as AdActionButton,
+  type AdActionButtonProps,
+} from './AdActionButton';
+export {
+  default as AdEmojiPicker,
+  AD_COMPOSER_EMOJIS,
+  AD_DEFAULT_EMOJIS,
+  type AdEmojiPickerProps,
+} from './AdEmojiPicker';
+export {
+  default as AdEmojiIconPicker,
+  type AdEmojiIconPickerProps,
+} from './AdEmojiIconPicker';
+export {
+  default as AdQuickReactionBar,
+  type AdQuickReactionBarProps,
+} from './AdQuickReactionBar';
+export {
+  default as AdConfirmDialog,
+  type AdConfirmDialogProps,
+} from './AdConfirmDialog';

@@ -19,9 +19,18 @@ import { useSidebarDnD } from './useSidebarDnD';
 export type ChatboxSidebarProps = {
   selectedId?: string;
   onSelect?: (id: string) => void;
+  onOpenCreate: (entity: 'chatbox' | 'group') => void;
+  onEditChatbox: (id: string) => void;
+  onEditGroup: (id: string) => void;
 };
 
-const ChatboxSidebar: FC<ChatboxSidebarProps> = ({ selectedId, onSelect }) => {
+const ChatboxSidebar: FC<ChatboxSidebarProps> = ({
+  selectedId,
+  onSelect,
+  onOpenCreate,
+  onEditChatbox,
+  onEditGroup,
+}) => {
   const hydrated = useDiaryHydrated();
   const seedIfEmpty = useDiaryStore('seedIfEmpty');
   const { rows, swap, add, remove } = useSidebarDnD();
@@ -47,7 +56,7 @@ const ChatboxSidebar: FC<ChatboxSidebarProps> = ({ selectedId, onSelect }) => {
       className={styles.root}
       aria-label="My Diary chatboxes"
     >
-      <Header />
+      <Header onOpenCreate={onOpenCreate} />
 
       <div className={styles.searchRow}>
         <Search value={searchQuery} onChange={setSearchQuery} />
@@ -87,6 +96,8 @@ const ChatboxSidebar: FC<ChatboxSidebarProps> = ({ selectedId, onSelect }) => {
                     data={view.data}
                     selectedId={selectedId}
                     onSelect={onSelect}
+                    onEditGroup={onEditGroup}
+                    onEditChatbox={onEditChatbox}
                     extraScrollOffset={scrollerOffset}
                     dndEnabled={dndEnabled}
                     listLocked={isListLocked}
@@ -101,6 +112,7 @@ const ChatboxSidebar: FC<ChatboxSidebarProps> = ({ selectedId, onSelect }) => {
                     itemOf="diary-list"
                     selectedId={selectedId}
                     onSelect={onSelect}
+                    onEdit={onEditChatbox}
                     extraScrollOffset={scrollerOffset}
                     dndEnabled={dndEnabled}
                     listLocked={isListLocked}

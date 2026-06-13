@@ -14,6 +14,7 @@ export type SortableChatboxProps = {
   itemOf: 'diary-list' | 'diary-group';
   selectedId?: string;
   onSelect?: (id: string) => void;
+  onEdit?: (id: string) => void;
   extraScrollOffset?: ScrollOffset;
   onSortableChange: (current: number, previous: number) => void;
   dndEnabled?: boolean;
@@ -25,6 +26,7 @@ const SortableChatbox: FC<SortableChatboxProps> = ({
   itemOf,
   selectedId,
   onSelect,
+  onEdit,
   extraScrollOffset,
   onSortableChange,
   dndEnabled = true,
@@ -57,6 +59,7 @@ const SortableChatbox: FC<SortableChatboxProps> = ({
           data={data}
           selected={data.id === selectedId}
           onSelect={onSelect}
+          onEdit={onEdit}
           suppressTooltip={suppressTooltip}
         />
       </div>

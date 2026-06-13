@@ -33,8 +33,19 @@ export type DiaryStoreActions = {
 
   createMessage: (data: Partial<Message>) => string;
   updateMessage: (messageId: string, data: MessageUpdateData) => void;
+  updateMessageContent: (messageId: string, data: MessageUpdateData) => void;
+  patchMessage: (messageId: string, data: MessagePatchData) => void;
   deleteMessage: (messageId: string) => void;
   moveMessage: (messageId: string, targetChatboxId: string) => void;
+  toggleMessagePin: (messageId: string) => void;
+  toggleMessageArchive: (messageId: string) => void;
+  toggleMessageReaction: (messageId: string, emoji: string) => void;
+  setMessageTags: (messageId: string, tagIds: string[]) => void;
+  forwardMessage: (
+    sourceMessageId: string,
+    targetChatboxId: string,
+    caption?: string,
+  ) => string;
 
   // #endregion
 
@@ -94,8 +105,7 @@ export type Group = {
 
 // #endregion
 
-// #region Chatbox
-
+// #region [Chatbox]
 export type Chatbox = {
   id: string;
   groupId: string | null;
@@ -121,14 +131,24 @@ export type ChatboxTagStatistic = {
   count: number;
 };
 
-export type ChatboxUpdateData = Pick<
-  Chatbox,
-  'name' | 'description' | 'icon' | 'color' | 'pinned' | 'archived'
->;
+export type ChatboxUpdateData = Partial<
+  Pick<
+    Chatbox,
+    | 'name'
+    | 'description'
+    | 'icon'
+    | 'color'
+    | 'pinned'
+    | 'archived'
+    | 'notificationEnabled'
+  >
+> & {
+  tags?: ChatboxTagStatistic[];
+};
 
 // #endregion
 
-// #region Tag
+// #region [Tag]
 
 export type Tag = {
   id: string;
@@ -138,15 +158,94 @@ export type Tag = {
 
 // #endregion
 
-// #region Message Base
+// #region [Message]
+
+// #region Shared
+
+export type RichTextContent = {
+  text: string;
+};
+
+// #endregion
+
+// #region Attachments
+
+export type Attachment =
+  | ImageAttachment
+  | VideoAttachment
+  | FileAttachment
+  | LinkAttachment;
+
+export type AttachmentBase = {
+  id: string;
+  name?: string;
+};
+
+export type ImageAttachment = AttachmentBase & {
+  type: 'image';
+  url: string;
+  width?: number;
+  height?: number;
+};
+
+export type VideoAttachment = AttachmentBase & {
+  type: 'video';
+  url: string;
+  thumbnail?: string;
+  duration?: number;
+};
+
+export type FileAttachment = AttachmentBase & {
+  type: 'file';
+  url: string;
+  mimeType: string;
+  size?: number;
+};
+
+export type LinkAttachment = AttachmentBase & {
+  type: 'link';
+  url: string;
+};
+
+// #endregion
+
+// #region Message Decoration
+export type MessageDecoration = TicketDecoration | CountdownDecoration;
+
+export type TicketDecoration = {
+  type: 'ticket';
+  title: string;
+  state: 'todo' | 'doing' | 'done';
+  ticked: boolean;
+};
+
+export type CountdownDecoration = {
+  type: 'countdown';
+  title: string;
+  targetDate: string;
+  pause: boolean;
+};
+
+// #endregion
+
+// #region Message Types
+export type Message = TextMessage | TodoMessage | AIMessage;
+
+export type MessageSender = 'user' | 'assistant';
 
 export type MessageBase = {
   id: string;
   chatboxId: string;
+  sender: MessageSender;
   tagIds: string[];
   pinned: boolean;
+  archived: boolean;
+  replyToMessageId: string | null;
+  sourceMessageId: string | null;
   reactions: MessageReaction[];
   edited: boolean;
+  attachments: Attachment[];
+  decorations: MessageDecoration[];
   createdAt: string;
   updatedAt: string | null;
 };
@@ -156,58 +255,15 @@ export type MessageReaction = {
   count: number;
 };
 
-// #endregion
-
-// #region Message
-
-export type Message =
-  | TextMessage
-  | ImageMessage
-  | VideoMessage
-  | TodoMessage
-  | TicketMessage
-  | CountdownMessage
-  | AIMessage;
-
-// #endregion
-
-// #region Text Message
-
 export type TextMessage = MessageBase & {
   type: 'text';
-  content: {
-    text: string;
-  };
+  content: RichTextContent;
 };
 
-// #endregion
-
-// #region Image Message
-
-export type ImageMessage = MessageBase & {
-  type: 'image';
-  content: {
-    url: string;
-    width?: number;
-    height?: number;
-  };
+export type AIMessage = MessageBase & {
+  type: 'ai';
+  content: RichTextContent;
 };
-
-// #endregion
-
-// #region Video Message
-
-export type VideoMessage = MessageBase & {
-  type: 'video';
-  content: {
-    url: string;
-    thumbnail?: string;
-  };
-};
-
-// #endregion
-
-// #region Todo Message
 
 export type TodoMessage = MessageBase & {
   type: 'todo';
@@ -218,49 +274,15 @@ export type TodoMessage = MessageBase & {
 
 export type TodoItem = {
   id: string;
-  label: string;
   completed: boolean;
+  content: RichTextContent;
+  attachments: Attachment[];
 };
+// #endregion
 
 // #endregion
 
-// #region Ticket Message
-
-export type TicketMessage = MessageBase & {
-  type: 'ticket';
-  content: {
-    title: string;
-    description?: string;
-    status: 'todo' | 'doing' | 'done';
-  };
-};
-
-// #endregion
-
-// #region Countdown Message
-
-export type CountdownMessage = MessageBase & {
-  type: 'countdown';
-  content: {
-    title: string;
-    targetDate: string;
-  };
-};
-
-// #endregion
-
-// #region AI Message
-
-export type AIMessage = MessageBase & {
-  type: 'ai';
-  content: {
-    text: string;
-  };
-};
-
-// #endregion
-
-// #region Helpers
+// #region [Helpers]
 
 /* eslint-disable @typescript-eslint/no-duplicate-type-constituents -- semantic id unions (all `string` today) */
 export type DiaryEntityId =
@@ -275,6 +297,18 @@ export type MessageType = Message['type'];
 
 export type MessageUpdateData = Partial<
   Omit<Message, 'id' | 'chatboxId' | 'createdAt' | 'edited' | 'updatedAt'>
+>;
+
+export type MessagePatchData = Partial<
+  Pick<
+    Message,
+    | 'tagIds'
+    | 'pinned'
+    | 'archived'
+    | 'reactions'
+    | 'replyToMessageId'
+    | 'sourceMessageId'
+  >
 >;
 
 // #endregion

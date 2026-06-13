@@ -1,10 +1,8 @@
 import type { FC } from 'react';
 
-import { AdModal } from '@/packages/base';
+import DiaryFormModal, { type DiaryFormModalState } from './DiaryFormModal';
 
-import CreateChatboxForm from './CreateChatboxForm';
-import CreateGroupForm from './CreateGroupForm';
-
+/** @deprecated Use DiaryFormModal with full state instead */
 export type CreateModalMode = 'chatbox' | 'group' | null;
 
 export type CreateModalProps = {
@@ -13,23 +11,14 @@ export type CreateModalProps = {
 };
 
 const CreateModal: FC<CreateModalProps> = ({ mode, onClose }) => {
-  const title =
+  const state: DiaryFormModalState =
     mode === 'chatbox'
-      ? 'Start new chatbox'
+      ? { action: 'create', entity: 'chatbox' }
       : mode === 'group'
-        ? 'Create new group'
-        : '';
+        ? { action: 'create', entity: 'group' }
+        : null;
 
-  return (
-    <AdModal opened={mode !== null} onClose={onClose} title={title} size="md">
-      {mode === 'chatbox' ? (
-        <CreateChatboxForm onCancel={onClose} onCreated={onClose} />
-      ) : null}
-      {mode === 'group' ? (
-        <CreateGroupForm onCancel={onClose} onCreated={onClose} />
-      ) : null}
-    </AdModal>
-  );
+  return <DiaryFormModal state={state} onClose={onClose} />;
 };
 
 export default CreateModal;

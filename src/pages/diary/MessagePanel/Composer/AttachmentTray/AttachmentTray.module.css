@@ -1,0 +1,117 @@
+.card {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
+  min-width: 8.5rem;
+  max-width: 11rem;
+  padding: 0.4rem 0.55rem;
+  border: 1px solid var(--border-soft);
+  border-radius: var(--radius-md);
+  background: var(--surface);
+  box-shadow: var(--shadow-sm);
+}
+
+.cardCompact {
+  min-width: 6.5rem;
+  max-width: 9rem;
+  padding: 0.3rem 0.45rem;
+}
+
+.thumb {
+  display: flex;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: center;
+  width: 2rem;
+  height: 2rem;
+  overflow: hidden;
+  border-radius: var(--radius-sm);
+  background: var(--surface-soft);
+  color: var(--text-muted);
+}
+
+.thumbCompact {
+  width: 1.5rem;
+  height: 1.5rem;
+}
+
+.thumbImage {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.meta {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: 0.05rem;
+  min-width: 0;
+}
+
+.name {
+  overflow: hidden;
+  font-size: var(--font-2xs);
+  font-weight: var(--font-medium);
+  color: var(--text);
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.size {
+  font-size: 0.65rem;
+  color: var(--text-soft);
+}
+
+.removeBtn {
+  position: absolute;
+  top: 0.15rem;
+  right: 0.15rem;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 1rem;
+  height: 1rem;
+  border: none;
+  border-radius: 999px;
+  font-size: 0.65rem;
+  line-height: 1;
+  color: var(--text-muted);
+  background: var(--surface);
+  cursor: pointer;
+}
+
+.addBtn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 3.25rem;
+  height: 3.25rem;
+  border: 1px dashed var(--border-soft);
+  border-radius: var(--radius-md);
+  color: var(--text-muted);
+  background: transparent;
+  cursor: pointer;
+}
+
+.addBtn:hover {
+  color: var(--text);
+  border-color: var(--primary);
+}
+
+.tray {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.45rem;
+  align-items: flex-start;
+  transition: opacity var(--transition-fast);
+}
+
+.trayDimmed {
+  opacity: 0.55;
+}
+
+.hiddenInput {
+  display: none;
+}

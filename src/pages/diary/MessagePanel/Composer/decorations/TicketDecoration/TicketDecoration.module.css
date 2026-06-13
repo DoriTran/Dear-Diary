@@ -1,0 +1,70 @@
+.shell {
+  display: flex;
+  overflow: hidden;
+  border-radius: var(--radius-lg);
+  background: color-mix(in srgb, #c4b5fd 28%, var(--surface));
+  border: 1px solid color-mix(in srgb, #8b5cf6 25%, var(--border-soft));
+}
+
+.header {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.35rem 0.65rem 0;
+  font-size: var(--font-2xs);
+  font-weight: var(--font-semibold);
+  letter-spacing: 0.06em;
+  color: color-mix(in srgb, #6d28d9 80%, var(--text));
+  text-transform: uppercase;
+}
+
+.body {
+  display: flex;
+  flex: 1;
+  min-width: 0;
+}
+
+.main {
+  flex: 1;
+  min-width: 0;
+  padding: 0.35rem 0.65rem 0.65rem;
+}
+
+.stub {
+  position: relative;
+  display: flex;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: center;
+  width: 3.5rem;
+  padding: 0.5rem;
+  border-left: 2px dotted color-mix(in srgb, #8b5cf6 35%, var(--border-soft));
+}
+
+.completeBtn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 2rem;
+  height: 2rem;
+  border: 1px solid var(--border-soft);
+  border-radius: 999px;
+  color: var(--text-soft);
+  background: var(--surface);
+  cursor: not-allowed;
+  opacity: 0.55;
+}
+
+.completeBtnActive {
+  cursor: pointer;
+  opacity: 1;
+  color: var(--success);
+  border-color: color-mix(in srgb, var(--success) 40%, var(--border-soft));
+}
+
+.innerColumn {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  min-width: 0;
+}

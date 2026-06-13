@@ -1,0 +1,27 @@
+.root {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.25rem;
+  margin-top: 0.35rem;
+}
+
+.chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.15rem;
+  padding: 0.1rem 0.45rem;
+  border: 1px solid var(--border-soft);
+  border-radius: 999px;
+  font-size: var(--font-2xs);
+  background: var(--surface);
+  cursor: pointer;
+}
+
+.chip[data-active] {
+  border-color: color-mix(in srgb, var(--primary) 40%, var(--border-soft));
+  background: color-mix(in srgb, var(--primary) 10%, var(--surface));
+}
+
+.chip:hover {
+  background: var(--surface-soft);
+}

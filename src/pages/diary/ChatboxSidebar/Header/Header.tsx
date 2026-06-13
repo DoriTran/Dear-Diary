@@ -3,11 +3,15 @@
 import Create from '../Create/Create';
 import styles from './Header.module.css';
 
-const Header: FC = () => {
+export type HeaderProps = {
+  onOpenCreate: (entity: 'chatbox' | 'group') => void;
+};
+
+const Header: FC<HeaderProps> = ({ onOpenCreate }) => {
   return (
     <header className={styles.root}>
       <h1 className={styles.title}>My Diary</h1>
-      <Create />
+      <Create onOpenCreate={onOpenCreate} />
     </header>
   );
 };

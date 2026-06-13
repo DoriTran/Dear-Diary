@@ -274,15 +274,17 @@ const useDiaryStoreBase = create<DiaryStore & DiaryStoreActions>()(
             return state;
           }
 
+          const { tags: nextTags, ...rest } = data;
+
           return {
             chatboxes: {
               ...state.chatboxes,
               [chatboxId]: {
                 ...current,
-                ...data,
+                ...rest,
                 id: chatboxId,
                 groupId: current.groupId,
-                tags: current.tags,
+                tags: nextTags ?? current.tags,
                 totalMessage: current.totalMessage,
                 lastMessageId: current.lastMessageId,
                 lastMessageAt: current.lastMessageAt,
@@ -405,6 +407,15 @@ const useDiaryStoreBase = create<DiaryStore & DiaryStoreActions>()(
         const message: Message = {
           ...(data as Message),
           id,
+          sender: data.sender ?? 'user',
+          tagIds: data.tagIds ?? [],
+          pinned: data.pinned ?? false,
+          archived: data.archived ?? false,
+          replyToMessageId: data.replyToMessageId ?? null,
+          sourceMessageId: data.sourceMessageId ?? null,
+          reactions: data.reactions ?? [],
+          attachments: data.attachments ?? [],
+          decorations: data.decorations ?? [],
           edited: false,
           createdAt: nowIso(),
           updatedAt: null,
@@ -456,6 +467,59 @@ const useDiaryStoreBase = create<DiaryStore & DiaryStoreActions>()(
                 id: messageId,
                 chatboxId: current.chatboxId,
                 edited: true,
+                updatedAt: nowIso(),
+              } as Message,
+            },
+          };
+
+          nextState = recalculateChatboxTags(nextState, current.chatboxId);
+
+          return nextState;
+        }),
+      updateMessageContent: (messageId, data: MessageUpdateData) =>
+        set((state) => {
+          const current = state.messages[messageId];
+
+          if (!current) {
+            return state;
+          }
+
+          let nextState: DiaryStore = {
+            ...state,
+            messages: {
+              ...state.messages,
+              [messageId]: {
+                ...current,
+                ...data,
+                id: messageId,
+                chatboxId: current.chatboxId,
+                edited: true,
+                updatedAt: nowIso(),
+              } as Message,
+            },
+          };
+
+          nextState = recalculateChatboxTags(nextState, current.chatboxId);
+
+          return nextState;
+        }),
+      patchMessage: (messageId, data) =>
+        set((state) => {
+          const current = state.messages[messageId];
+
+          if (!current) {
+            return state;
+          }
+
+          let nextState: DiaryStore = {
+            ...state,
+            messages: {
+              ...state.messages,
+              [messageId]: {
+                ...current,
+                ...data,
+                id: messageId,
+                chatboxId: current.chatboxId,
                 updatedAt: nowIso(),
               } as Message,
             },
@@ -544,6 +608,70 @@ const useDiaryStoreBase = create<DiaryStore & DiaryStoreActions>()(
 
           return nextState;
         }),
+      toggleMessagePin: (messageId) => {
+        const current = get().messages[messageId];
+
+        if (!current) {
+          return;
+        }
+
+        get().patchMessage(messageId, { pinned: !current.pinned });
+      },
+      toggleMessageArchive: (messageId) => {
+        const current = get().messages[messageId];
+
+        if (!current) {
+          return;
+        }
+
+        get().patchMessage(messageId, { archived: !current.archived });
+      },
+      toggleMessageReaction: (messageId, emoji) => {
+        const current = get().messages[messageId];
+
+        if (!current) {
+          return;
+        }
+
+        const existing = current.reactions.find(
+          (reaction) => reaction.emoji === emoji,
+        );
+
+        const reactions =
+          existing && existing.count > 0
+            ? current.reactions.filter((reaction) => reaction.emoji !== emoji)
+            : [
+                ...current.reactions.filter(
+                  (reaction) => reaction.emoji !== emoji,
+                ),
+                { emoji, count: 1 },
+              ];
+
+        get().patchMessage(messageId, { reactions });
+      },
+      setMessageTags: (messageId, tagIds) => {
+        get().patchMessage(messageId, { tagIds });
+      },
+      forwardMessage: (sourceMessageId, targetChatboxId, caption) => {
+        const source = get().messages[sourceMessageId];
+
+        if (!source) {
+          return '';
+        }
+
+        const rootSourceId = source.sourceMessageId ?? sourceMessageId;
+
+        return get().createMessage({
+          chatboxId: targetChatboxId,
+          sender: 'user',
+          type: 'text',
+          content: { text: caption?.trim() ?? '' },
+          sourceMessageId: rootSourceId,
+          tagIds: [],
+          attachments: [],
+          decorations: [],
+        });
+      },
 
       // #endregion
 

@@ -1,28 +1,49 @@
 import { useState, type FC, type FormEvent } from 'react';
 
+import { AdColorPicker, AdIconPicker } from '@/packages/base';
 import { useAppStore, useDiaryStore } from '@/store';
 
-import ColorPicker from './ColorPicker';
 import {
   CREATE_COLOR_SWATCHES,
   CREATE_ICON_KEYS,
   type CreateIconKey,
 } from './create.constants';
 import formStyles from './CreateForm.module.css';
-import IconPicker from './IconPicker';
 
-export type CreateGroupFormProps = {
-  onCancel: () => void;
-  onCreated: () => void;
+const resolveIconKey = (icon: string): CreateIconKey => {
+  if ((CREATE_ICON_KEYS as readonly string[]).includes(icon)) {
+    return icon as CreateIconKey;
+  }
+
+  return CREATE_ICON_KEYS[0];
 };
 
-const CreateGroupForm: FC<CreateGroupFormProps> = ({ onCancel, onCreated }) => {
-  const createGroup = useDiaryStore('createGroup');
-  const expandGroup = useAppStore('expandGroup');
+export type CreateGroupFormProps = {
+  groupId?: string;
+  onCancel: () => void;
+  onSaved: () => void;
+};
 
-  const [name, setName] = useState('');
-  const [icon, setIcon] = useState<CreateIconKey>(CREATE_ICON_KEYS[0]);
-  const [color, setColor] = useState<string>(CREATE_COLOR_SWATCHES[0]);
+const CreateGroupForm: FC<CreateGroupFormProps> = ({
+  groupId,
+  onCancel,
+  onSaved,
+}) => {
+  const isEdit = Boolean(groupId);
+  const createGroup = useDiaryStore('createGroup');
+  const updateGroup = useDiaryStore('updateGroup');
+  const expandGroup = useAppStore('expandGroup');
+  const groups = useDiaryStore('groups');
+
+  const existing = groupId ? groups[groupId] : null;
+
+  const [name, setName] = useState(existing?.name ?? '');
+  const [icon, setIcon] = useState<CreateIconKey>(
+    resolveIconKey(existing?.icon ?? CREATE_ICON_KEYS[0]),
+  );
+  const [color, setColor] = useState<string>(
+    existing?.color ?? CREATE_COLOR_SWATCHES[0],
+  );
 
   const handleSubmit = (event: FormEvent) => {
     event.preventDefault();
@@ -33,6 +54,16 @@ const CreateGroupForm: FC<CreateGroupFormProps> = ({ onCancel, onCreated }) => {
       return;
     }
 
+    if (isEdit && groupId) {
+      updateGroup(groupId, {
+        name: trimmedName,
+        icon,
+        color,
+      });
+      onSaved();
+      return;
+    }
+
     const newId = createGroup({
       name: trimmedName,
       icon,
@@ -40,7 +71,7 @@ const CreateGroupForm: FC<CreateGroupFormProps> = ({ onCancel, onCreated }) => {
     });
 
     expandGroup(newId);
-    onCreated();
+    onSaved();
   };
 
   return (
@@ -59,8 +90,11 @@ const CreateGroupForm: FC<CreateGroupFormProps> = ({ onCancel, onCreated }) => {
         />
       </div>
 
-      <IconPicker value={icon} onChange={setIcon} />
-      <ColorPicker value={color} onChange={setColor} />
+      <AdIconPicker
+        value={icon}
+        onChange={(value) => setIcon(value as CreateIconKey)}
+      />
+      <AdColorPicker value={color} onChange={setColor} />
 
       <div className={formStyles.actions}>
         <button
@@ -75,7 +109,7 @@ const CreateGroupForm: FC<CreateGroupFormProps> = ({ onCancel, onCreated }) => {
           className={formStyles.btnPrimary}
           disabled={!name.trim()}
         >
-          Create
+          {isEdit ? 'Save' : 'Create'}
         </button>
       </div>
     </form>

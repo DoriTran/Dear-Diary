@@ -2,58 +2,35 @@
   faBell,
   faBoxArchive,
   faEllipsis,
+  faPen,
   faThumbtack,
 } from '@fortawesome/free-solid-svg-icons';
-import { Tooltip } from '@mantine/core';
 import clsx from 'clsx';
-import {
-  useLayoutEffect,
-  useMemo,
-  useRef,
-  useState,
-  type CSSProperties,
-  type FC,
-} from 'react';
+import { useState, type CSSProperties, type FC } from 'react';
 
-import { AdChip, AdIcon } from '@/packages/base';
+import { AdIcon, AdMenu, AdMenuItem, AdTooltip } from '@/packages/base';
 import LayoutCard from '@/packages/ui/LayoutCard/LayoutCard';
 
 import type { ChatboxData } from '../../types';
 
 import styles from './Chatbox.module.css';
-import {
-  calculateFittingTagCount,
-  formatChatboxTime,
-  formatTotalMessages,
-  sortTagsByCount,
-  type ResolvedChatboxTag,
-} from './chatbox.utils';
+import { formatChatboxTime, formatTotalMessages } from './chatbox.utils';
+import ChatboxTagRow from './ChatboxTagRow';
 
 export type ChatboxProps = {
   data: ChatboxData;
   selected?: boolean;
   onSelect?: (id: string) => void;
+  onEdit?: (id: string) => void;
   /** Suppress hover tooltip (e.g. while dragging). */
   suppressTooltip?: boolean;
 };
-
-const TAG_GAP_PX = 4.8;
-
-type TagLayout = {
-  visibleCount: number;
-  overflowCount: number;
-};
-
-const applyTagLayout = (prev: TagLayout, next: TagLayout): TagLayout =>
-  prev.visibleCount === next.visibleCount &&
-  prev.overflowCount === next.overflowCount
-    ? prev
-    : next;
 
 const Chatbox: FC<ChatboxProps> = ({
   data,
   selected,
   onSelect,
+  onEdit,
   suppressTooltip = false,
 }) => {
   const {
@@ -73,76 +50,8 @@ const Chatbox: FC<ChatboxProps> = ({
     lastMessageAt,
   } = data;
 
-  const tagsKey = tags
-    .map((tag) => `${tag.label}:${tag.count}:${tag.color}`)
-    .join('|');
-  const sortedTags = useMemo(() => sortTagsByCount(tags), [tagsKey]);
+  const [menuOpen, setMenuOpen] = useState(false);
   const formattedTime = formatChatboxTime(lastMessageAt);
-
-  const tagsContainerRef = useRef<HTMLDivElement>(null);
-  const tagMeasureRef = useRef<HTMLDivElement>(null);
-  const overflowMeasureRef = useRef<HTMLSpanElement>(null);
-  const [tagLayout, setTagLayout] = useState({
-    visibleCount: sortedTags.length,
-    overflowCount: 0,
-  });
-  const [layoutTagsKey, setLayoutTagsKey] = useState(tagsKey);
-
-  if (layoutTagsKey !== tagsKey) {
-    setLayoutTagsKey(tagsKey);
-    setTagLayout({
-      visibleCount: sortedTags.length,
-      overflowCount: 0,
-    });
-  }
-
-  useLayoutEffect(() => {
-    if (sortedTags.length === 0) {
-      return;
-    }
-
-    const container = tagsContainerRef.current;
-    const measureRow = tagMeasureRef.current;
-    const overflowMeasure = overflowMeasureRef.current;
-
-    if (!container || !measureRow || !overflowMeasure) {
-      return;
-    }
-
-    const measure = () => {
-      const containerWidth = container.clientWidth;
-
-      if (containerWidth <= 0) {
-        return;
-      }
-
-      const tagElements = Array.from(
-        measureRow.querySelectorAll<HTMLElement>('[data-tag-measure]'),
-      );
-      const tagWidths = tagElements.map((element) => element.offsetWidth);
-      const overflowChipWidth = overflowMeasure.offsetWidth;
-
-      setTagLayout((prev) =>
-        applyTagLayout(
-          prev,
-          calculateFittingTagCount(
-            tagWidths,
-            containerWidth,
-            TAG_GAP_PX,
-            overflowChipWidth,
-          ),
-        ),
-      );
-    };
-
-    const observer = new ResizeObserver(measure);
-    observer.observe(container);
-
-    return () => observer.disconnect();
-  }, [tagsKey, sortedTags.length]);
-
-  const visibleTags = sortedTags.slice(0, tagLayout.visibleCount);
-  const overflowCount = tagLayout.overflowCount;
 
   const tooltipLabel = (
     <div className={styles.tooltipContent}>
@@ -153,18 +62,8 @@ const Chatbox: FC<ChatboxProps> = ({
     </div>
   );
 
-  const renderTagChip = (tag: ResolvedChatboxTag, measure = false) => (
-    <AdChip
-      key={measure ? `measure-${tag.label}` : tag.label}
-      label={tag.label}
-      color={tag.color}
-      count={tag.count}
-      data-tag-measure={measure}
-    />
-  );
-
   return (
-    <Tooltip
+    <AdTooltip
       label={tooltipLabel}
       openDelay={500}
       position="right"
@@ -245,39 +144,44 @@ const Chatbox: FC<ChatboxProps> = ({
             </div>
           </div>
 
-          {sortedTags.length > 0 ? (
-            <div className={styles.tagsContainer} ref={tagsContainerRef}>
-              <div className={styles.tagsMeasure} aria-hidden>
-                {sortedTags.map((tag) => renderTagChip(tag, true))}
-                <span
-                  ref={overflowMeasureRef}
-                  className={styles.tagOverflow}
-                  data-overflow-measure
-                >
-                  +{sortedTags.length}
-                </span>
-              </div>
-
-              <div className={styles.tags}>
-                {visibleTags.map((tag) => renderTagChip(tag))}
-                {overflowCount > 0 ? (
-                  <span className={styles.tagOverflow}>+{overflowCount}</span>
-                ) : null}
-              </div>
-            </div>
-          ) : null}
+          <ChatboxTagRow tags={tags} className={styles.tagsContainer} />
         </button>
 
-        <button
-          type="button"
-          className={styles.menuBtn}
-          aria-label={`${name} options`}
-          onClick={(event) => event.stopPropagation()}
+        <AdMenu
+          offset={4}
+          onChange={setMenuOpen}
+          opened={menuOpen}
+          position="bottom"
+          width={160}
+          anchor={
+            <button
+              type="button"
+              className={styles.menuBtn}
+              aria-label={`${name} options`}
+              aria-expanded={menuOpen}
+              aria-haspopup="menu"
+              onClick={(event) => {
+                event.stopPropagation();
+                setMenuOpen((value) => !value);
+              }}
+            >
+              <AdIcon icon={faEllipsis} size={12} />
+            </button>
+          }
         >
-          <AdIcon icon={faEllipsis} size={12} />
-        </button>
+          <AdMenuItem
+            onClick={(event) => {
+              event.stopPropagation();
+              setMenuOpen(false);
+              onEdit?.(id);
+            }}
+          >
+            <AdIcon icon={faPen} size={12} />
+            Edit
+          </AdMenuItem>
+        </AdMenu>
       </LayoutCard>
-    </Tooltip>
+    </AdTooltip>
   );
 };
 

@@ -1,32 +1,46 @@
 import { useMemo, useState, type FC, type FormEvent } from 'react';
 
-import { AdSelect } from '@/packages/base';
+import { AdColorPicker, AdIconPicker, AdSelect } from '@/packages/base';
 import { useAppStore, useDiaryStore } from '@/store';
 
-import ColorPicker from './ColorPicker';
 import {
   CREATE_COLOR_SWATCHES,
   CREATE_ICON_KEYS,
   type CreateIconKey,
 } from './create.constants';
 import formStyles from './CreateForm.module.css';
-import IconPicker from './IconPicker';
+
+const resolveIconKey = (icon: string): CreateIconKey => {
+  if ((CREATE_ICON_KEYS as readonly string[]).includes(icon)) {
+    return icon as CreateIconKey;
+  }
+
+  return CREATE_ICON_KEYS[0];
+};
 
 export type CreateChatboxFormProps = {
+  chatboxId?: string;
   onCancel: () => void;
-  onCreated: () => void;
+  onSaved: () => void;
 };
 
 const CreateChatboxForm: FC<CreateChatboxFormProps> = ({
+  chatboxId,
   onCancel,
-  onCreated,
+  onSaved,
 }) => {
+  const isEdit = Boolean(chatboxId);
   const createChatbox = useDiaryStore('createChatbox');
+  const updateChatbox = useDiaryStore('updateChatbox');
+  const moveChatboxToGroup = useDiaryStore('moveChatboxToGroup');
   const createTag = useDiaryStore('createTag');
   const selectChatbox = useAppStore('selectChatbox');
   const groups = useDiaryStore('groups');
   const tags = useDiaryStore('tags');
+  const chatboxes = useDiaryStore('chatboxes');
   const rootOrders = useDiaryStore('orders').rootOrders;
+
+  const existing = chatboxId ? chatboxes[chatboxId] : null;
 
   const groupOptions = useMemo(
     () =>
@@ -36,12 +50,18 @@ const CreateChatboxForm: FC<CreateChatboxFormProps> = ({
     [groups, rootOrders],
   );
 
-  const [name, setName] = useState('');
-  const [description, setDescription] = useState('');
-  const [icon, setIcon] = useState<CreateIconKey>(CREATE_ICON_KEYS[0]);
-  const [color, setColor] = useState<string>(CREATE_COLOR_SWATCHES[0]);
-  const [groupId, setGroupId] = useState('');
-  const [tagIds, setTagIds] = useState<string[]>([]);
+  const [name, setName] = useState(existing?.name ?? '');
+  const [description, setDescription] = useState(existing?.description ?? '');
+  const [icon, setIcon] = useState<CreateIconKey>(
+    resolveIconKey(existing?.icon ?? CREATE_ICON_KEYS[0]),
+  );
+  const [color, setColor] = useState<string>(
+    existing?.color ?? CREATE_COLOR_SWATCHES[0],
+  );
+  const [groupId, setGroupId] = useState(existing?.groupId ?? '');
+  const [tagIds, setTagIds] = useState<string[]>(
+    existing?.tags.map((stat) => stat.tagId) ?? [],
+  );
 
   const tagOptions = useMemo(
     () =>
@@ -62,6 +82,33 @@ const CreateChatboxForm: FC<CreateChatboxFormProps> = ({
       return;
     }
 
+    if (isEdit && chatboxId && existing) {
+      const countByTagId = new Map(
+        existing.tags.map((stat) => [stat.tagId, stat.count]),
+      );
+      const nextTags = tagIds.map((tagId) => ({
+        tagId,
+        count: countByTagId.get(tagId) ?? 0,
+      }));
+
+      updateChatbox(chatboxId, {
+        name: trimmedName,
+        description: description.trim(),
+        icon,
+        color,
+        tags: nextTags,
+      });
+
+      const nextGroupId = groupId || null;
+
+      if (nextGroupId !== existing.groupId) {
+        moveChatboxToGroup(chatboxId, nextGroupId);
+      }
+
+      onSaved();
+      return;
+    }
+
     const newId = createChatbox({
       name: trimmedName,
       description: description.trim(),
@@ -72,7 +119,7 @@ const CreateChatboxForm: FC<CreateChatboxFormProps> = ({
     });
 
     selectChatbox(newId);
-    onCreated();
+    onSaved();
   };
 
   return (
@@ -107,8 +154,11 @@ const CreateChatboxForm: FC<CreateChatboxFormProps> = ({
         />
       </div>
 
-      <IconPicker value={icon} onChange={setIcon} />
-      <ColorPicker value={color} onChange={setColor} />
+      <AdIconPicker
+        value={icon}
+        onChange={(value) => setIcon(value as CreateIconKey)}
+      />
+      <AdColorPicker value={color} onChange={setColor} />
 
       <AdSelect
         multiple
@@ -121,13 +171,13 @@ const CreateChatboxForm: FC<CreateChatboxFormProps> = ({
         create
         emptyLabel="No tags found"
         onCreate={(label) => {
-          const existing = Object.values(tags).find(
+          const existingTag = Object.values(tags).find(
             (tag) => tag.label.toLowerCase() === label.toLowerCase(),
           );
 
-          if (existing) {
+          if (existingTag) {
             setTagIds((prev) =>
-              prev.includes(existing.id) ? prev : [...prev, existing.id],
+              prev.includes(existingTag.id) ? prev : [...prev, existingTag.id],
             );
             return;
           }
@@ -169,7 +219,7 @@ const CreateChatboxForm: FC<CreateChatboxFormProps> = ({
           className={formStyles.btnPrimary}
           disabled={!name.trim()}
         >
-          Create
+          {isEdit ? 'Save' : 'Create'}
         </button>
       </div>
     </form>

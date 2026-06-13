@@ -1,0 +1,51 @@
+.root {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  width: 100%;
+}
+
+.root:not([data-assistant]) {
+  justify-content: flex-end;
+}
+
+.root[data-assistant] {
+  justify-content: flex-start;
+}
+
+.root[data-assistant] .hoverActions {
+  order: 2;
+}
+
+.root[data-highlighted] .bubbleWrap {
+  outline: 2px solid color-mix(in srgb, var(--primary) 55%, transparent);
+  outline-offset: 2px;
+  border-radius: var(--radius-lg);
+}
+
+.hoverActions {
+  display: flex;
+  align-items: center;
+  gap: 0.2rem;
+  flex-shrink: 0;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity var(--transition-fast);
+}
+
+.root:hover .hoverActions,
+.root:focus-within .hoverActions {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.bubbleWrap {
+  min-width: 0;
+  max-width: 85%;
+}
+
+.root:not([data-assistant]) .bubbleWrap > * {
+  margin-left: 0;
+  max-width: 100%;
+}

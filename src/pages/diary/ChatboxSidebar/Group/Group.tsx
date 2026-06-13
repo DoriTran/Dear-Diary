@@ -2,10 +2,18 @@ import {
   faChevronRight,
   faEllipsis,
   faGripVertical,
+  faPen,
 } from '@fortawesome/free-solid-svg-icons';
-import { useId, useLayoutEffect, useRef, type FC, type ReactNode } from 'react';
+import {
+  useId,
+  useLayoutEffect,
+  useRef,
+  useState,
+  type FC,
+  type ReactNode,
+} from 'react';
 
-import { AdIcon } from '@/packages/base';
+import { AdIcon, AdMenu, AdMenuItem } from '@/packages/base';
 import { BrushHighlight } from '@/packages/ui';
 import LayoutCard from '@/packages/ui/LayoutCard/LayoutCard';
 import { useAppStore } from '@/store';
@@ -20,6 +28,8 @@ export type GroupProps = {
   data: GroupData;
   selectedId?: string;
   onSelect?: (id: string) => void;
+  onEditGroup?: (id: string) => void;
+  onEditChatbox?: (id: string) => void;
   renderChatbox?: (chatbox: GroupData['chatboxes'][number]) => ReactNode;
 };
 
@@ -27,11 +37,14 @@ const Group: FC<GroupProps> = ({
   data,
   selectedId,
   onSelect,
+  onEditGroup,
+  onEditChatbox,
   renderChatbox,
 }) => {
   const titleId = useId();
   const listId = useId();
   const { id, title, brushColor, groupIcon, chatboxes } = data;
+  const [menuOpen, setMenuOpen] = useState(false);
 
   const { diaryPage, toggleGroup, collapseGroup } = useAppStore([
     'diaryPage',
@@ -134,13 +147,39 @@ const Group: FC<GroupProps> = ({
           </LayoutCard>
         ) : null}
       </header>
-      <button
-        className={styles.menuBtn}
-        type="button"
-        aria-label={`${title} group options`}
+      <AdMenu
+        offset={4}
+        onChange={setMenuOpen}
+        opened={menuOpen}
+        position="bottom"
+        width={160}
+        anchor={
+          <button
+            className={styles.menuBtn}
+            type="button"
+            aria-label={`${title} group options`}
+            aria-expanded={menuOpen}
+            aria-haspopup="menu"
+            onClick={(event) => {
+              event.stopPropagation();
+              setMenuOpen((value) => !value);
+            }}
+          >
+            <AdIcon icon={faEllipsis} size={14} />
+          </button>
+        }
       >
-        <AdIcon icon={faEllipsis} size={14} />
-      </button>
+        <AdMenuItem
+          onClick={(event) => {
+            event.stopPropagation();
+            setMenuOpen(false);
+            onEditGroup?.(id);
+          }}
+        >
+          <AdIcon icon={faPen} size={12} />
+          Edit
+        </AdMenuItem>
+      </AdMenu>
       <div
         className={styles.listShell}
         id={listId}
@@ -156,6 +195,7 @@ const Group: FC<GroupProps> = ({
                   data={chatbox}
                   selected={chatbox.id === selectedId}
                   onSelect={onSelect}
+                  onEdit={onEditChatbox}
                 />
               )}
             </div>

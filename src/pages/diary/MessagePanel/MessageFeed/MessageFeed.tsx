@@ -1,30 +1,37 @@
 import type { FC } from 'react';
 
-import type { MessageDayGroup } from '../../types';
+import type { MessageActionsAPI } from '../hooks/useMessageActions';
+import type { MessageDayGroup } from './message.utils';
 
-import AIMessage from './AIMessage/AIMessage';
 import DateSeparator from './DateSeparator/DateSeparator';
 import styles from './MessageFeed.module.css';
-import UserMessage from './UserMessage/UserMessage';
+import MessageRow from './MessageRow/MessageRow';
 
 export type MessageFeedProps = {
   groups: MessageDayGroup[];
+  registerRef: (messageId: string, element: HTMLElement | null) => void;
+  actions: MessageActionsAPI;
 };
 
-const MessageFeed: FC<MessageFeedProps> = ({ groups }) => {
+const MessageFeed: FC<MessageFeedProps> = ({
+  groups,
+  registerRef,
+  actions,
+}) => {
   return (
     <div className={styles.root}>
       {groups.map((group) => (
         <section key={group.date} className={styles.dayGroup}>
           <DateSeparator label={group.date} />
           <div className={styles.messages}>
-            {group.messages.map((message) =>
-              message.author === 'ai' ? (
-                <AIMessage key={message.id} message={message} />
-              ) : (
-                <UserMessage key={message.id} message={message} />
-              ),
-            )}
+            {group.messages.map((message) => (
+              <MessageRow
+                key={message.id}
+                message={message}
+                registerRef={registerRef}
+                actions={actions}
+              />
+            ))}
           </div>
         </section>
       ))}

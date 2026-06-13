@@ -1,0 +1,77 @@
+.root {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.55rem;
+  width: 100%;
+  padding: 0.55rem 0.45rem;
+  border: none;
+  border-radius: var(--radius-md);
+  background: transparent;
+  text-align: left;
+  cursor: pointer;
+  transition: var(--transition-fast);
+}
+
+.root:hover {
+  background: color-mix(in srgb, var(--primary) 6%, var(--surface));
+}
+
+.thumb,
+.thumbPlaceholder {
+  flex-shrink: 0;
+  width: 2.25rem;
+  height: 2.25rem;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--border-soft);
+  background: var(--surface-soft) center / cover no-repeat;
+}
+
+.thumbPlaceholder {
+  background: color-mix(in srgb, var(--border-soft) 40%, var(--surface-soft));
+}
+
+.body {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: 0.1rem;
+  min-width: 0;
+}
+
+.titleRow {
+  display: flex;
+  align-items: center;
+  gap: 0.3rem;
+}
+
+.title {
+  font-size: var(--font-xs);
+  font-weight: var(--font-semibold);
+  color: var(--text);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.pinIcon {
+  flex-shrink: 0;
+  color: var(--primary);
+}
+
+.snippet {
+  font-size: var(--font-2xs);
+  color: var(--text-muted);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.tags {
+  font-size: 0.6rem;
+  color: var(--text-muted);
+}
+
+.time {
+  font-size: 0.6rem;
+  color: var(--text-muted);
+}

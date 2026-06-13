@@ -3,15 +3,28 @@
   flex-shrink: 0;
   align-items: center;
   gap: 0.2rem;
-  padding: 0.08rem 0.35rem;
   border: none;
   border-radius: 999px;
-  font-size: var(--font-2xs);
   font-weight: var(--font-medium);
   line-height: 1;
   color: var(--text);
   white-space: nowrap;
   vertical-align: top;
+}
+
+.size_small {
+  padding: 0.08rem 0.35rem;
+  font-size: var(--font-2xs);
+}
+
+.size_medium {
+  padding: 0.14rem 0.55rem;
+  font-size: var(--font-xs);
+}
+
+.size_large {
+  padding: 0.2rem 0.7rem;
+  font-size: var(--font-sm);
 }
 
 .removable {
