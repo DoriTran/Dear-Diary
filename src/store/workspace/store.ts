@@ -1,3 +1,4 @@
+import { useEffect, useState } from 'react';
 import { v4 as uuidv4 } from 'uuid';
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
@@ -12,7 +13,7 @@ import type {
 
 import { idbStorage, nowIso } from '../helper';
 import shallow from '../shallow';
-import { workspaceInitialState } from './constants';
+import { workspaceInitialState, workspaceDummyState } from './constants';
 
 // #region Helpers
 
@@ -22,7 +23,7 @@ const ensureUnique = <T>(items: T[]) => Array.from(new Set(items));
 
 const useWorkspaceStoreBase = create<WorkspaceStore & WorkspaceStoreActions>()(
   persist(
-    (set) => ({
+    (set, get) => ({
       ...workspaceInitialState,
 
       // =====================================================
@@ -134,6 +135,11 @@ const useWorkspaceStoreBase = create<WorkspaceStore & WorkspaceStoreActions>()(
                 state.ui.selectedWorkspaceId === workspaceId
                   ? null
                   : state.ui.selectedWorkspaceId,
+
+              selectedRecordId:
+                state.ui.selectedWorkspaceId === workspaceId
+                  ? null
+                  : state.ui.selectedRecordId,
             },
           };
         }),
@@ -286,6 +292,15 @@ const useWorkspaceStoreBase = create<WorkspaceStore & WorkspaceStoreActions>()(
 
           return {
             records,
+
+            ui: {
+              ...state.ui,
+
+              selectedRecordId:
+                state.ui.selectedRecordId === recordId
+                  ? null
+                  : state.ui.selectedRecordId,
+            },
           };
         }),
 
@@ -320,6 +335,37 @@ const useWorkspaceStoreBase = create<WorkspaceStore & WorkspaceStoreActions>()(
             ...state.ui,
 
             selectedWorkspaceId: workspaceId,
+
+            selectedRecordId: null,
+          },
+        })),
+
+      selectRecord: (recordId) =>
+        set((state) => ({
+          ui: {
+            ...state.ui,
+
+            selectedRecordId: recordId,
+
+            inspectorOpen: recordId ? true : state.ui.inspectorOpen,
+          },
+        })),
+
+      setInspectorOpen: (open) =>
+        set((state) => ({
+          ui: {
+            ...state.ui,
+
+            inspectorOpen: open,
+          },
+        })),
+
+      setExplorerView: (view) =>
+        set((state) => ({
+          ui: {
+            ...state.ui,
+
+            explorerView: view,
           },
         })),
 
@@ -330,6 +376,18 @@ const useWorkspaceStoreBase = create<WorkspaceStore & WorkspaceStoreActions>()(
       // =====================================================
 
       // #region Utility
+
+      seedIfEmpty: () => {
+        const state = get();
+
+        if (state.orders.workspaceIds.length > 0) {
+          return;
+        }
+
+        set(() => ({
+          ...workspaceDummyState,
+        }));
+      },
 
       reset: () =>
         set(() => ({
@@ -354,8 +412,43 @@ const useWorkspaceStoreBase = create<WorkspaceStore & WorkspaceStoreActions>()(
 
         ui: state.ui,
       }),
+
+      merge: (persistedState, currentState) => {
+        const persisted = persistedState as Partial<WorkspaceStore> | undefined;
+
+        return {
+          ...currentState,
+          ...persisted,
+          ui: {
+            ...currentState.ui,
+            ...persisted?.ui,
+          },
+          orders: {
+            ...currentState.orders,
+            ...persisted?.orders,
+          },
+        };
+      },
     },
   ),
 );
 
 export const useWorkspaceStore = shallow(useWorkspaceStoreBase);
+
+export const useWorkspaceHydrated = () => {
+  const [hydrated, setHydrated] = useState(() =>
+    useWorkspaceStoreBase.persist.hasHydrated(),
+  );
+
+  useEffect(() => {
+    const unsub = useWorkspaceStoreBase.persist.onFinishHydration(() => {
+      setHydrated(true);
+    });
+
+    setHydrated(useWorkspaceStoreBase.persist.hasHydrated());
+
+    return unsub;
+  }, []);
+
+  return hydrated;
+};

@@ -1,0 +1,40 @@
+.root {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: 0.85rem;
+  min-height: 0;
+  overflow: hidden;
+}
+
+.calendarArea {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: 0.55rem;
+  min-height: 0;
+  overflow: hidden;
+}
+
+.summaryGrid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 0.65rem;
+  flex-shrink: 0;
+}
+
+.stubView {
+  display: grid;
+  place-items: center;
+  flex: 1;
+  border: 1px dashed var(--border-soft);
+  border-radius: var(--radius-lg);
+  color: var(--text-muted);
+  font-size: var(--font-sm);
+}
+
+@media (max-width: 1100px) {
+  .summaryGrid {
+    grid-template-columns: 1fr;
+  }
+}

@@ -13,6 +13,9 @@ export const workspaceInitialState: WorkspaceStore = {
 
   ui: {
     selectedWorkspaceId: null,
+    selectedRecordId: null,
+    inspectorOpen: true,
+    explorerView: 'grid',
   },
 };
 
@@ -20,41 +23,112 @@ export const workspaceDummyState: WorkspaceStore = {
   workspaces: {
     'ws:daily-work': {
       id: 'ws:daily-work',
-
       type: 'scheduler',
-
       name: 'Daily Work Meeting',
-
       description: 'Team meetings, syncs and planning.',
-
       icon: '📅',
-
       color: '#A78BFA',
-
       sourceIds: ['src:work-chat', 'src:job-chat', 'src:meeting-chat'],
-
       createdAt: '2026-01-01T00:00:00.000Z',
-
       updatedAt: null,
     },
-
+    'ws:study-plan': {
+      id: 'ws:study-plan',
+      type: 'scheduler',
+      name: 'Study Plan',
+      description: 'Personal study schedule and deadlines.',
+      icon: '📚',
+      color: '#93C5FD',
+      sourceIds: ['src:japanese-chat'],
+      createdAt: '2026-01-02T00:00:00.000Z',
+      updatedAt: null,
+    },
+    'ws:team-sprint': {
+      id: 'ws:team-sprint',
+      type: 'scheduler',
+      name: 'Team Sprint',
+      description: 'Sprint ceremonies and milestones.',
+      icon: '🏃',
+      color: '#C4B5FD',
+      sourceIds: ['src:work-chat'],
+      createdAt: '2026-01-03T00:00:00.000Z',
+      updatedAt: null,
+    },
     'ws:study-progress': {
       id: 'ws:study-progress',
-
       type: 'analytics',
-
       name: 'Study Progress',
-
       description: 'Track study performance.',
-
       icon: '📊',
-
       color: '#86EFAC',
-
       sourceIds: ['src:japanese-chat'],
-
       createdAt: '2026-01-01T00:00:00.000Z',
-
+      updatedAt: null,
+    },
+    'ws:mood-tracker': {
+      id: 'ws:mood-tracker',
+      type: 'analytics',
+      name: 'Mood Tracker',
+      description: 'Daily mood and energy trends.',
+      icon: '😊',
+      color: '#FDE68A',
+      sourceIds: [],
+      createdAt: '2026-01-04T00:00:00.000Z',
+      updatedAt: null,
+    },
+    'ws:finance-overview': {
+      id: 'ws:finance-overview',
+      type: 'analytics',
+      name: 'Finance Overview',
+      description: 'Spending and savings overview.',
+      icon: '💰',
+      color: '#FDBA74',
+      sourceIds: [],
+      createdAt: '2026-01-05T00:00:00.000Z',
+      updatedAt: null,
+    },
+    'ws:anime-tracker': {
+      id: 'ws:anime-tracker',
+      type: 'tracker',
+      name: 'Anime Tracker',
+      description: 'Track anime watch progress.',
+      icon: '🎬',
+      color: '#F9A8D4',
+      sourceIds: [],
+      createdAt: '2026-01-06T00:00:00.000Z',
+      updatedAt: null,
+    },
+    'ws:reading-tracker': {
+      id: 'ws:reading-tracker',
+      type: 'tracker',
+      name: 'Reading Tracker',
+      description: 'Books and reading goals.',
+      icon: '📖',
+      color: '#A7F3D0',
+      sourceIds: [],
+      createdAt: '2026-01-07T00:00:00.000Z',
+      updatedAt: null,
+    },
+    'ws:product-roadmap': {
+      id: 'ws:product-roadmap',
+      type: 'kanban',
+      name: 'Product Roadmap',
+      description: 'Product planning board.',
+      icon: '🗂️',
+      color: '#BFDBFE',
+      sourceIds: [],
+      createdAt: '2026-01-08T00:00:00.000Z',
+      updatedAt: null,
+    },
+    'ws:habit-tracker': {
+      id: 'ws:habit-tracker',
+      type: 'habit',
+      name: 'Habit Tracker',
+      description: 'Daily habits and streaks.',
+      icon: '✨',
+      color: '#FBCFE8',
+      sourceIds: [],
+      createdAt: '2026-01-09T00:00:00.000Z',
       updatedAt: null,
     },
   },
@@ -62,49 +136,30 @@ export const workspaceDummyState: WorkspaceStore = {
   sources: {
     'src:work-chat': {
       id: 'src:work-chat',
-
       type: 'chatbox',
-
       label: 'Work Chat',
-
-      chatboxId: 'cb:work-chat',
-
+      chatboxId: 'cb:project',
       createdAt: '2026-01-01T00:00:00.000Z',
     },
-
     'src:job-chat': {
       id: 'src:job-chat',
-
       type: 'chatbox',
-
       label: 'Job Chat',
-
-      chatboxId: 'cb:job-chat',
-
+      chatboxId: 'cb:diary',
       createdAt: '2026-01-01T00:00:00.000Z',
     },
-
     'src:meeting-chat': {
       id: 'src:meeting-chat',
-
       type: 'chatbox',
-
       label: 'Meeting Chat',
-
-      chatboxId: 'cb:meeting-chat',
-
+      chatboxId: 'cb:study',
       createdAt: '2026-01-01T00:00:00.000Z',
     },
-
     'src:japanese-chat': {
       id: 'src:japanese-chat',
-
       type: 'chatbox',
-
       label: 'Japanese Study',
-
-      chatboxId: 'cb:japanese-study',
-
+      chatboxId: 'cb:study',
       createdAt: '2026-01-01T00:00:00.000Z',
     },
   },
@@ -112,64 +167,215 @@ export const workspaceDummyState: WorkspaceStore = {
   records: {
     'record:1': {
       id: 'record:1',
-
       workspaceId: 'ws:daily-work',
-
       type: 'scheduler-event',
-
-      source: {
-        type: 'local',
-      },
-
+      source: { type: 'local' },
       payload: {
-        title: 'Sprint Planning',
-
-        startDate: '2026-05-20T09:00:00.000Z',
-
-        endDate: '2026-05-20T10:00:00.000Z',
-
-        allDay: false,
+        title: 'Weekly Report Preparation',
+        description: 'Prepare weekly status report for the team.',
+        startDate: '2026-05-05T00:00:00.000Z',
+        endDate: '2026-05-09T23:59:59.000Z',
+        allDay: true,
+        tags: ['#report', '#weekly'],
+        notes: 'Block time each morning to compile updates.',
       },
-
       createdAt: '2026-01-01T00:00:00.000Z',
-
       updatedAt: null,
     },
-
     'record:2': {
       id: 'record:2',
-
       workspaceId: 'ws:daily-work',
-
       type: 'scheduler-event',
-
-      source: {
-        type: 'chatbox',
-
-        chatboxId: 'cb:work-chat',
-      },
-
+      source: { type: 'chatbox', chatboxId: 'cb:project' },
       payload: {
         title: 'Team Standup',
-
+        description: 'Daily team sync meeting.',
+        startDate: '2026-05-06T09:00:00.000Z',
+        endDate: '2026-05-06T09:30:00.000Z',
+        allDay: false,
+        tags: ['#meeting', '#standup'],
+        linkedMessageIds: ['ms:project-1', 'ms:project-2', 'ms:study-1'],
+      },
+      createdAt: '2026-01-01T00:00:00.000Z',
+      updatedAt: null,
+    },
+    'record:3': {
+      id: 'record:3',
+      workspaceId: 'ws:daily-work',
+      type: 'scheduler-event',
+      source: { type: 'chatbox', chatboxId: 'cb:diary' },
+      payload: {
+        title: 'Job Interview',
+        description: 'Technical interview with hiring manager.',
+        startDate: '2026-05-08T14:00:00.000Z',
+        endDate: '2026-05-08T15:00:00.000Z',
+        allDay: false,
+        tags: ['#interview', '#career'],
+      },
+      createdAt: '2026-01-01T00:00:00.000Z',
+      updatedAt: null,
+    },
+    'record:4': {
+      id: 'record:4',
+      workspaceId: 'ws:daily-work',
+      type: 'scheduler-event',
+      source: { type: 'chatbox', chatboxId: 'cb:study' },
+      payload: {
+        title: 'Design Review',
+        description: 'Review UI mockups with the team.',
+        startDate: '2026-05-12T11:00:00.000Z',
+        endDate: '2026-05-12T12:00:00.000Z',
+        allDay: false,
+        tags: ['#design', '#review'],
+      },
+      createdAt: '2026-01-01T00:00:00.000Z',
+      updatedAt: null,
+    },
+    'record:5': {
+      id: 'record:5',
+      workspaceId: 'ws:daily-work',
+      type: 'scheduler-event',
+      source: { type: 'local' },
+      payload: {
+        title: 'Sprint Planning',
+        description: 'Plan next sprint goals and tasks.',
+        startDate: '2026-05-14T09:00:00.000Z',
+        endDate: '2026-05-14T11:00:00.000Z',
+        allDay: false,
+        tags: ['#planning', '#sprint'],
+        notes: 'Bring backlog items ready for estimation.',
+      },
+      createdAt: '2026-01-01T00:00:00.000Z',
+      updatedAt: null,
+    },
+    'record:6': {
+      id: 'record:6',
+      workspaceId: 'ws:daily-work',
+      type: 'scheduler-event',
+      source: { type: 'chatbox', chatboxId: 'cb:project' },
+      payload: {
+        title: 'Client Call',
+        description:
+          'Quarterly review call with the client to discuss project progress and next milestones.',
+        startDate: '2026-05-14T15:00:00.000Z',
+        endDate: '2026-05-14T16:00:00.000Z',
+        allDay: false,
+        tags: ['#meeting', '#client', '#important'],
+        notes: 'Prepare demo slides before the call.',
+        linkedMessageIds: ['ms:project-1', 'ms:project-2', 'ms:study-1'],
+      },
+      createdAt: '2026-01-01T00:00:00.000Z',
+      updatedAt: null,
+    },
+    'record:7': {
+      id: 'record:7',
+      workspaceId: 'ws:daily-work',
+      type: 'scheduler-event',
+      source: { type: 'chatbox', chatboxId: 'cb:project' },
+      payload: {
+        title: 'Team Standup',
         startDate: '2026-05-21T09:00:00.000Z',
-
         endDate: '2026-05-21T09:30:00.000Z',
-
         allDay: false,
       },
-
       createdAt: '2026-01-01T00:00:00.000Z',
-
+      updatedAt: null,
+    },
+    'record:8': {
+      id: 'record:8',
+      workspaceId: 'ws:daily-work',
+      type: 'scheduler-event',
+      source: { type: 'local' },
+      payload: {
+        title: 'Retrospective',
+        startDate: '2026-05-22T16:00:00.000Z',
+        endDate: '2026-05-22T17:00:00.000Z',
+        allDay: false,
+        tags: ['#retro'],
+      },
+      createdAt: '2026-01-01T00:00:00.000Z',
+      updatedAt: null,
+    },
+    'record:9': {
+      id: 'record:9',
+      workspaceId: 'ws:daily-work',
+      type: 'scheduler-event',
+      source: { type: 'chatbox', chatboxId: 'cb:diary' },
+      payload: {
+        title: 'Follow-up Email',
+        startDate: '2026-05-26T10:00:00.000Z',
+        endDate: '2026-05-26T10:30:00.000Z',
+        allDay: false,
+      },
+      createdAt: '2026-01-01T00:00:00.000Z',
+      updatedAt: null,
+    },
+    'record:10': {
+      id: 'record:10',
+      workspaceId: 'ws:daily-work',
+      type: 'scheduler-event',
+      source: { type: 'chatbox', chatboxId: 'cb:study' },
+      payload: {
+        title: 'All Hands',
+        startDate: '2026-05-28T13:00:00.000Z',
+        endDate: '2026-05-28T14:00:00.000Z',
+        allDay: false,
+        tags: ['#meeting'],
+      },
+      createdAt: '2026-01-01T00:00:00.000Z',
+      updatedAt: null,
+    },
+    'record:11': {
+      id: 'record:11',
+      workspaceId: 'ws:daily-work',
+      type: 'scheduler-event',
+      source: { type: 'chatbox', chatboxId: 'cb:project' },
+      payload: {
+        title: 'Morning Sync',
+        description: 'Quick alignment before client work.',
+        startDate: '2026-06-14T09:00:00.000Z',
+        endDate: '2026-06-14T09:30:00.000Z',
+        allDay: false,
+        tags: ['#meeting', '#standup'],
+      },
+      createdAt: '2026-01-01T00:00:00.000Z',
+      updatedAt: null,
+    },
+    'record:12': {
+      id: 'record:12',
+      workspaceId: 'ws:daily-work',
+      type: 'scheduler-event',
+      source: { type: 'local' },
+      payload: {
+        title: 'Workspace Planning',
+        startDate: '2026-06-16T14:00:00.000Z',
+        endDate: '2026-06-16T15:30:00.000Z',
+        allDay: false,
+      },
+      createdAt: '2026-01-01T00:00:00.000Z',
       updatedAt: null,
     },
   },
 
   orders: {
-    workspaceIds: ['ws:daily-work', 'ws:study-progress'],
+    workspaceIds: [
+      'ws:daily-work',
+      'ws:study-progress',
+      'ws:habit-tracker',
+      'ws:study-plan',
+      'ws:team-sprint',
+      'ws:mood-tracker',
+      'ws:finance-overview',
+      'ws:anime-tracker',
+      'ws:reading-tracker',
+      'ws:product-roadmap',
+    ],
   },
 
   ui: {
     selectedWorkspaceId: 'ws:daily-work',
+    selectedRecordId: 'record:6',
+    inspectorOpen: true,
+    explorerView: 'grid',
   },
 };

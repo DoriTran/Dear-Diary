@@ -1,0 +1,27 @@
+.root {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem;
+}
+
+.tab {
+  padding: 0.35rem 0.75rem;
+  border: 1px solid var(--border-soft);
+  border-radius: 999px;
+  background: var(--surface);
+  font-size: var(--font-xs);
+  color: var(--text-muted);
+  cursor: pointer;
+}
+
+.tab:hover {
+  border-color: color-mix(in srgb, var(--workspace) 35%, var(--border-soft));
+  color: var(--text);
+}
+
+.active {
+  border-color: color-mix(in srgb, var(--workspace) 55%, var(--border-soft));
+  background: color-mix(in srgb, var(--workspace-bg) 75%, var(--surface));
+  color: var(--text);
+  font-weight: var(--font-semibold);
+}

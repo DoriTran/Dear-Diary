@@ -137,6 +137,12 @@ export type SchedulerEventPayload = {
   endDate: string;
 
   allDay: boolean;
+
+  tags?: string[];
+
+  notes?: string;
+
+  linkedMessageIds?: string[];
 };
 
 // ======================================================
@@ -189,6 +195,12 @@ export type HabitEntryPayload = {
 
 export type WorkspaceUIState = {
   selectedWorkspaceId: string | null;
+
+  selectedRecordId: string | null;
+
+  inspectorOpen: boolean;
+
+  explorerView: 'grid' | 'list';
 };
 
 // ======================================================
@@ -252,7 +264,15 @@ export type WorkspaceStoreActions = {
 
   selectWorkspace: (workspaceId: string | null) => void;
 
+  selectRecord: (recordId: string | null) => void;
+
+  setInspectorOpen: (open: boolean) => void;
+
+  setExplorerView: (view: 'grid' | 'list') => void;
+
   // Utility
+
+  seedIfEmpty: () => void;
 
   reset: () => void;
 };

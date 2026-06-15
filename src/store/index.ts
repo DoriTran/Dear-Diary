@@ -1,4 +1,5 @@
 export { useDiaryStore, useDiaryHydrated } from './diary/store';
+export { useWorkspaceStore, useWorkspaceHydrated } from './workspace/store';
 export { useAppStore, applyAppTheme } from './app/store';
 export type {
   AppMode,
