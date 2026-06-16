@@ -201,6 +201,8 @@ export type WorkspaceUIState = {
   inspectorOpen: boolean;
 
   explorerView: 'grid' | 'list';
+
+  lastUsedWorkspaceByType: Partial<Record<WorkspaceType, string>>;
 };
 
 // ======================================================

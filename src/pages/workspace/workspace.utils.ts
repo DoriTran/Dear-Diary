@@ -113,6 +113,21 @@ export const getRecentWorkspaces = (
     .slice(0, limit);
 };
 
+export const resolveWorkspaceForToolType = (
+  type: WorkspaceType,
+  workspaces: Record<string, Workspace>,
+  workspaceIds: string[],
+  lastUsedByType: Partial<Record<WorkspaceType, string>>,
+): string | null => {
+  const lastUsedId = lastUsedByType[type];
+
+  if (lastUsedId && workspaces[lastUsedId]?.type === type) {
+    return lastUsedId;
+  }
+
+  return workspaceIds.find((id) => workspaces[id]?.type === type) ?? null;
+};
+
 export const resolveRecordSourceMeta = (
   source: RecordSource,
   sources: WorkspaceSource[],

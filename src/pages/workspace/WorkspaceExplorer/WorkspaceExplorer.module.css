@@ -20,15 +20,6 @@
   padding-right: 0.2rem;
 }
 
-.scroll::-webkit-scrollbar {
-  width: 6px;
-}
-
-.scroll::-webkit-scrollbar-thumb {
-  border-radius: 999px;
-  background: var(--border-soft);
-}
-
 .byTool {
   display: flex;
   flex-direction: column;

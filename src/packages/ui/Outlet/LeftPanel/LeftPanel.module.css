@@ -6,6 +6,7 @@
   flex-direction: column;
   width: var(--left-panel-width);
   min-height: calc(100vh - 24px);
+  max-height: calc(100vh - 24px);
   margin: 12px;
   padding: 1.25rem 1rem 1rem;
   background: var(--surface);
@@ -191,6 +192,30 @@
   --nav-bg-hover: var(--scheduler-hover);
 }
 
+.navItem[data-module='analytics'] {
+  --nav-accent: var(--analytics);
+  --nav-bg-active: var(--analytics-bg);
+  --nav-bg-hover: var(--analytics-hover);
+}
+
+.navItem[data-module='tracker'] {
+  --nav-accent: var(--tracker);
+  --nav-bg-active: var(--tracker-bg);
+  --nav-bg-hover: var(--tracker-hover);
+}
+
+.navItem[data-module='kanban'] {
+  --nav-accent: var(--kanban);
+  --nav-bg-active: var(--kanban-bg);
+  --nav-bg-hover: var(--kanban-hover);
+}
+
+.navItem[data-module='habit'] {
+  --nav-accent: var(--habit);
+  --nav-bg-active: var(--habit-bg);
+  --nav-bg-hover: var(--habit-hover);
+}
+
 .navItem[data-module='settings'] {
   --nav-accent: var(--settings);
   --nav-bg-active: var(--settings-bg);
@@ -219,7 +244,7 @@
   color: var(--nav-accent);
 }
 
-.navItem span {
+.navItemLabel {
   position: absolute;
   top: 50%;
   right: 0.75rem;
@@ -246,7 +271,7 @@
   padding-inline: calc((100% - 16px) / 2);
 }
 
-.panel[data-collapsed] .navItem span {
+.panel[data-collapsed] .navItemLabel {
   opacity: 0;
   transition-delay: 0ms;
 }

@@ -1,46 +1,52 @@
-import type { FC } from 'react';
+import { useMemo, type FC } from 'react';
 
-import {
-  faCalendar,
-  faChartColumn,
-  faWandMagicSparkles,
-} from '@fortawesome/free-solid-svg-icons';
 import { useLocation, useNavigate } from 'react-router-dom';
 
+import { resolveWorkspaceForToolType } from '@/pages/workspace/workspace.utils';
 import { AdDivider, AdIcon } from '@/packages/base';
-import { useAppStore } from '@/store';
+import { useAppStore, useDiaryHydrated, useDiaryStore, useWorkspaceStore } from '@/store';
 
 import LayoutCard from '../../LayoutCard/LayoutCard';
 import Logo from '../../Logo/Logo';
 import ThemeSelection from '../../ThemeSelection/ThemeSelection';
+import { getLatestUpdatedChatboxes } from './leftPanel.utils';
 import styles from './LeftPanel.module.css';
 import {
   mainNavigationPages,
   navigationIcons,
   navigationLabels,
   navigationRoutes,
+  toolsNav,
   type NavigationPage,
 } from './nav.constants';
 import ProfileInfo from './ProfileInfo/ProfileInfo';
 
-const toolsNav = [
-  { id: 'scheduler', label: 'Scheduler', icon: faCalendar },
-  { id: 'analytics', label: 'Analytics', icon: faChartColumn },
-] as const;
-
-const systemNav = [
-  { id: 'settings', page: 'settings' as const },
-  { id: 'theme', label: 'Theme', icon: faWandMagicSparkles },
-] as const;
-
 const LeftPanel: FC = () => {
-  const { navPanel, setNavPanelFolded } = useAppStore([
+  const { navPanel, diaryPage, setNavPanelFolded, selectChatbox } = useAppStore([
     'navPanel',
+    'diaryPage',
     'setNavPanelFolded',
+    'selectChatbox',
   ]);
+  const chatboxes = useDiaryStore('chatboxes');
+  const workspaces = useWorkspaceStore('workspaces');
+  const orders = useWorkspaceStore('orders');
+  const ui = useWorkspaceStore('ui');
+  const selectWorkspace = useWorkspaceStore('selectWorkspace');
+  const diaryHydrated = useDiaryHydrated();
+
   const folded = navPanel.folded;
   const navigate = useNavigate();
   const location = useLocation();
+
+  const storyChatboxes = useMemo(
+    () => (diaryHydrated ? getLatestUpdatedChatboxes(chatboxes) : []),
+    [chatboxes, diaryHydrated],
+  );
+
+  const selectedWorkspace = ui.selectedWorkspaceId
+    ? workspaces[ui.selectedWorkspaceId]
+    : undefined;
 
   const isActive = (page: NavigationPage) =>
     location.pathname === navigationRoutes[page];
@@ -49,8 +55,24 @@ const LeftPanel: FC = () => {
     void navigate(navigationRoutes[page]);
   };
 
-  const goHome = () => {
-    goToPage('home');
+  const goToStoryChatbox = (chatboxId: string) => {
+    selectChatbox(chatboxId);
+    void navigate('/diary');
+  };
+
+  const goToTool = (type: (typeof toolsNav)[number]['type']) => {
+    const workspaceId = resolveWorkspaceForToolType(
+      type,
+      workspaces,
+      orders.workspaceIds,
+      ui.lastUsedWorkspaceByType,
+    );
+
+    void navigate('/workspace');
+
+    if (workspaceId) {
+      selectWorkspace(workspaceId);
+    }
   };
 
   return (
@@ -64,7 +86,7 @@ const LeftPanel: FC = () => {
         <Logo className={styles.headerTextLogo} height={84} text />
       </header>
 
-      <nav aria-label="Sidebar" className={styles.nav}>
+      <nav aria-label="Sidebar" className={`${styles.nav} scrollbar-hidden`}>
         <section className={styles.navGroup}>
           <h2 className={styles.groupLabel}>Main</h2>
           <ul className={styles.navList}>
@@ -78,12 +100,41 @@ const LeftPanel: FC = () => {
                   onClick={() => goToPage(page)}
                 >
                   <AdIcon icon={navigationIcons[page]} size={16} />
-                  <span>{navigationLabels[page]}</span>
+                  <span className={styles.navItemLabel}>
+                    {navigationLabels[page]}
+                  </span>
                 </button>
               </li>
             ))}
           </ul>
         </section>
+
+        {storyChatboxes.length > 0 ? (
+          <section className={styles.navGroup}>
+            <AdDivider aria-hidden={!folded} className={styles.groupDivider} />
+            <h2 className={styles.groupLabel}>Story</h2>
+            <ul className={styles.navList}>
+              {storyChatboxes.map((chatbox) => (
+                <li key={chatbox.id}>
+                  <button
+                    className={styles.navItem}
+                    data-active={
+                      (location.pathname === '/diary' &&
+                        diaryPage.selectedChatboxId === chatbox.id) ||
+                      undefined
+                    }
+                    data-module="diary"
+                    type="button"
+                    onClick={() => goToStoryChatbox(chatbox.id)}
+                  >
+                    <AdIcon icon={chatbox.icon} size={16} />
+                    <span className={styles.navItemLabel}>{chatbox.name}</span>
+                  </button>
+                </li>
+              ))}
+            </ul>
+          </section>
+        ) : null}
 
         <section className={styles.navGroup}>
           <AdDivider aria-hidden={!folded} className={styles.groupDivider} />
@@ -93,51 +144,20 @@ const LeftPanel: FC = () => {
               <li key={item.id}>
                 <button
                   className={styles.navItem}
-                  data-module={
-                    item.id === 'scheduler' ? 'scheduler' : undefined
+                  data-active={
+                    (location.pathname === '/workspace' &&
+                      selectedWorkspace?.type === item.type) ||
+                    undefined
                   }
+                  data-module={item.type}
                   type="button"
-                  onClick={goHome}
+                  onClick={() => goToTool(item.type)}
                 >
                   <AdIcon icon={item.icon} size={16} />
-                  <span>{item.label}</span>
+                  <span className={styles.navItemLabel}>{item.label}</span>
                 </button>
               </li>
             ))}
-          </ul>
-        </section>
-
-        <section className={styles.navGroup}>
-          <AdDivider aria-hidden={!folded} className={styles.groupDivider} />
-          <h2 className={styles.groupLabel}>System</h2>
-          <ul className={styles.navList}>
-            {systemNav.map((item) =>
-              'page' in item ? (
-                <li key={item.id}>
-                  <button
-                    className={styles.navItem}
-                    data-active={isActive(item.page) || undefined}
-                    data-module={item.page}
-                    type="button"
-                    onClick={() => goToPage(item.page)}
-                  >
-                    <AdIcon icon={navigationIcons[item.page]} size={16} />
-                    <span>{navigationLabels[item.page]}</span>
-                  </button>
-                </li>
-              ) : (
-                <li key={item.id}>
-                  <button
-                    className={styles.navItem}
-                    type="button"
-                    onClick={goHome}
-                  >
-                    <AdIcon icon={item.icon} size={16} />
-                    <span>{item.label}</span>
-                  </button>
-                </li>
-              ),
-            )}
           </ul>
         </section>
       </nav>

@@ -4,11 +4,6 @@
   flex-wrap: nowrap;
   gap: 0.5rem;
   overflow-x: auto;
-  scrollbar-width: none;
-}
-
-.root::-webkit-scrollbar {
-  display: none;
 }
 
 .tab {

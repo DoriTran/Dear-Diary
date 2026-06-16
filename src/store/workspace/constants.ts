@@ -16,6 +16,7 @@ export const workspaceInitialState: WorkspaceStore = {
     selectedRecordId: null,
     inspectorOpen: true,
     explorerView: 'grid',
+    lastUsedWorkspaceByType: {},
   },
 };
 
@@ -377,5 +378,6 @@ export const workspaceDummyState: WorkspaceStore = {
     selectedRecordId: 'record:6',
     inspectorOpen: true,
     explorerView: 'grid',
+    lastUsedWorkspaceByType: {},
   },
 };

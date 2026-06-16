@@ -138,6 +138,22 @@ Each dark theme can override module colors inside [data-theme='...'][data-mode='
 --scheduler-bg: Scheduler soft background, readable with --scheduler on top.
 --scheduler-hover: Scheduler hover background/content surface.
 
+--analytics: Analytics module color.
+--analytics-bg: Analytics soft background, readable with --analytics on top.
+--analytics-hover: Analytics hover background/content surface.
+
+--tracker: Tracker module color.
+--tracker-bg: Tracker soft background, readable with --tracker on top.
+--tracker-hover: Tracker hover background/content surface.
+
+--kanban: Kanban module color.
+--kanban-bg: Kanban soft background, readable with --kanban on top.
+--kanban-hover: Kanban hover background/content surface.
+
+--habit: Habit module color.
+--habit-bg: Habit soft background, readable with --habit on top.
+--habit-hover: Habit hover background/content surface.
+
 --settings: Settings module color.
 --settings-bg: Settings soft background, readable with --settings on top.
 --settings-hover: Settings hover background/content surface.
@@ -161,6 +177,13 @@ Each dark theme can override module colors inside [data-theme='...'][data-mode='
 --button-bg: Primary button background.
 --button-bg-hover: Primary button hover color.
 --button-text: Primary button text color.
+
+[Scrollbar]
+--scrollbar-size: Scrollbar width/height (6px).
+--scrollbar-track: Track background (transparent).
+--scrollbar-thumb: Default thumb color (primary @ 40%).
+--scrollbar-thumb-hover: Thumb hover color (primary @ 65%).
+--scrollbar-thumb-active: Thumb drag color (primary @ 100%).
 
 [Chat Blocks]
 --chat-text-bg: Text block background.
@@ -193,6 +216,10 @@ Each dark theme can override module colors inside [data-theme='...'][data-mode='
   --diary: #9b7df5;
   --workspace: #e7a73d;
   --scheduler: #89b8bf;
+  --analytics: var(--accent-blue);
+  --tracker: var(--accent-green);
+  --kanban: var(--accent-purple);
+  --habit: var(--accent-yellow);
   --settings: #8f9aaa;
 
   --success: #b9d8a8;
@@ -271,6 +298,10 @@ Each dark theme can override module colors inside [data-theme='...'][data-mode='
   --diary: #a98cff;
   --workspace: #f6bd60;
   --scheduler: #8fcfd1;
+  --analytics: var(--accent-blue);
+  --tracker: var(--accent-green);
+  --kanban: var(--accent-purple);
+  --habit: var(--accent-yellow);
   --settings: #9aa5b1;
 
   --success: #bfe3c0;
@@ -349,6 +380,10 @@ Each dark theme can override module colors inside [data-theme='...'][data-mode='
   --diary: #9b7df5;
   --workspace: #e9ad4d;
   --scheduler: #93c5d6;
+  --analytics: var(--accent-blue);
+  --tracker: var(--accent-green);
+  --kanban: var(--accent-purple);
+  --habit: var(--accent-yellow);
   --settings: #9098aa;
 
   --success: #c7ddb1;
@@ -427,6 +462,10 @@ Each dark theme can override module colors inside [data-theme='...'][data-mode='
   --diary: #9d88ec;
   --workspace: #e3ad4d;
   --scheduler: #80bfa3;
+  --analytics: var(--accent-blue);
+  --tracker: var(--accent-green);
+  --kanban: var(--accent-purple);
+  --habit: var(--accent-yellow);
   --settings: #8796a3;
 
   --success: #80bfa3;
@@ -502,6 +541,18 @@ Each dark theme can override module colors inside [data-theme='...'][data-mode='
   --scheduler-bg: color-mix(in srgb, var(--scheduler) 18%, var(--surface));
   --scheduler-hover: color-mix(in srgb, var(--scheduler) 30%, var(--surface));
 
+  --analytics-bg: color-mix(in srgb, var(--analytics) 18%, var(--surface));
+  --analytics-hover: color-mix(in srgb, var(--analytics) 30%, var(--surface));
+
+  --tracker-bg: color-mix(in srgb, var(--tracker) 18%, var(--surface));
+  --tracker-hover: color-mix(in srgb, var(--tracker) 30%, var(--surface));
+
+  --kanban-bg: color-mix(in srgb, var(--kanban) 18%, var(--surface));
+  --kanban-hover: color-mix(in srgb, var(--kanban) 30%, var(--surface));
+
+  --habit-bg: color-mix(in srgb, var(--habit) 18%, var(--surface));
+  --habit-hover: color-mix(in srgb, var(--habit) 30%, var(--surface));
+
   --settings-bg: color-mix(in srgb, var(--settings) 16%, var(--surface));
   --settings-hover: color-mix(in srgb, var(--settings) 26%, var(--surface));
 }
@@ -518,6 +569,18 @@ Each dark theme can override module colors inside [data-theme='...'][data-mode='
 
   --scheduler-bg: color-mix(in srgb, var(--scheduler) 22%, var(--surface));
   --scheduler-hover: color-mix(in srgb, var(--scheduler) 36%, var(--surface));
+
+  --analytics-bg: color-mix(in srgb, var(--analytics) 22%, var(--surface));
+  --analytics-hover: color-mix(in srgb, var(--analytics) 36%, var(--surface));
+
+  --tracker-bg: color-mix(in srgb, var(--tracker) 22%, var(--surface));
+  --tracker-hover: color-mix(in srgb, var(--tracker) 36%, var(--surface));
+
+  --kanban-bg: color-mix(in srgb, var(--kanban) 22%, var(--surface));
+  --kanban-hover: color-mix(in srgb, var(--kanban) 36%, var(--surface));
+
+  --habit-bg: color-mix(in srgb, var(--habit) 22%, var(--surface));
+  --habit-hover: color-mix(in srgb, var(--habit) 36%, var(--surface));
 
   --settings-bg: color-mix(in srgb, var(--settings) 20%, var(--surface));
   --settings-hover: color-mix(in srgb, var(--settings) 32%, var(--surface));
@@ -542,6 +605,12 @@ Each dark theme can override module colors inside [data-theme='...'][data-mode='
   --chat-image-bg: #fff0f4;
   --chat-timer-bg: #eef4ff;
   --chat-sticky-bg: #fff5c9;
+
+  --scrollbar-size: 6px;
+  --scrollbar-track: transparent;
+  --scrollbar-thumb: color-mix(in srgb, var(--primary) 40%, transparent);
+  --scrollbar-thumb-hover: color-mix(in srgb, var(--primary) 65%, transparent);
+  --scrollbar-thumb-active: var(--primary);
 }
 
 [data-mode='dark'] {
@@ -556,6 +625,49 @@ Each dark theme can override module colors inside [data-theme='...'][data-mode='
     var(--accent-yellow) 20%,
     var(--surface)
   );
+}
+
+/* --------------------------------------------------
+   Global scrollbar
+-------------------------------------------------- */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: var(--scrollbar-thumb) var(--scrollbar-track);
+}
+
+*::-webkit-scrollbar {
+  width: var(--scrollbar-size);
+  height: var(--scrollbar-size);
+}
+
+*::-webkit-scrollbar-track {
+  background: var(--scrollbar-track);
+}
+
+*::-webkit-scrollbar-thumb {
+  border-radius: 999px;
+  background: transparent;
+  transition: background var(--transition-fast);
+}
+
+*:hover::-webkit-scrollbar-thumb {
+  background: var(--scrollbar-thumb);
+}
+
+*::-webkit-scrollbar-thumb:hover {
+  background: var(--scrollbar-thumb-hover);
+}
+
+*::-webkit-scrollbar-thumb:active {
+  background: var(--scrollbar-thumb-active);
+}
+
+.scrollbar-hidden {
+  scrollbar-width: none;
+}
+
+.scrollbar-hidden::-webkit-scrollbar {
+  display: none;
 }
 
 /* --------------------------------------------------

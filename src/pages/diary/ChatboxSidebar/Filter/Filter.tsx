@@ -18,7 +18,11 @@ export type FilterProps = {
 
 const Filter: FC<FilterProps> = ({ activeTab, onTabChange }) => {
   return (
-    <div className={styles.root} role="tablist" aria-label="Filter chatboxes">
+    <div
+      className={`${styles.root} scrollbar-hidden`}
+      role="tablist"
+      aria-label="Filter chatboxes"
+    >
       {TABS.map((tab) => (
         <button
           key={tab.id}

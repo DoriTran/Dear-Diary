@@ -8,15 +8,6 @@
   padding: 1rem 1.25rem 1.25rem;
 }
 
-.root::-webkit-scrollbar {
-  width: 6px;
-}
-
-.root::-webkit-scrollbar-thumb {
-  border-radius: 999px;
-  background: var(--border-soft);
-}
-
 .dayGroup {
   display: flex;
   flex-direction: column;

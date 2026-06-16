@@ -330,15 +330,25 @@ const useWorkspaceStoreBase = create<WorkspaceStore & WorkspaceStoreActions>()(
       // #region UI
 
       selectWorkspace: (workspaceId) =>
-        set((state) => ({
-          ui: {
-            ...state.ui,
+        set((state) => {
+          const workspace = workspaceId
+            ? state.workspaces[workspaceId]
+            : undefined;
 
-            selectedWorkspaceId: workspaceId,
-
-            selectedRecordId: null,
-          },
-        })),
+          return {
+            ui: {
+              ...state.ui,
+              selectedWorkspaceId: workspaceId,
+              selectedRecordId: null,
+              lastUsedWorkspaceByType: workspace
+                ? {
+                    ...state.ui.lastUsedWorkspaceByType,
+                    [workspace.type]: workspaceId,
+                  }
+                : state.ui.lastUsedWorkspaceByType,
+            },
+          };
+        }),
 
       selectRecord: (recordId) =>
         set((state) => ({
