@@ -173,6 +173,7 @@ Each dark theme can override module colors inside [data-theme='...'][data-mode='
 --card-bg: Default card background.
 --card-bg-soft: Soft card background.
 --input-bg: Input background.
+--field-*: Form control tokens (bg, border, hover, focus ring) derived from --primary.
 
 --button-bg: Primary button background.
 --button-bg-hover: Primary button hover color.
@@ -598,6 +599,22 @@ Each dark theme can override module colors inside [data-theme='...'][data-mode='
   --button-bg-hover: var(--primary-dark);
   --button-text: var(--text-contrast);
 
+  --field-bg: var(--surface-soft);
+  --field-border: var(--border-soft);
+  --field-border-hover: color-mix(in srgb, var(--primary) 22%, var(--border-soft));
+  --field-border-focus: color-mix(in srgb, var(--primary) 40%, var(--border-soft));
+  --field-bg-hover: color-mix(in srgb, var(--primary) 4%, var(--surface-soft));
+  --field-bg-hover-strong: color-mix(in srgb, var(--primary) 8%, var(--surface-soft));
+  --field-bg-tint: color-mix(in srgb, var(--primary) 6%, var(--surface-soft));
+  --field-bg-selected: color-mix(in srgb, var(--primary) 12%, var(--surface-soft));
+  --field-ring: 0 0 0 3px color-mix(in srgb, var(--primary) 15%, transparent);
+  --field-padding-y: 0.625rem;
+  --field-padding-x: 0.75rem;
+  --field-min-height: 2.5rem;
+  --field-control-height: calc(
+    var(--field-padding-y) * 2 + 0.875rem * 1.5 + 2px
+  );
+
   --chat-text-bg: #f0e7ff;
   --chat-user-bg: #fff0e6;
   --chat-todo-bg: #fff8ee;
@@ -720,11 +737,19 @@ Each dark theme can override module colors inside [data-theme='...'][data-mode='
 
 .input {
   color: var(--text);
-  background: var(--input-bg);
-  border: 1px solid var(--border-soft);
+  background: var(--field-bg);
+  border: 1px solid var(--field-border);
   border-radius: var(--radius-md);
   outline: none;
-  transition: var(--transition-fast);
+  transition:
+    border-color var(--transition-fast),
+    box-shadow var(--transition-fast),
+    background var(--transition-fast);
+}
+
+.input:hover {
+  border-color: var(--field-border-hover);
+  background: var(--field-bg-hover);
 }
 
 .input::placeholder {
@@ -732,8 +757,8 @@ Each dark theme can override module colors inside [data-theme='...'][data-mode='
 }
 
 .input:focus {
-  border-color: var(--primary);
-  box-shadow: 0 0 0 4px color-mix(in srgb, var(--primary) 20%, transparent);
+  border-color: var(--field-border-focus);
+  box-shadow: var(--field-ring);
 }
 
 .chat-bubble {

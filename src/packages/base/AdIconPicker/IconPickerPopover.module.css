@@ -1,0 +1,112 @@
+.root {
+  --icon-cell-size: 2.25rem;
+  --icon-grid-gap: 0.25rem;
+  --icon-picker-home-columns: 12;
+  --icon-picker-sidebar-width: calc(9.75rem - 5px);
+  --icon-picker-content-gap: 0.5rem;
+  --icon-picker-scroll-padding-end: 0.15rem;
+  --icon-picker-scroll-gutter: var(--scrollbar-size, 6px);
+  --icon-picker-viewport-margin: 1rem;
+  --icon-picker-max-width: calc(100vw - 2 * var(--icon-picker-viewport-margin));
+  --icon-picker-width: calc(
+    0.85rem * 2 + var(--icon-picker-home-columns) * var(--icon-cell-size) +
+      (var(--icon-picker-home-columns) - 1) * var(--icon-grid-gap) +
+      var(--icon-picker-scroll-gutter) + 6px
+  );
+  display: flex;
+  flex-direction: column;
+  width: min(var(--icon-picker-width), var(--icon-picker-max-width));
+  min-width: min(var(--icon-picker-width), var(--icon-picker-max-width));
+  max-width: var(--icon-picker-max-width);
+  max-height: min(34rem, 80vh);
+  padding: 0.65rem 0.85rem;
+  overflow: hidden;
+}
+
+@media (max-width: 540px) {
+  .root {
+    --icon-picker-sidebar-width: 7rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .root {
+    --icon-picker-sidebar-width: 5.5rem;
+  }
+}
+
+@media (max-width: 400px) {
+  .root {
+    --icon-picker-sidebar-width: 2.75rem;
+  }
+}
+
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 0.45rem;
+  flex-shrink: 0;
+}
+
+.headerTitle {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  font-size: var(--font-sm);
+  font-weight: var(--font-semibold);
+  color: var(--text);
+}
+
+.closeBtn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 1.6rem;
+  height: 1.6rem;
+  padding: 0;
+  border: none;
+  border-radius: var(--radius-sm);
+  background: transparent;
+  color: var(--text-muted);
+  cursor: pointer;
+}
+
+.closeBtn:hover {
+  background: var(--surface-soft);
+  color: var(--text);
+}
+
+.searchRow {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 0.5rem;
+  align-items: center;
+  margin-bottom: 0.45rem;
+  flex-shrink: 0;
+}
+
+.scrollBody {
+  flex: 1;
+  min-height: 0;
+  min-width: 0;
+  width: 100%;
+  overflow-y: auto;
+  scrollbar-gutter: auto;
+}
+
+.searchResults {
+  margin-bottom: 0.45rem;
+}
+
+.searchResultsTitle {
+  margin: 0 0 0.3rem;
+  font-size: var(--font-xs);
+  font-weight: var(--font-semibold);
+  color: var(--text-muted);
+}
+
+.body {
+  display: flex;
+  flex-direction: column;
+}

@@ -1,25 +1,22 @@
 import { useState, type FC, type FormEvent } from 'react';
 
 import {
-  AdColorPicker,
-  AdEmojiIconPicker,
+  AdField,
+  AdIconPicker,
+  AdInput,
   AdModal,
   AdSelect,
+  AdTextarea,
 } from '@/packages/base';
+import { DEFAULT_COLOR_ID } from '@/packages/color';
+import type { ColorId } from '@/packages/color';
+import { PalettePicker } from '@/packages/ui';
+import { DEFAULT_ICON_ID, type IconId } from '@/packages/icon';
 import { useWorkspaceStore } from '@/store';
 import type { WorkspaceType } from '@/store/workspace/type';
 
 import { WORKSPACE_TYPE_LABELS } from '../../workspace.utils';
 import styles from './CreateWorkspaceModal.module.css';
-
-const COLOR_SWATCHES = [
-  '#A78BFA',
-  '#86EFAC',
-  '#FBCFE8',
-  '#93C5FD',
-  '#FDE68A',
-  '#FDBA74',
-];
 
 const TYPE_OPTIONS = (
   Object.entries(WORKSPACE_TYPE_LABELS) as [WorkspaceType, string][]
@@ -42,16 +39,15 @@ const CreateWorkspaceModal: FC<CreateWorkspaceModalProps> = ({
   const [name, setName] = useState('');
   const [description, setDescription] = useState('');
   const [type, setType] = useState<WorkspaceType>(initialType);
-  const [icon, setIcon] = useState('📁');
-  const [color, setColor] = useState(COLOR_SWATCHES[0]);
-  const [iconPickerOpen, setIconPickerOpen] = useState(false);
+  const [icon, setIcon] = useState<IconId>(DEFAULT_ICON_ID);
+  const [colorId, setColorId] = useState<ColorId>(DEFAULT_COLOR_ID);
 
   const handleClose = () => {
     setName('');
     setDescription('');
     setType(initialType);
-    setIcon('📁');
-    setColor(COLOR_SWATCHES[0]);
+    setIcon(DEFAULT_ICON_ID);
+    setColorId(DEFAULT_COLOR_ID);
     onClose();
   };
 
@@ -69,7 +65,7 @@ const CreateWorkspaceModal: FC<CreateWorkspaceModalProps> = ({
       description: description.trim(),
       type,
       icon,
-      color,
+      colorId,
     });
 
     selectWorkspace(workspaceId);
@@ -84,28 +80,27 @@ const CreateWorkspaceModal: FC<CreateWorkspaceModalProps> = ({
       size="md"
     >
       <form className={styles.form} onSubmit={handleSubmit}>
-        <label className={styles.field}>
-          <span>Name</span>
-          <input
+        <AdField label="Name" htmlFor="create-workspace-name">
+          <AdInput
+            id="create-workspace-name"
             value={name}
             onChange={(event) => setName(event.target.value)}
             placeholder="My workspace"
             autoFocus
           />
-        </label>
+        </AdField>
 
-        <label className={styles.field}>
-          <span>Description</span>
-          <textarea
+        <AdField label="Description" htmlFor="create-workspace-description">
+          <AdTextarea
+            id="create-workspace-description"
             value={description}
             onChange={(event) => setDescription(event.target.value)}
             placeholder="What is this workspace for?"
             rows={3}
           />
-        </label>
+        </AdField>
 
-        <label className={styles.field}>
-          <span>Tool Type</span>
+        <AdField label="Tool Type">
           <AdSelect
             value={type}
             onChange={(value) => {
@@ -115,35 +110,21 @@ const CreateWorkspaceModal: FC<CreateWorkspaceModalProps> = ({
             }}
             data={TYPE_OPTIONS}
           />
-        </label>
+        </AdField>
 
         <div className={styles.pickers}>
-          <label className={styles.field}>
-            <span>Icon</span>
-            <AdEmojiIconPicker
-              opened={iconPickerOpen}
-              onChange={setIconPickerOpen}
-              onSelect={setIcon}
-              anchor={
-                <button
-                  type="button"
-                  className={styles.iconButton}
-                  onClick={() => setIconPickerOpen((value) => !value)}
-                >
-                  {icon}
-                </button>
-              }
-            />
-          </label>
-
-          <label className={styles.field}>
-            <span>Color</span>
-            <AdColorPicker
-              value={color}
-              onChange={setColor}
-              swatches={COLOR_SWATCHES}
-            />
-          </label>
+          <AdIconPicker
+            value={icon}
+            onChange={setIcon}
+            variant="compact"
+            label="Icon"
+          />
+          <PalettePicker
+            value={colorId}
+            onChange={setColorId}
+            variant="compact"
+            label="Color"
+          />
         </div>
 
         <div className={styles.actions}>

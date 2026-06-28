@@ -46,7 +46,9 @@ const Header: FC<HeaderProps> = ({
     name,
     description,
     icon,
-    color,
+    paletteSoft,
+    paletteMain,
+    paletteStrong,
     iconBg,
     pinned,
     groupName,
@@ -63,7 +65,13 @@ const Header: FC<HeaderProps> = ({
   return (
     <header
       className={styles.root}
-      style={{ '--header-color': color } as CSSProperties}
+      style={
+        {
+          '--header-soft': paletteSoft,
+          '--header-main': paletteMain,
+          '--header-strong': paletteStrong,
+        } as CSSProperties
+      }
     >
       <div className={styles.topRow}>
         <div className={styles.identityBlock}>
@@ -73,7 +81,7 @@ const Header: FC<HeaderProps> = ({
               style={{ background: iconBg }}
               aria-hidden
             >
-              <AdIcon icon={icon} size={26} />
+              <AdIcon icon={icon} source="lucide" size={26} />
             </span>
             {pinned ? (
               <span className={styles.overlayPin} aria-label="Pinned">

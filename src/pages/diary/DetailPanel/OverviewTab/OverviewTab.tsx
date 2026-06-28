@@ -15,6 +15,7 @@ import ProgressBarRow from '../components/ProgressBarRow';
 import StatCard from '../components/StatCard';
 
 import styles from './OverviewTab.module.css';
+import TagFill from './TagFill';
 
 export type OverviewTabProps = {
   stats: DetailPanelStats;
@@ -105,13 +106,7 @@ const OverviewTab: FC<OverviewTabProps> = ({
                   >
                     <span className={styles.tagLabel}>#{tag.label}</span>
                     <span className={styles.tagTrack} aria-hidden>
-                      <span
-                        className={styles.tagFill}
-                        style={{
-                          width: `${percent}%`,
-                          background: tag.color,
-                        }}
-                      />
+                      <TagFill colorId={tag.colorId} percent={percent} />
                     </span>
                     <span className={styles.tagCount}>{tag.count}</span>
                   </button>

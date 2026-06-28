@@ -1,0 +1,144 @@
+.categoryItem {
+  display: grid;
+  grid-template-columns: 1rem 1fr auto;
+  align-items: center;
+  gap: 0.3rem;
+  width: 100%;
+  padding: 0.35rem 0.3rem;
+  border: none;
+  border-radius: var(--radius-md);
+  background: transparent;
+  font: inherit;
+  font-size: var(--font-xs);
+  line-height: 1.25;
+  color: var(--text-muted);
+  cursor: pointer;
+  text-align: left;
+  transition:
+    background var(--transition-fast),
+    color var(--transition-fast);
+}
+
+.categoryItem:hover {
+  background: var(--field-bg-hover, var(--surface-soft));
+  color: var(--text);
+}
+
+.categoryItem[data-active] {
+  background: var(--field-bg-selected);
+  color: var(--primary);
+  font-weight: var(--font-semibold);
+}
+
+.categoryIcon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 1rem;
+  height: 1rem;
+  flex-shrink: 0;
+}
+
+.categoryLabel {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.categoryCount {
+  justify-self: end;
+  font-size: var(--font-2xs);
+  font-variant-numeric: tabular-nums;
+  line-height: 1.25;
+  color: var(--text-soft);
+}
+
+.categoryItem[data-active] .categoryCount {
+  color: inherit;
+  opacity: 0.85;
+}
+
+.sidebar {
+  display: flex;
+  flex-direction: column;
+  gap: 0.05rem;
+  flex-shrink: 0;
+  width: var(--icon-picker-sidebar-width, 9.75rem);
+  min-height: 0;
+  overflow-y: auto;
+  scrollbar-gutter: auto;
+  container-type: inline-size;
+  container-name: iconCategorySidebar;
+}
+
+/* Tier 2: hide counts, keep icon + label */
+.sidebar[data-compact='no-count'] .categoryCount {
+  display: none;
+}
+
+.sidebar[data-compact='no-count'] .categoryItem {
+  grid-template-columns: 1rem 1fr;
+}
+
+/* Tier 3: hide labels, show counts again */
+.sidebar[data-compact='icon-count'] .categoryLabel {
+  display: none;
+}
+
+.sidebar[data-compact='icon-count'] .categoryItem {
+  grid-template-columns: 1rem auto;
+  justify-content: start;
+  padding-inline: 0.35rem;
+}
+
+/* Tier 4: icon only */
+.sidebar[data-compact='icon-only'] .categoryLabel,
+.sidebar[data-compact='icon-only'] .categoryCount {
+  display: none;
+}
+
+.sidebar[data-compact='icon-only'] .categoryItem {
+  grid-template-columns: 1rem;
+  justify-content: center;
+  padding-inline: 0.35rem;
+}
+
+/* Container-query fallback mirrors the same four tiers */
+@container iconCategorySidebar (max-width: 8.875rem) {
+  .categoryCount {
+    display: none;
+  }
+
+  .categoryItem {
+    grid-template-columns: 1rem 1fr;
+  }
+}
+
+@container iconCategorySidebar (max-width: 5.5rem) {
+  .categoryLabel {
+    display: none;
+  }
+
+  .categoryCount {
+    display: block;
+  }
+
+  .categoryItem {
+    grid-template-columns: 1rem auto;
+    justify-content: start;
+    padding-inline: 0.35rem;
+  }
+}
+
+@container iconCategorySidebar (max-width: 2.75rem) {
+  .categoryCount {
+    display: none;
+  }
+
+  .categoryItem {
+    grid-template-columns: 1rem;
+    justify-content: center;
+    padding-inline: 0.35rem;
+  }
+}

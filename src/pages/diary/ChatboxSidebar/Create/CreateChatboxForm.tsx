@@ -1,22 +1,22 @@
 import { useMemo, useState, type FC, type FormEvent } from 'react';
 
-import { AdColorPicker, AdIconPicker, AdSelect } from '@/packages/base';
+import {
+  AD_SELECT_NONE_VALUE,
+  AdField,
+  AdIconPicker,
+  AdInput,
+  AdSelect,
+  AdTextarea,
+} from '@/packages/base';
+import { PalettePicker } from '@/packages/ui';
+import type { ColorId } from '@/packages/color';
+import { DEFAULT_COLOR_ID } from '@/packages/color';
+import type { IconId } from '@/packages/icon';
+import { DEFAULT_ICON_ID, normalizeIconId } from '@/packages/icon';
 import { useAppStore, useDiaryStore } from '@/store';
 
-import {
-  CREATE_COLOR_SWATCHES,
-  CREATE_ICON_KEYS,
-  type CreateIconKey,
-} from './create.constants';
+import { resolveCreateIconId } from './create.constants';
 import formStyles from './CreateForm.module.css';
-
-const resolveIconKey = (icon: string): CreateIconKey => {
-  if ((CREATE_ICON_KEYS as readonly string[]).includes(icon)) {
-    return icon as CreateIconKey;
-  }
-
-  return CREATE_ICON_KEYS[0];
-};
 
 export type CreateChatboxFormProps = {
   chatboxId?: string;
@@ -52,11 +52,11 @@ const CreateChatboxForm: FC<CreateChatboxFormProps> = ({
 
   const [name, setName] = useState(existing?.name ?? '');
   const [description, setDescription] = useState(existing?.description ?? '');
-  const [icon, setIcon] = useState<CreateIconKey>(
-    resolveIconKey(existing?.icon ?? CREATE_ICON_KEYS[0]),
+  const [icon, setIcon] = useState<IconId>(
+    resolveCreateIconId(existing?.icon ?? DEFAULT_ICON_ID),
   );
-  const [color, setColor] = useState<string>(
-    existing?.color ?? CREATE_COLOR_SWATCHES[0],
+  const [colorId, setColorId] = useState<ColorId>(
+    existing?.colorId ?? DEFAULT_COLOR_ID,
   );
   const [groupId, setGroupId] = useState(existing?.groupId ?? '');
   const [tagIds, setTagIds] = useState<string[]>(
@@ -68,9 +68,22 @@ const CreateChatboxForm: FC<CreateChatboxFormProps> = ({
       Object.values(tags).map((tag) => ({
         value: tag.id,
         label: tag.label,
-        color: tag.color,
+        colorId: tag.colorId,
       })),
     [tags],
+  );
+
+  const groupSelectOptions = useMemo(
+    () => [
+      { value: AD_SELECT_NONE_VALUE, label: 'No group' },
+      ...groupOptions.map((group) => ({
+        value: group.id,
+        label: group.name,
+        iconId: normalizeIconId(group.icon),
+        colorId: group.colorId,
+      })),
+    ],
+    [groupOptions],
   );
 
   const handleSubmit = (event: FormEvent) => {
@@ -95,7 +108,7 @@ const CreateChatboxForm: FC<CreateChatboxFormProps> = ({
         name: trimmedName,
         description: description.trim(),
         icon,
-        color,
+        colorId,
         tags: nextTags,
       });
 
@@ -113,7 +126,7 @@ const CreateChatboxForm: FC<CreateChatboxFormProps> = ({
       name: trimmedName,
       description: description.trim(),
       icon,
-      color,
+      colorId,
       groupId: groupId || null,
       tags: tagIds.map((tagId) => ({ tagId, count: 0 })),
     });
@@ -124,45 +137,44 @@ const CreateChatboxForm: FC<CreateChatboxFormProps> = ({
 
   return (
     <form className={formStyles.form} onSubmit={handleSubmit}>
-      <div className={formStyles.field}>
-        <label className={formStyles.label} htmlFor="create-chatbox-name">
-          Name
-        </label>
-        <input
-          id="create-chatbox-name"
-          className={formStyles.input}
-          value={name}
-          onChange={(event) => setName(event.target.value)}
-          placeholder="My chatbox"
-          required
-        />
+      <div className={formStyles.identityRow}>
+        <div className={formStyles.identityPickers}>
+          <AdIconPicker
+            value={icon}
+            onChange={setIcon}
+            variant="compact"
+            label="Icon"
+          />
+          <PalettePicker
+            value={colorId}
+            onChange={setColorId}
+            variant="compact"
+            label="Color"
+          />
+        </div>
+        <AdField label="Name" htmlFor="create-chatbox-name">
+          <AdInput
+            id="create-chatbox-name"
+            value={name}
+            onChange={(event) => setName(event.target.value)}
+            placeholder="My chatbox"
+            required
+          />
+        </AdField>
       </div>
 
-      <div className={formStyles.field}>
-        <label
-          className={formStyles.label}
-          htmlFor="create-chatbox-description"
-        >
-          Description
-        </label>
-        <textarea
+      <AdField label="Description (optional)" htmlFor="create-chatbox-description">
+        <AdTextarea
           id="create-chatbox-description"
-          className={formStyles.textarea}
           value={description}
           onChange={(event) => setDescription(event.target.value)}
           placeholder="What is this chatbox about?"
         />
-      </div>
-
-      <AdIconPicker
-        value={icon}
-        onChange={(value) => setIcon(value as CreateIconKey)}
-      />
-      <AdColorPicker value={color} onChange={setColor} />
+      </AdField>
 
       <AdSelect
         multiple
-        label="Tags"
+        label="Tags (optional)"
         placeholder="Search or create tags..."
         data={tagOptions}
         value={tagIds}
@@ -177,34 +189,27 @@ const CreateChatboxForm: FC<CreateChatboxFormProps> = ({
 
           if (existingTag) {
             setTagIds((prev) =>
-              prev.includes(existingTag.id) ? prev : [...prev, existingTag.id],
+              prev.includes(existingTag.id)
+                ? prev
+                : [...prev, existingTag.id],
             );
             return;
           }
 
-          const id = createTag({ label, color: CREATE_COLOR_SWATCHES[0] });
+          const id = createTag({ label, colorId: DEFAULT_COLOR_ID });
           setTagIds((prev) => [...prev, id]);
         }}
       />
 
-      <div className={formStyles.field}>
-        <label className={formStyles.label} htmlFor="create-chatbox-group">
-          Group
-        </label>
-        <select
-          id="create-chatbox-group"
-          className={formStyles.select}
-          value={groupId}
-          onChange={(event) => setGroupId(event.target.value)}
-        >
-          <option value="">No group</option>
-          {groupOptions.map((group) => (
-            <option key={group.id} value={group.id}>
-              {group.name}
-            </option>
-          ))}
-        </select>
-      </div>
+      <AdSelect
+        label="Group (optional)"
+        placeholder="No group"
+        data={groupSelectOptions}
+        value={groupId || AD_SELECT_NONE_VALUE}
+        onChange={(value) =>
+          setGroupId(value === AD_SELECT_NONE_VALUE ? '' : (value ?? ''))
+        }
+      />
 
       <div className={formStyles.actions}>
         <button

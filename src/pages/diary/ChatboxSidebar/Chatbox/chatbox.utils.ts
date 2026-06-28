@@ -1,16 +1,29 @@
-import type { Message } from '@/store/diary/type';
+import type { ColorId } from '@/packages/color';
+import { iconBackground, resolvePalette } from '@/packages/color';
+import { normalizeIconId } from '@/packages/icon';
+import type { AppMode } from '@/store/app/type';
+import type { CustomPalette } from '@/packages/color';
+import type { Chatbox, Message, Tag } from '@/store/diary/type';
+
+import type { ChatboxData } from '../../types';
 
 export type ResolvedChatboxTag = {
   label: string;
   count: number;
-  color: string;
+  colorId: ColorId;
 };
 
-export const buildIconBackground = (color: string) =>
-  `color-mix(in srgb, ${color} 22%, var(--surface))`;
+export const resolveChatboxPalette = (
+  colorId: ColorId,
+  mode: AppMode,
+  customPalettes: Record<string, CustomPalette> = {},
+) => resolvePalette(colorId, mode, customPalettes);
 
-export const buildTagBackground = (color: string) =>
-  `color-mix(in srgb, ${color} 26%, var(--surface))`;
+export const buildIconBackground = (
+  colorId: ColorId,
+  mode: AppMode,
+  customPalettes: Record<string, CustomPalette> = {},
+) => iconBackground(resolvePalette(colorId, mode, customPalettes));
 
 export const formatTotalMessages = (value: number): string => {
   if (value < 1000) {
@@ -217,4 +230,55 @@ export const calculateFittingTagCount = (
   }
 
   return { visibleCount: 0, overflowCount: total };
+};
+
+export type MapChatboxDataOptions = {
+  mode: AppMode;
+  customPalettes: Record<string, CustomPalette>;
+};
+
+export const mapChatboxData = (
+  chatbox: Chatbox,
+  tags: Record<string, Tag>,
+  lastMessage: Message | null | undefined,
+  { mode, customPalettes }: MapChatboxDataOptions,
+): ChatboxData => {
+  const palette = resolvePalette(chatbox.colorId, mode, customPalettes);
+
+  const resolvedTags = chatbox.tags
+    .map((stat) => {
+      const tag = tags[stat.tagId];
+
+      if (!tag) {
+        return null;
+      }
+
+      return {
+        label: tag.label,
+        count: stat.count,
+        colorId: tag.colorId,
+      };
+    })
+    .filter((tag): tag is NonNullable<typeof tag> => tag !== null);
+
+  return {
+    id: chatbox.id,
+    name: chatbox.name,
+    description: chatbox.description,
+    preview: getMessagePreview(lastMessage),
+    tags: resolvedTags,
+    icon: normalizeIconId(chatbox.icon),
+    colorId: chatbox.colorId,
+    paletteSoft: palette.soft,
+    paletteMain: palette.main,
+    paletteStrong: palette.strong,
+    iconBg: palette.soft,
+    pinned: chatbox.pinned,
+    archived: chatbox.archived,
+    hasUnread: chatbox.hasUnread,
+    notificationEnabled: chatbox.notificationEnabled,
+    totalMessage: chatbox.totalMessage,
+    lastMessageAt: chatbox.lastMessageAt,
+    createdAt: chatbox.createdAt,
+  };
 };

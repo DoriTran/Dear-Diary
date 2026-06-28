@@ -4,6 +4,8 @@ import { faChevronDown, faPlus } from '@fortawesome/free-solid-svg-icons';
 import clsx from 'clsx';
 
 import { AdIcon } from '@/packages/base';
+import { ColorMainSwatch } from '@/packages/color';
+import { normalizeIconId } from '@/packages/icon';
 import type { Workspace, WorkspaceType } from '@/store/workspace/type';
 
 import styles from './ByToolSection.module.css';
@@ -79,13 +81,17 @@ const ByToolSection: FC<ByToolSectionProps> = ({
               )}
               onClick={() => onSelect(workspace.id)}
             >
-              <span
+              <ColorMainSwatch
                 className={styles.icon}
-                style={{ background: workspace.color }}
+                colorId={workspace.colorId}
                 aria-hidden
               >
-                {workspace.icon}
-              </span>
+                <AdIcon
+                  icon={normalizeIconId(workspace.icon)}
+                  source="lucide"
+                  size={18}
+                />
+              </ColorMainSwatch>
               <span className={styles.name}>{workspace.name}</span>
             </button>
           ))}

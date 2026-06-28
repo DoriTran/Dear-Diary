@@ -40,7 +40,9 @@ const Chatbox: FC<ChatboxProps> = ({
     preview,
     tags,
     icon,
-    color,
+    paletteSoft,
+    paletteMain,
+    paletteStrong,
     iconBg,
     pinned,
     archived,
@@ -77,7 +79,13 @@ const Chatbox: FC<ChatboxProps> = ({
       <LayoutCard
         tag="div"
         className={styles.root}
-        style={{ '--chatbox-color': color } as CSSProperties}
+        style={
+          {
+            '--chatbox-soft': paletteSoft,
+            '--chatbox-main': paletteMain,
+            '--chatbox-strong': paletteStrong,
+          } as CSSProperties
+        }
         data-active={selected || undefined}
       >
         {selected ? <span className={styles.accentBar} aria-hidden /> : null}
@@ -96,7 +104,7 @@ const Chatbox: FC<ChatboxProps> = ({
                   style={{ background: iconBg }}
                   aria-hidden
                 >
-                  <AdIcon icon={icon} size={16} />
+                  <AdIcon icon={icon} source="lucide" size={16} />
                 </span>
                 {pinned ? (
                   <span className={styles.overlayPin} aria-label="Pinned">

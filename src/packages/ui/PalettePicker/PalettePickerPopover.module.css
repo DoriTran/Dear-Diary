@@ -1,0 +1,86 @@
+.root {
+  --palette-card-max: 5rem;
+  --palette-card-gap: 0.375rem;
+  --palette-grid-max: calc(5 * var(--palette-card-max) + 4 * var(--palette-card-gap));
+  --palette-panel-padding-x: 0.85rem;
+  --palette-panel-padding-y: 0.85rem;
+  --palette-panel-padding-bottom: 1rem;
+  --palette-create-inner-width: 25rem;
+  --palette-selection-width: calc(var(--palette-grid-max) + 2 * var(--palette-panel-padding-x));
+  --palette-create-panel-width: calc(
+    var(--palette-create-inner-width) + 2 * var(--palette-panel-padding-x)
+  );
+  --palette-combined-width: calc(
+    var(--palette-selection-width) + var(--palette-create-panel-width) + 1px
+  );
+
+  width: fit-content;
+  max-width: min(var(--palette-combined-width), calc(100vw - 2rem));
+  max-height: min(34rem, 80vh);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  min-height: 0;
+}
+
+.layout {
+  display: flex;
+  flex: 1 1 auto;
+  align-items: stretch;
+  min-height: 0;
+  min-width: 0;
+  overflow: hidden;
+  width: 100%;
+  max-width: 100%;
+}
+
+.layout[data-view='create'] .selectionPanel {
+  display: none;
+}
+
+.selectionPanel {
+  flex: 0 0 auto;
+  min-width: 0;
+  min-height: 0;
+  max-height: min(34rem, 80vh);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+.createPanel {
+  flex: 0 0 var(--palette-create-panel-width);
+  width: var(--palette-create-panel-width);
+  min-width: 0;
+  min-height: 0;
+  max-height: min(34rem, 80vh);
+  box-sizing: border-box;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  border-left: 1px solid var(--border-soft);
+}
+
+.layout[data-view='create'] .createPanel {
+  flex: 0 1 auto;
+  width: fit-content;
+  min-width: min(24rem, calc(100vw - 2rem));
+  max-width: min(calc(var(--palette-create-inner-width) + 2 * var(--palette-panel-padding-x)), calc(100vw - 2rem));
+  border-left: none;
+}
+
+@media (max-width: 55.99rem) {
+  .createPanel {
+    display: none;
+  }
+
+  .layout[data-view='create'] .createPanel {
+    display: flex;
+  }
+}
+
+@media (min-width: 56rem) {
+  .layout[data-view='browse'] .createPanel {
+    display: flex;
+  }
+}

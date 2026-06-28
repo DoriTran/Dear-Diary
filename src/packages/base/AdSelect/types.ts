@@ -1,12 +1,17 @@
 import type { ComboboxItem, SelectProps } from '@mantine/core';
 import type { ReactNode } from 'react';
 
+import type { ColorId } from '@/packages/color';
+import type { IconId } from '@/packages/icon';
+
 import type { AdChipProps } from '../AdChip';
 
 export const CREATE_OPTION_VALUE = '__adselect_create__';
+export const AD_SELECT_NONE_VALUE = '__adselect_none__';
 
 export type AdSelectOption = ComboboxItem & {
-  color?: string;
+  colorId?: ColorId;
+  iconId?: IconId;
 };
 
 export type AdSelectBaseProps = {
@@ -26,6 +31,8 @@ export type AdSelectSingleProps = AdSelectBaseProps &
     multiple?: false;
     value: string | null;
     onChange: (value: string | null) => void;
+    searchable?: boolean;
+    emptyLabel?: string;
   };
 
 export type AdSelectRenderPillInput = {

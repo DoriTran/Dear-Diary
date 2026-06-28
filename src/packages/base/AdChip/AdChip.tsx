@@ -2,16 +2,17 @@ import type { HTMLAttributes, FC, CSSProperties } from 'react';
 
 import clsx from 'clsx';
 
-import styles from './AdChip.module.css';
+import type { ColorId } from '@/packages/color';
+import { useResolvedPalette } from '@/packages/color';
+import { tagStyles } from '@/packages/color';
 
-const buildTagBackground = (color: string) =>
-  `color-mix(in srgb, ${color} 26%, var(--surface))`;
+import styles from './AdChip.module.css';
 
 export type AdChipSize = 'small' | 'medium' | 'large' | number;
 
 export type AdChipProps = {
   label: string;
-  color?: string;
+  colorId?: ColorId;
   count?: number;
   size?: AdChipSize;
   onRemove?: () => void;
@@ -30,7 +31,7 @@ const resolveSizeClass = (size: AdChipSize): string | undefined => {
 
 const AdChip: FC<AdChipProps> = ({
   label,
-  color,
+  colorId,
   count,
   size = 'small',
   onRemove,
@@ -38,6 +39,7 @@ const AdChip: FC<AdChipProps> = ({
   className,
   'data-tag-measure': dataTagMeasure,
 }) => {
+  const palette = useResolvedPalette(colorId ?? 'lavender');
   const showCount = count !== undefined && count > 0;
   const display = showCount ? `${count} #${label}` : `#${label}`;
 
@@ -50,6 +52,8 @@ const AdChip: FC<AdChipProps> = ({
         }
       : undefined;
 
+  const colorStyle = colorId ? tagStyles(palette) : undefined;
+
   return (
     <span
       {...reorderProps}
@@ -61,7 +65,7 @@ const AdChip: FC<AdChipProps> = ({
       )}
       data-tag-measure={dataTagMeasure || undefined}
       style={{
-        ...(color ? { background: buildTagBackground(color) } : undefined),
+        ...colorStyle,
         ...sizeStyle,
       }}
     >

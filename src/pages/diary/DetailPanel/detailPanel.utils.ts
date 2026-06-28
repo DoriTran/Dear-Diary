@@ -1,10 +1,7 @@
-import type { IconDefinition } from '@fortawesome/fontawesome-svg-core';
-import {
-  faQuestion,
-  type IconDefinition as FaIconDefinition,
-} from '@fortawesome/free-solid-svg-icons';
-import * as solidIcons from '@fortawesome/free-solid-svg-icons';
-
+import { resolvePalette } from '@/packages/color';
+import type { AppMode } from '@/store/app/type';
+import type { CustomPalette } from '@/packages/color';
+import { normalizeIconId, type IconId } from '@/packages/icon';
 import type {
   Attachment,
   Chatbox,
@@ -16,7 +13,6 @@ import type {
 import {
   formatChatboxTime,
   formatHeaderUpdatedAt,
-  buildIconBackground,
   type ResolvedChatboxTag,
 } from '../ChatboxSidebar/Chatbox/chatbox.utils';
 import type { MediaFilter } from '../types';
@@ -49,17 +45,12 @@ export type DetailPanelIdentity = {
   id: string;
   name: string;
   description: string;
-  icon: IconDefinition;
-  color: string;
+  icon: IconId;
+  paletteSoft: string;
+  paletteMain: string;
+  paletteStrong: string;
   iconBg: string;
   notificationEnabled: boolean;
-};
-
-const resolveFaIcon = (icon: string): FaIconDefinition => {
-  return (
-    (solidIcons as unknown as Record<string, FaIconDefinition>)[icon] ||
-    faQuestion
-  );
 };
 
 const collectMessageAttachments = (message: Message): Attachment[] => {
@@ -88,15 +79,23 @@ export const getChatboxMessages = (
 
 export const resolveChatboxIdentity = (
   chatbox: Chatbox,
-): DetailPanelIdentity => ({
-  id: chatbox.id,
-  name: chatbox.name,
-  description: chatbox.description,
-  icon: resolveFaIcon(chatbox.icon),
-  color: chatbox.color,
-  iconBg: buildIconBackground(chatbox.color),
-  notificationEnabled: chatbox.notificationEnabled,
-});
+  mode: AppMode,
+  customPalettes: Record<string, CustomPalette> = {},
+): DetailPanelIdentity => {
+  const palette = resolvePalette(chatbox.colorId, mode, customPalettes);
+
+  return {
+    id: chatbox.id,
+    name: chatbox.name,
+    description: chatbox.description,
+    icon: normalizeIconId(chatbox.icon),
+    paletteSoft: palette.soft,
+    paletteMain: palette.main,
+    paletteStrong: palette.strong,
+    iconBg: palette.soft,
+    notificationEnabled: chatbox.notificationEnabled,
+  };
+};
 
 export const computeDetailPanelStats = (
   chatbox: Chatbox,
@@ -173,7 +172,7 @@ export const resolveDetailPanelTags = (
         tagId: tag.id,
         label: tag.label,
         count: statistic.count,
-        color: tag.color,
+        colorId: tag.colorId,
       };
     })
     .filter((tag): tag is DetailPanelTag => Boolean(tag));

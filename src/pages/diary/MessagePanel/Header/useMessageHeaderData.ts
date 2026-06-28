@@ -1,30 +1,21 @@
-import * as solidIcons from '@fortawesome/free-solid-svg-icons';
-import {
-  faQuestion,
-  type IconDefinition,
-} from '@fortawesome/free-solid-svg-icons';
 import { useMemo } from 'react';
 
-import { useDiaryStore } from '@/store';
+import { resolvePalette } from '@/packages/color';
+import { normalizeIconId, type IconId } from '@/packages/icon';
+import { useAppStore, useDiaryStore } from '@/store';
 
 import {
-  buildIconBackground,
   formatHeaderUpdatedAt,
 } from '../../ChatboxSidebar/Chatbox/chatbox.utils';
-
-const resolveFaIcon = (icon: string): IconDefinition => {
-  return (
-    (solidIcons as unknown as Record<string, IconDefinition>)[icon] ||
-    faQuestion
-  );
-};
 
 export type MessageHeaderData = {
   id: string;
   name: string;
   description: string;
-  icon: IconDefinition;
-  color: string;
+  icon: IconId;
+  paletteSoft: string;
+  paletteMain: string;
+  paletteStrong: string;
   iconBg: string;
   pinned: boolean;
   groupName: string | null;
@@ -36,7 +27,12 @@ export type MessageHeaderData = {
 export const useMessageHeaderData = (
   chatboxId: string,
 ): MessageHeaderData | null => {
-  const { chatboxes, groups } = useDiaryStore(['chatboxes', 'groups']);
+  const mode = useAppStore('mode');
+  const { chatboxes, groups, customPalettes } = useDiaryStore([
+    'chatboxes',
+    'groups',
+    'customPalettes',
+  ]);
 
   return useMemo(() => {
     const chatbox = chatboxes[chatboxId];
@@ -45,23 +41,23 @@ export const useMessageHeaderData = (
       return null;
     }
 
-    const activityAt =
-      chatbox.updatedAt ?? chatbox.lastMessageAt ?? chatbox.createdAt;
-
+    const palette = resolvePalette(chatbox.colorId, mode, customPalettes);
     const group = chatbox.groupId ? groups[chatbox.groupId] : null;
 
     return {
       id: chatbox.id,
       name: chatbox.name,
       description: chatbox.description,
-      icon: resolveFaIcon(chatbox.icon),
-      color: chatbox.color,
-      iconBg: buildIconBackground(chatbox.color),
+      icon: normalizeIconId(chatbox.icon),
+      paletteSoft: palette.soft,
+      paletteMain: palette.main,
+      paletteStrong: palette.strong,
+      iconBg: palette.soft,
       pinned: chatbox.pinned,
       groupName: group?.name ?? null,
       totalMessage: chatbox.totalMessage,
-      updatedLabel: formatHeaderUpdatedAt(activityAt),
-      updatedAt: activityAt,
+      updatedLabel: formatHeaderUpdatedAt(chatbox.updatedAt),
+      updatedAt: chatbox.updatedAt,
     };
-  }, [chatboxId, chatboxes, groups]);
+  }, [chatboxId, chatboxes, customPalettes, groups, mode]);
 };

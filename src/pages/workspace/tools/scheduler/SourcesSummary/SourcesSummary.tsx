@@ -1,12 +1,14 @@
 import type { FC } from 'react';
 
-import type { WorkspaceSource } from '@/store/workspace/type';
+import { resolvePalette } from '@/packages/color';
+import { useAppStore, useDiaryStore } from '@/store';
 import type { Chatbox } from '@/store/diary/type';
+import type { WorkspaceSource } from '@/store/workspace/type';
 
 import {
   countRecordsBySource,
   resolveSourceChipMeta,
-  WORKSPACE_LOCAL_SOURCE_COLOR,
+  WORKSPACE_LOCAL_SOURCE_COLOR_ID,
 } from '../../../workspace.utils';
 import type { CalendarEventView } from '../scheduler.utils';
 import styles from './SourcesSummary.module.css';
@@ -22,6 +24,13 @@ const SourcesSummary: FC<SourcesSummaryProps> = ({
   sources,
   chatboxes,
 }) => {
+  const mode = useAppStore('mode');
+  const customPalettes = useDiaryStore('customPalettes');
+  const localColor = resolvePalette(
+    WORKSPACE_LOCAL_SOURCE_COLOR_ID,
+    mode,
+    customPalettes,
+  ).main;
   const localCount = events.filter((event) => event.isLocal).length;
   const sourceCounts = countRecordsBySource(
     events.map((event) => event.record),
@@ -57,7 +66,7 @@ const SourcesSummary: FC<SourcesSummaryProps> = ({
         <li className={styles.item}>
           <span
             className={styles.dot}
-            style={{ background: WORKSPACE_LOCAL_SOURCE_COLOR }}
+            style={{ background: localColor }}
             aria-hidden
           />
           <span>Workspace Data: {localCount} related events</span>

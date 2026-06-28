@@ -8,4 +8,5 @@ export type {
 } from './BrushHighlight/BrushHighlight';
 export { default as Logo } from './Logo/Logo';
 export { default as NotchedCard } from './NotchedCard/NotchedCard';
+export { default as PalettePicker, type PalettePickerProps } from './PalettePicker';
 export { default as ThemeSelection } from './ThemeSelection/ThemeSelection';

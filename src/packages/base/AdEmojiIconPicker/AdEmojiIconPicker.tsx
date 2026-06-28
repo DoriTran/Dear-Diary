@@ -1,15 +1,14 @@
 import { useState, type FC, type ReactNode } from 'react';
 
 import AdEmojiPicker from '../AdEmojiPicker/AdEmojiPicker';
-import { AD_COMPOSER_EMOJIS } from '../AdEmojiPicker/emojiPresets';
-import { AD_ICON_KEYS } from '../AdIconPicker/iconPresets';
+import { AD_COMPOSER_EMOJIS, AD_COMPOSER_ICON_IDS } from '../AdEmojiPicker/emojiPresets';
 import AdPopover from '../AdPopover/AdPopover';
 
 export type AdEmojiIconPickerProps = {
   anchor: ReactNode;
   onSelect: (value: string) => void;
   emojis?: readonly string[];
-  iconKeys?: readonly string[];
+  iconIds?: readonly string[];
   opened?: boolean;
   onChange?: (opened: boolean) => void;
   position?: 'top' | 'bottom' | 'left' | 'right';
@@ -20,7 +19,7 @@ const AdEmojiIconPicker: FC<AdEmojiIconPickerProps> = ({
   anchor,
   onSelect,
   emojis = AD_COMPOSER_EMOJIS,
-  iconKeys = AD_ICON_KEYS,
+  iconIds = AD_COMPOSER_ICON_IDS,
   opened: controlledOpened,
   onChange: controlledOnChange,
   position = 'top',
@@ -45,7 +44,7 @@ const AdEmojiIconPicker: FC<AdEmojiIconPickerProps> = ({
     >
       <AdEmojiPicker
         emojis={emojis}
-        iconKeys={iconKeys}
+        iconIds={iconIds}
         showIcons
         onSelect={handleSelect}
       />

@@ -1,24 +1,53 @@
 .label {
-  font-size: var(--font-xs);
-  font-weight: var(--font-semibold);
-  color: var(--text-muted);
   margin-bottom: 0.375rem;
 }
 
 .input {
-  border-color: var(--border-soft);
-  border-radius: var(--radius-md);
-  background: var(--surface-soft);
-  color: var(--text);
-  font-size: var(--font-sm);
-  min-height: 2.5rem;
+  min-height: var(--field-min-height);
 }
 
-.input:focus,
-.input:focus-within {
-  border-color: color-mix(in srgb, var(--accent-purple) 40%, var(--border-soft));
-  box-shadow: 0 0 0 3px
-    color-mix(in srgb, var(--accent-purple) 15%, transparent);
+.singleTrigger {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 0.375rem;
+  padding-right: 2.25rem;
+  cursor: pointer;
+}
+
+.singleValue {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  align-items: center;
+}
+
+.chevron {
+  position: absolute;
+  top: 50%;
+  right: 0.75rem;
+  transform: translateY(-50%);
+  flex-shrink: 0;
+  color: var(--text-muted);
+  pointer-events: none;
+}
+
+.placeholder {
+  color: var(--text-muted);
+  font-size: var(--font-sm);
+}
+
+.search {
+  margin: 0.375rem;
+  border: 1px solid var(--field-border);
+  border-radius: var(--radius-md);
+  background: var(--field-bg);
+  font-size: var(--font-sm);
+}
+
+.search:focus {
+  border-color: var(--field-border-focus);
+  box-shadow: var(--field-ring);
 }
 
 .dropdown {
@@ -26,40 +55,36 @@
   border-radius: var(--radius-md);
   background: var(--surface);
   box-shadow: var(--shadow-md);
+  padding: 0.25rem;
 }
 
 .option {
   font-size: var(--font-sm);
   color: var(--text);
   border-radius: var(--radius-sm);
+  padding: 0.375rem 0.5rem;
 }
 
-.option[data-combobox-selected] {
-  background: color-mix(in srgb, var(--accent-purple) 12%, var(--surface-soft));
+.option[data-combobox-active]:not(.optionColorHover) {
+  background: var(--field-bg-hover);
+}
+
+.option[data-combobox-selected]:not(.optionColorHover) {
+  background: var(--field-bg-selected);
   color: var(--text);
 }
 
-.option[data-combobox-active] {
-  background: var(--surface-soft);
+.optionColorHover[data-combobox-active] {
+  background: var(--adselect-option-hover-bg);
+  color: var(--adselect-option-hover-color);
 }
 
-.multiField {
-  display: flex;
-  min-height: 2.5rem;
-  padding: 0.375rem 0.5rem;
-  border: 1px solid var(--border-soft);
-  border-radius: var(--radius-md);
-  background: var(--surface-soft);
-  cursor: text;
-  transition:
-    border-color var(--transition-fast),
-    box-shadow var(--transition-fast);
-}
-
-.multiField:focus-within {
-  border-color: color-mix(in srgb, var(--accent-purple) 40%, var(--border-soft));
-  box-shadow: 0 0 0 3px
-    color-mix(in srgb, var(--accent-purple) 15%, transparent);
+.optionColorHover[data-combobox-selected] {
+  background: var(
+    --adselect-option-selected-bg,
+    var(--adselect-option-hover-bg)
+  );
+  color: var(--adselect-option-hover-color);
 }
 
 .pillsRow {
@@ -93,7 +118,7 @@
 }
 
 .createOptionLabel {
-  color: var(--accent-purple);
+  color: var(--primary);
   font-weight: var(--font-semibold);
 }
 

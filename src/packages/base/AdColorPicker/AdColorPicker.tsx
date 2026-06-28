@@ -1,44 +1,45 @@
-import type { CSSProperties, FC } from 'react';
+import type { FC } from 'react';
 
-import styles from './AdColorPicker.module.css';
-import { AD_COLOR_SWATCHES } from './colorPresets';
+import ColorPickerAnchor from './ColorPickerAnchor';
+import ColorPickerField, { type HuePlacement } from './ColorPickerField';
+import { useColorPickerState } from './useColorPickerState';
 
 export type AdColorPickerProps = {
   value: string;
-  onChange: (value: string) => void;
-  swatches?: readonly string[];
+  onChange: (hex: string) => void;
   label?: string;
-  columns?: number;
+  exposed?: boolean;
+  disabled?: boolean;
+  huePlacement?: HuePlacement;
 };
 
 const AdColorPicker: FC<AdColorPickerProps> = ({
   value,
   onChange,
-  swatches = AD_COLOR_SWATCHES,
-  label = 'Color',
-  columns = 8,
+  label,
+  exposed = false,
+  disabled,
+  huePlacement,
 }) => {
+  const picker = useColorPickerState(value, onChange);
+
+  if (exposed) {
+    return (
+      <ColorPickerField
+        picker={picker}
+        disabled={disabled}
+        huePlacement={huePlacement}
+      />
+    );
+  }
+
   return (
-    <div
-      className={styles.field}
-      style={{ '--ad-color-picker-columns': columns } as CSSProperties}
-    >
-      {label ? <span className={styles.label}>{label}</span> : null}
-      <div className={styles.grid}>
-        {swatches.map((color) => (
-          <button
-            key={color}
-            type="button"
-            className={styles.colorBtn}
-            style={{ background: color }}
-            data-selected={color === value || undefined}
-            aria-label={`Color ${color}`}
-            aria-pressed={color === value}
-            onClick={() => onChange(color)}
-          />
-        ))}
-      </div>
-    </div>
+    <ColorPickerAnchor
+      picker={picker}
+      label={label}
+      disabled={disabled}
+      huePlacement={huePlacement}
+    />
   );
 };
 

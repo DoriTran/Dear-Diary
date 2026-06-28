@@ -102,7 +102,7 @@
 }
 
 .editBtn:hover {
-  background: color-mix(in srgb, var(--header-color) 10%, var(--surface));
+  background: color-mix(in srgb, var(--header-soft) 10%, var(--surface));
   color: var(--text);
 }
 

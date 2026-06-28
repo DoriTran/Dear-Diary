@@ -2,6 +2,10 @@ import type { FC } from 'react';
 
 import clsx from 'clsx';
 
+import { AdIcon } from '@/packages/base';
+import { ColorMainSwatch } from '@/packages/color';
+import { normalizeIconId } from '@/packages/icon';
+
 import type { Workspace } from '@/store/workspace/type';
 
 import styles from './QuickAccess.module.css';
@@ -31,13 +35,9 @@ const QuickAccess: FC<QuickAccessProps> = ({
             )}
             onClick={() => onSelect(workspace.id)}
           >
-            <span
-              className={styles.icon}
-              style={{ background: workspace.color }}
-              aria-hidden
-            >
-              {workspace.icon}
-            </span>
+            <ColorMainSwatch className={styles.icon} colorId={workspace.colorId} aria-hidden>
+              <AdIcon icon={normalizeIconId(workspace.icon)} source="lucide" size={18} />
+            </ColorMainSwatch>
             <span className={styles.meta}>
               <span className={styles.name}>{workspace.name}</span>
               <span className={styles.type}>{workspace.type}</span>

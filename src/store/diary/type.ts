@@ -1,10 +1,13 @@
 // #region Store
 
+import type { ColorId, CustomPalette } from '@/packages/color';
+
 export type DiaryStore = {
   groups: Record<string, Group>;
   chatboxes: Record<string, Chatbox>;
   messages: Record<string, Message>;
   tags: Record<string, Tag>;
+  customPalettes: Record<string, CustomPalette>;
   orders: Orders;
 };
 
@@ -57,6 +60,19 @@ export type DiaryStoreActions = {
 
   // #endregion
 
+  // #region Custom Palette
+
+  createCustomPalette: (data: {
+    name: string;
+    description?: string;
+    baseColor: string;
+    light: CustomPalette['light'];
+    dark: CustomPalette['dark'];
+  }) => ColorId;
+  deleteCustomPalette: (paletteId: string) => void;
+
+  // #endregion
+
   // #region Orders
 
   updateRootOrders: (ids: string[]) => void;
@@ -97,7 +113,7 @@ export type Group = {
   id: string;
   name: string;
   icon: string;
-  color: string; // hex
+  colorId: ColorId;
 
   createdAt: string;
   updatedAt: string | null;
@@ -112,7 +128,7 @@ export type Chatbox = {
   name: string;
   description: string;
   icon: string;
-  color: string; // hex
+  colorId: ColorId;
 
   pinned: boolean;
   archived: boolean;
@@ -137,7 +153,7 @@ export type ChatboxUpdateData = Partial<
     | 'name'
     | 'description'
     | 'icon'
-    | 'color'
+    | 'colorId'
     | 'pinned'
     | 'archived'
     | 'notificationEnabled'
@@ -153,7 +169,7 @@ export type ChatboxUpdateData = Partial<
 export type Tag = {
   id: string;
   label: string;
-  color: string;
+  colorId: ColorId;
 };
 
 // #endregion

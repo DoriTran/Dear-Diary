@@ -2,7 +2,7 @@ import { useMemo, useState, type FC } from 'react';
 
 import moment from 'moment';
 
-import { useDiaryStore } from '@/store';
+import { useAppStore, useDiaryStore } from '@/store';
 
 import type { WorkspaceToolRendererProps } from '../types';
 import EventListSection from './EventListSection/EventListSection';
@@ -25,18 +25,27 @@ const SchedulerTool: FC<WorkspaceToolRendererProps> = ({
   selectedRecordId,
   onSelectRecord,
 }) => {
+  const mode = useAppStore('mode');
   const chatboxes = useDiaryStore('chatboxes');
+  const customPalettes = useDiaryStore('customPalettes');
   const [activeView, setActiveView] = useState<SchedulerView>('month');
   const [currentMonth, setCurrentMonth] = useState(() => moment('2026-05-01'));
 
   const events = useMemo(
-    () => buildCalendarEventViews(records, sources, chatboxes),
-    [records, sources, chatboxes],
+    () =>
+      buildCalendarEventViews(
+        records,
+        sources,
+        chatboxes,
+        mode,
+        customPalettes,
+      ),
+    [records, sources, chatboxes, mode, customPalettes],
   );
 
   const legendItems = useMemo(
-    () => getLegendItems(sources, chatboxes),
-    [sources, chatboxes],
+    () => getLegendItems(sources, chatboxes, mode, customPalettes),
+    [sources, chatboxes, mode, customPalettes],
   );
 
   const todayEvents = useMemo(() => getTodayEvents(events), [events]);

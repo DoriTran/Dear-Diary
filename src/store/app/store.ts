@@ -1,11 +1,17 @@
 import { create } from 'zustand';
 import { createJSONStorage, persist } from 'zustand/middleware';
 
-import type { AppMode, AppStore, AppTheme } from './type';
+import { isValidColorId, RECENT_COLOR_LIMIT } from '@/packages/color';
+import { isValidIconId, RECENT_ICON_LIMIT } from '@/packages/icon';
 
+import type { AppMode, AppStore, AppTheme, ColorPickerPrefs } from './type';
+
+import { getDiaryCustomPalettes } from '../diary/store';
 import shallow from '../shallow';
 import {
+  DEFAULT_COLOR_PICKER_PREFS,
   DEFAULT_DIARY_PAGE,
+  DEFAULT_ICON_PICKER_PREFS,
   DEFAULT_MODE,
   DEFAULT_NAV_PANEL,
   DEFAULT_THEME,
@@ -23,6 +29,8 @@ const useAppStoreBase = create<AppStore>()(
       mode: DEFAULT_MODE,
       navPanel: DEFAULT_NAV_PANEL,
       diaryPage: DEFAULT_DIARY_PAGE,
+      iconPickerPrefs: DEFAULT_ICON_PICKER_PREFS,
+      colorPickerPrefs: DEFAULT_COLOR_PICKER_PREFS,
 
       setTheme: (theme) =>
         set((state) => {
@@ -95,6 +103,106 @@ const useAppStoreBase = create<AppStore>()(
             },
           };
         }),
+
+      addRecentIcon: (iconId) =>
+        set((state) => {
+          if (!isValidIconId(iconId)) {
+            return state;
+          }
+
+          const recent = [
+            iconId,
+            ...state.iconPickerPrefs.recent.filter((id) => id !== iconId),
+          ].slice(0, RECENT_ICON_LIMIT);
+
+          return {
+            iconPickerPrefs: {
+              ...state.iconPickerPrefs,
+              recent,
+            },
+          };
+        }),
+
+      clearRecentIcons: () =>
+        set((state) => ({
+          iconPickerPrefs: {
+            ...state.iconPickerPrefs,
+            recent: [],
+          },
+        })),
+
+      toggleFavoriteIcon: (iconId) =>
+        set((state) => {
+          if (!isValidIconId(iconId)) {
+            return state;
+          }
+
+          const favorites = state.iconPickerPrefs.favorites.includes(iconId)
+            ? state.iconPickerPrefs.favorites.filter((id) => id !== iconId)
+            : [...state.iconPickerPrefs.favorites, iconId];
+
+          return {
+            iconPickerPrefs: {
+              ...state.iconPickerPrefs,
+              favorites,
+            },
+          };
+        }),
+
+      setFavoriteIcons: (iconIds) =>
+        set((state) => ({
+          iconPickerPrefs: {
+            ...state.iconPickerPrefs,
+            favorites: iconIds.filter(isValidIconId),
+          },
+        })),
+
+      addRecentColor: (colorId) =>
+        set((state) => {
+          const customPalettes = getDiaryCustomPalettes();
+
+          if (!isValidColorId(colorId, customPalettes)) {
+            return state;
+          }
+
+          const recent = [
+            colorId,
+            ...state.colorPickerPrefs.recent.filter((id) => id !== colorId),
+          ].slice(0, RECENT_COLOR_LIMIT);
+
+          return {
+            colorPickerPrefs: {
+              ...state.colorPickerPrefs,
+              recent,
+            },
+          };
+        }),
+
+      removeRecentColor: (colorId) =>
+        set((state) => {
+          const recent = state.colorPickerPrefs.recent.filter(
+            (id) => id !== colorId,
+          );
+
+          if (recent.length === state.colorPickerPrefs.recent.length) {
+            return state;
+          }
+
+          return {
+            colorPickerPrefs: {
+              ...state.colorPickerPrefs,
+              recent,
+            },
+          };
+        }),
+
+      clearRecentColors: () =>
+        set((state) => ({
+          colorPickerPrefs: {
+            ...state.colorPickerPrefs,
+            recent: [],
+          },
+        })),
     }),
     {
       name: 'dear-diary-app',
@@ -103,6 +211,8 @@ const useAppStoreBase = create<AppStore>()(
         theme: state.theme,
         mode: state.mode,
         navPanel: state.navPanel,
+        iconPickerPrefs: state.iconPickerPrefs,
+        colorPickerPrefs: state.colorPickerPrefs,
         diaryPage: {
           selectedChatboxId: state.diaryPage.selectedChatboxId,
           expandedGroupIds: Array.from(state.diaryPage.expandedGroupIds),
@@ -113,6 +223,8 @@ const useAppStoreBase = create<AppStore>()(
           theme?: AppTheme;
           mode?: AppMode;
           navPanel?: typeof DEFAULT_NAV_PANEL;
+          iconPickerPrefs?: typeof DEFAULT_ICON_PICKER_PREFS;
+          colorPickerPrefs?: ColorPickerPrefs;
           diaryPage?: {
             selectedChatboxId?: string | null;
             expandedGroupIds?: string[];
@@ -125,6 +237,17 @@ const useAppStoreBase = create<AppStore>()(
           navPanel: {
             ...currentState.navPanel,
             ...persisted.navPanel,
+          },
+          iconPickerPrefs: {
+            ...currentState.iconPickerPrefs,
+            ...persisted.iconPickerPrefs,
+            recent: persisted.iconPickerPrefs?.recent ?? [],
+            favorites: persisted.iconPickerPrefs?.favorites ?? [],
+          },
+          colorPickerPrefs: {
+            ...currentState.colorPickerPrefs,
+            ...persisted.colorPickerPrefs,
+            recent: persisted.colorPickerPrefs?.recent ?? [],
           },
           diaryPage: {
             ...currentState.diaryPage,

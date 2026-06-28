@@ -1,6 +1,6 @@
 import { useMemo } from 'react';
 
-import { useDiaryStore } from '@/store';
+import { useAppStore, useDiaryStore } from '@/store';
 
 import {
   collectDetailPanelMedia,
@@ -30,11 +30,13 @@ export type DetailPanelData = {
 const TOP_TAG_LIMIT = 5;
 
 export const useDetailPanelData = (chatboxId: string): DetailPanelData => {
-  const { chatboxes, messages, tags, orders } = useDiaryStore([
+  const mode = useAppStore('mode');
+  const { chatboxes, messages, tags, orders, customPalettes } = useDiaryStore([
     'chatboxes',
     'messages',
     'tags',
     'orders',
+    'customPalettes',
   ]);
 
   return useMemo(() => {
@@ -57,7 +59,7 @@ export const useDetailPanelData = (chatboxId: string): DetailPanelData => {
     const resolvedTags = resolveDetailPanelTags(chatbox, tags);
 
     return {
-      identity: resolveChatboxIdentity(chatbox),
+      identity: resolveChatboxIdentity(chatbox, mode, customPalettes),
       stats: computeDetailPanelStats(chatbox, allMessages),
       tags: resolvedTags,
       topTags: resolvedTags.slice(0, TOP_TAG_LIMIT),
@@ -66,5 +68,5 @@ export const useDetailPanelData = (chatboxId: string): DetailPanelData => {
       archivedMessages: getArchivedMessages(allMessages),
       allMessages,
     };
-  }, [chatboxId, chatboxes, messages, orders, tags]);
+  }, [chatboxId, chatboxes, messages, orders, tags, mode, customPalettes]);
 };

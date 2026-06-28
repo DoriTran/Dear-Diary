@@ -10,9 +10,13 @@ import type {
 import {
   getSchedulerPayload,
   resolveRecordSourceMeta,
-  WORKSPACE_LOCAL_SOURCE_COLOR,
+  resolveSourceChipMeta,
+  WORKSPACE_LOCAL_SOURCE_COLOR_ID,
   WORKSPACE_LOCAL_SOURCE_LABEL,
 } from '../../workspace.utils';
+import { getAppMode, resolvePalette } from '@/packages/color';
+import type { CustomPalette } from '@/packages/color';
+import type { AppMode } from '@/store/app/type';
 
 export type SchedulerView = 'day' | 'week' | 'month' | 'timeline' | 'agenda';
 
@@ -47,6 +51,8 @@ export const buildCalendarEventViews = (
   records: WorkspaceRecord[],
   sources: WorkspaceSource[],
   chatboxes: Record<string, Chatbox>,
+  mode: AppMode = getAppMode(),
+  customPalettes: Record<string, CustomPalette> = {},
 ): CalendarEventView[] => {
   return records
     .map((record) => {
@@ -56,7 +62,13 @@ export const buildCalendarEventViews = (
         return null;
       }
 
-      const meta = resolveRecordSourceMeta(record.source, sources, chatboxes);
+      const meta = resolveRecordSourceMeta(
+        record.source,
+        sources,
+        chatboxes,
+        mode,
+        customPalettes,
+      );
 
       return {
         record,
@@ -178,28 +190,22 @@ export const formatEventDate = (payload: SchedulerEventPayload) => {
 export const getLegendItems = (
   sources: WorkspaceSource[],
   chatboxes: Record<string, Chatbox>,
+  mode: AppMode = getAppMode(),
+  customPalettes: Record<string, CustomPalette> = {},
 ) => {
-  const sourceItems = sources.map((source) => {
-    if (source.type === 'chatbox') {
-      const chatbox = chatboxes[source.chatboxId];
-
-      return {
-        label: source.label,
-        color: chatbox?.color ?? '#94A3B8',
-      };
-    }
-
-    return {
-      label: source.label,
-      color: '#94A3B8',
-    };
-  });
+  const sourceItems = sources.map((source) =>
+    resolveSourceChipMeta(source, chatboxes, mode, customPalettes),
+  );
 
   return [
     ...sourceItems,
     {
       label: WORKSPACE_LOCAL_SOURCE_LABEL,
-      color: WORKSPACE_LOCAL_SOURCE_COLOR,
+      color: resolvePalette(
+        WORKSPACE_LOCAL_SOURCE_COLOR_ID,
+        mode,
+        customPalettes,
+      ).main,
     },
   ];
 };

@@ -1,0 +1,60 @@
+.root {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+
+.label {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  font-size: var(--font-xs);
+  font-weight: var(--font-semibold);
+  color: var(--text-muted);
+}
+
+.row {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.35rem 0.5rem 0.35rem 0.35rem;
+  border-radius: var(--radius-lg);
+  background: var(--surface-soft);
+  border: 1px solid var(--border-soft);
+}
+
+.swatchBtn {
+  flex-shrink: 0;
+  width: 1.75rem;
+  height: 1.75rem;
+  padding: 0;
+  border: 1px solid var(--border-soft);
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  transition: box-shadow var(--transition-fast);
+}
+
+.swatchBtn:hover:not(:disabled) {
+  box-shadow: 0 0 0 2px color-mix(in srgb, var(--accent-purple) 35%, transparent);
+}
+
+.swatchBtn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.swatchBtn[data-open] {
+  box-shadow: 0 0 0 2px var(--accent-purple);
+}
+
+.hex {
+  flex: 1;
+  min-width: 0;
+  font-size: var(--font-sm);
+  font-family: ui-monospace, monospace;
+  color: var(--text);
+}
+
+.popoverContent {
+  padding: 0.65rem;
+}

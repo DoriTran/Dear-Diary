@@ -3,6 +3,12 @@ import { v4 as uuidv4 } from 'uuid';
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 
+import type { ColorId } from '@/packages/color';
+import { DEFAULT_COLOR_ID, toCustomColorId } from '@/packages/color';
+import { generatePaletteFromBase } from '@/packages/color';
+
+import { migrateDiaryPersistedState } from '../migrateColorId';
+import { migrateDiaryIconState } from '../migrateIconId';
 import type {
   DiaryStore,
   DiaryStoreActions,
@@ -118,7 +124,7 @@ const useDiaryStoreBase = create<DiaryStore & DiaryStoreActions>()(
           id,
           name: data.name ?? '',
           icon: data.icon ?? '',
-          color: data.color ?? '',
+          colorId: data.colorId ?? DEFAULT_COLOR_ID,
           createdAt: now,
           updatedAt: null,
         };
@@ -219,7 +225,7 @@ const useDiaryStoreBase = create<DiaryStore & DiaryStoreActions>()(
           name: data.name ?? '',
           description: data.description ?? '',
           icon: data.icon ?? '',
-          color: data.color ?? '',
+          colorId: data.colorId ?? DEFAULT_COLOR_ID,
           pinned: false,
           archived: false,
           hasUnread: false,
@@ -682,7 +688,7 @@ const useDiaryStoreBase = create<DiaryStore & DiaryStoreActions>()(
         const tag: Tag = {
           id,
           label: data.label ?? '',
-          color: data.color ?? '',
+          colorId: data.colorId ?? DEFAULT_COLOR_ID,
         };
 
         set((state) => ({
@@ -754,6 +760,43 @@ const useDiaryStoreBase = create<DiaryStore & DiaryStoreActions>()(
           return nextState;
         }),
 
+      // #endregion
+
+      // #region Custom Palette
+      createCustomPalette: (data) => {
+        const id = uuidv4();
+        const generated = generatePaletteFromBase(data.baseColor);
+
+        const palette = {
+          id,
+          name: data.name.trim() || 'Custom Palette',
+          description: data.description?.trim() || undefined,
+          baseColor: data.baseColor,
+          light: data.light ?? generated.light,
+          dark: data.dark ?? generated.dark,
+          createdAt: nowIso(),
+        };
+
+        set((state) => ({
+          customPalettes: {
+            ...state.customPalettes,
+            [id]: palette,
+          },
+        }));
+
+        return toCustomColorId(id) as ColorId;
+      },
+      deleteCustomPalette: (paletteId) =>
+        set((state) => {
+          if (!state.customPalettes[paletteId]) {
+            return state;
+          }
+
+          const { [paletteId]: _removed, ...customPalettes } =
+            state.customPalettes;
+
+          return { customPalettes };
+        }),
       // #endregion
 
       // #region Orders
@@ -870,13 +913,33 @@ const useDiaryStoreBase = create<DiaryStore & DiaryStoreActions>()(
         chatboxes: state.chatboxes,
         messages: state.messages,
         tags: state.tags,
+        customPalettes: state.customPalettes,
         orders: state.orders,
       }),
+      merge: (persistedState, currentState) => {
+        const persisted = persistedState as Partial<DiaryStore> | undefined;
+        const merged = {
+          ...currentState,
+          ...persisted,
+          orders: {
+            ...currentState.orders,
+            ...persisted?.orders,
+          },
+          customPalettes: {
+            ...currentState.customPalettes,
+            ...persisted?.customPalettes,
+          },
+        };
+
+        return migrateDiaryIconState(migrateDiaryPersistedState(merged));
+      },
     },
   ),
 );
 
 export const useDiaryStore = shallow(useDiaryStoreBase);
+
+export const getDiaryCustomPalettes = () => useDiaryStoreBase.getState().customPalettes;
 
 export const useDiaryHydrated = () => {
   const [hydrated, setHydrated] = useState(() =>

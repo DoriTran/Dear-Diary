@@ -34,7 +34,7 @@ const MessageTagRow: FC<MessageTagRowProps> = ({ tagIds }) => {
           <AdChip
             key={tagId}
             label={tag.label}
-            color={tag.color}
+            colorId={tag.colorId}
             size="small"
           />
         );

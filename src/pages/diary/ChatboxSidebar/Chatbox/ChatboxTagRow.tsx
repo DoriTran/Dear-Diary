@@ -42,7 +42,7 @@ const ChatboxTagRow: FC<ChatboxTagRowProps> = ({
   chipSize = 'small',
 }) => {
   const tagsKey = tags
-    .map((tag) => `${tag.label}:${tag.count}:${tag.color}`)
+    .map((tag) => `${tag.label}:${tag.count}:${tag.colorId}`)
     .join('|');
   const sortedTags = useMemo(() => sortTagsByCount(tags), [tagsKey]);
 
@@ -128,7 +128,7 @@ const ChatboxTagRow: FC<ChatboxTagRowProps> = ({
     <AdChip
       key={measure ? `measure-${tag.label}` : tag.label}
       label={tag.label}
-      color={tag.color}
+      colorId={tag.colorId}
       count={tag.count}
       size={chipSize}
       data-tag-measure={measure}

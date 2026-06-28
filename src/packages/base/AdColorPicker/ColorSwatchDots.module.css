@@ -1,0 +1,10 @@
+.root {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.2rem;
+}
+
+.dot {
+  border-radius: 999px;
+  border: 1px solid rgb(0 0 0 / 6%);
+}

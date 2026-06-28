@@ -132,7 +132,7 @@ const CategoryTab: FC<CategoryTabProps> = ({
                 >
                   <AdChip
                     label={tag.label}
-                    color={tag.color}
+                    colorId={tag.colorId}
                     count={tag.count}
                     size="medium"
                   />

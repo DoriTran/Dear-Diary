@@ -1,7 +1,6 @@
-export {
-  AD_ICON_KEYS as CREATE_ICON_KEYS,
-  resolveAdIcon as resolveCreateIcon,
-  type AdIconKey as CreateIconKey,
-} from '@/packages/base/AdIconPicker/iconPresets';
+import { DEFAULT_ICON_ID, normalizeIconId, type IconId } from '@/packages/icon';
 
-export { AD_COLOR_SWATCHES as CREATE_COLOR_SWATCHES } from '@/packages/base/AdColorPicker/colorPresets';
+export { DEFAULT_ICON_ID as CREATE_DEFAULT_ICON_ID };
+
+export const resolveCreateIconId = (icon: string): IconId =>
+  normalizeIconId(icon);

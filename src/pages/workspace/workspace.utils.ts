@@ -1,4 +1,7 @@
 import type { Chatbox } from '@/store/diary/type';
+import { DEFAULT_COLOR_ID, getAppMode, resolvePalette } from '@/packages/color';
+import type { CustomPalette } from '@/packages/color';
+import type { AppMode } from '@/store/app/type';
 import type {
   RecordSource,
   SchedulerEventPayload,
@@ -8,7 +11,7 @@ import type {
   WorkspaceType,
 } from '@/store/workspace/type';
 
-export const WORKSPACE_LOCAL_SOURCE_COLOR = '#F9A8D4';
+export const WORKSPACE_LOCAL_SOURCE_COLOR_ID = DEFAULT_COLOR_ID;
 
 export const WORKSPACE_LOCAL_SOURCE_LABEL = 'Workspace Data';
 
@@ -128,15 +131,29 @@ export const resolveWorkspaceForToolType = (
   return workspaceIds.find((id) => workspaces[id]?.type === type) ?? null;
 };
 
+const resolveEntityMainColor = (
+  colorId: string | undefined,
+  mode: AppMode = getAppMode(),
+  customPalettes: Record<string, CustomPalette> = {},
+): string => {
+  if (!colorId) {
+    return resolvePalette(DEFAULT_COLOR_ID, mode, customPalettes).main;
+  }
+
+  return resolvePalette(colorId as import('@/packages/color').ColorId, mode, customPalettes).main;
+};
+
 export const resolveRecordSourceMeta = (
   source: RecordSource,
   sources: WorkspaceSource[],
   chatboxes: Record<string, Chatbox>,
+  mode: AppMode = getAppMode(),
+  customPalettes: Record<string, CustomPalette> = {},
 ): RecordSourceMeta => {
   if (source.type === 'local') {
     return {
       label: WORKSPACE_LOCAL_SOURCE_LABEL,
-      color: WORKSPACE_LOCAL_SOURCE_COLOR,
+      color: resolveEntityMainColor(WORKSPACE_LOCAL_SOURCE_COLOR_ID, mode, customPalettes),
     };
   }
 
@@ -150,39 +167,41 @@ export const resolveRecordSourceMeta = (
 
     return {
       label: chatboxSource?.label ?? chatbox?.name ?? 'Chatbox',
-      color: chatbox?.color ?? '#94A3B8',
+      color: resolveEntityMainColor(chatbox?.colorId, mode, customPalettes),
     };
   }
 
   if (source.type === 'message') {
     return {
       label: 'Message',
-      color: '#94A3B8',
+      color: resolvePalette('navy', mode, customPalettes).main,
     };
   }
 
   return {
     label: 'Workspace',
-    color: '#94A3B8',
+    color: resolvePalette('navy', mode, customPalettes).main,
   };
 };
 
 export const resolveSourceChipMeta = (
   source: WorkspaceSource,
   chatboxes: Record<string, Chatbox>,
+  mode: AppMode = getAppMode(),
+  customPalettes: Record<string, CustomPalette> = {},
 ): RecordSourceMeta => {
   if (source.type === 'chatbox') {
     const chatbox = chatboxes[source.chatboxId];
 
     return {
       label: source.label,
-      color: chatbox?.color ?? '#94A3B8',
+      color: resolveEntityMainColor(chatbox?.colorId, mode, customPalettes),
     };
   }
 
   return {
     label: source.label,
-    color: '#94A3B8',
+    color: resolvePalette('navy', mode, customPalettes).main,
   };
 };
 

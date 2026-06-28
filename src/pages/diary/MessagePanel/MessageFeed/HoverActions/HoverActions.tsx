@@ -1,6 +1,7 @@
 import { faReply, faSmile, faTags } from '@fortawesome/free-solid-svg-icons';
 import { useMemo, useState, type FC } from 'react';
 
+import { DEFAULT_COLOR_ID } from '@/packages/color';
 import type { Message } from '@/store/diary/type';
 
 import {
@@ -44,7 +45,7 @@ const HoverActions: FC<HoverActionsProps> = ({
       Object.values(tags).map((tag) => ({
         value: tag.id,
         label: tag.label,
-        color: tag.color,
+        colorId: tag.colorId,
       })),
     [tags],
   );
@@ -107,7 +108,7 @@ const HoverActions: FC<HoverActionsProps> = ({
                 return;
               }
 
-              const id = createTag({ label, color: '#E1BEE7' });
+              const id = createTag({ label, colorId: DEFAULT_COLOR_ID });
               actions.setTags(message.id, [...message.tagIds, id]);
             }}
           />

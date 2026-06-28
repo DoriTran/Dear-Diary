@@ -1,0 +1,51 @@
+.cell {
+  position: relative;
+  display: inline-flex;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: center;
+  width: var(--icon-cell-size, 2.25rem);
+  height: var(--icon-cell-size, 2.25rem);
+  padding: 0;
+  border: 1px solid var(--field-border, var(--border-soft));
+  border-radius: var(--radius-md);
+  background: var(--field-bg, var(--surface-soft));
+  color: var(--text);
+  cursor: pointer;
+  outline: none;
+  touch-action: manipulation;
+  -webkit-touch-callout: none;
+  user-select: none;
+  transition:
+    border-color var(--transition-fast),
+    background var(--transition-fast),
+    color var(--transition-fast);
+}
+
+.cell:hover,
+.cell:focus-visible {
+  border-color: var(--field-border-hover);
+  background: var(--field-bg-hover);
+  color: var(--primary);
+}
+
+.cell[data-selected] {
+  border-color: var(--accent-purple);
+  background: color-mix(in srgb, var(--accent-purple) 8%, var(--surface-soft));
+  color: var(--accent-purple);
+}
+
+.checkBadge {
+  position: absolute;
+  top: -0.2rem;
+  right: -0.2rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 0.85rem;
+  height: 0.85rem;
+  border-radius: 999px;
+  background: var(--accent-green, #5cb88a);
+  color: white;
+  box-shadow: 0 1px 2px rgb(0 0 0 / 12%);
+}

@@ -1,22 +1,15 @@
 import { useState, type FC, type FormEvent } from 'react';
 
-import { AdColorPicker, AdIconPicker } from '@/packages/base';
+import { AdField, AdIconPicker, AdInput } from '@/packages/base';
+import { PalettePicker } from '@/packages/ui';
+import type { ColorId } from '@/packages/color';
+import { DEFAULT_COLOR_ID } from '@/packages/color';
+import type { IconId } from '@/packages/icon';
+import { DEFAULT_ICON_ID } from '@/packages/icon';
 import { useAppStore, useDiaryStore } from '@/store';
 
-import {
-  CREATE_COLOR_SWATCHES,
-  CREATE_ICON_KEYS,
-  type CreateIconKey,
-} from './create.constants';
+import { resolveCreateIconId } from './create.constants';
 import formStyles from './CreateForm.module.css';
-
-const resolveIconKey = (icon: string): CreateIconKey => {
-  if ((CREATE_ICON_KEYS as readonly string[]).includes(icon)) {
-    return icon as CreateIconKey;
-  }
-
-  return CREATE_ICON_KEYS[0];
-};
 
 export type CreateGroupFormProps = {
   groupId?: string;
@@ -38,11 +31,11 @@ const CreateGroupForm: FC<CreateGroupFormProps> = ({
   const existing = groupId ? groups[groupId] : null;
 
   const [name, setName] = useState(existing?.name ?? '');
-  const [icon, setIcon] = useState<CreateIconKey>(
-    resolveIconKey(existing?.icon ?? CREATE_ICON_KEYS[0]),
+  const [icon, setIcon] = useState<IconId>(
+    resolveCreateIconId(existing?.icon ?? DEFAULT_ICON_ID),
   );
-  const [color, setColor] = useState<string>(
-    existing?.color ?? CREATE_COLOR_SWATCHES[0],
+  const [colorId, setColorId] = useState<ColorId>(
+    existing?.colorId ?? DEFAULT_COLOR_ID,
   );
 
   const handleSubmit = (event: FormEvent) => {
@@ -58,7 +51,7 @@ const CreateGroupForm: FC<CreateGroupFormProps> = ({
       updateGroup(groupId, {
         name: trimmedName,
         icon,
-        color,
+        colorId,
       });
       onSaved();
       return;
@@ -67,7 +60,7 @@ const CreateGroupForm: FC<CreateGroupFormProps> = ({
     const newId = createGroup({
       name: trimmedName,
       icon,
-      color,
+      colorId,
     });
 
     expandGroup(newId);
@@ -76,25 +69,31 @@ const CreateGroupForm: FC<CreateGroupFormProps> = ({
 
   return (
     <form className={formStyles.form} onSubmit={handleSubmit}>
-      <div className={formStyles.field}>
-        <label className={formStyles.label} htmlFor="create-group-name">
-          Name
-        </label>
-        <input
-          id="create-group-name"
-          className={formStyles.input}
-          value={name}
-          onChange={(event) => setName(event.target.value)}
-          placeholder="My group"
-          required
-        />
+      <div className={formStyles.identityRow}>
+        <div className={formStyles.identityPickers}>
+          <AdIconPicker
+            value={icon}
+            onChange={setIcon}
+            variant="compact"
+            label="Icon"
+          />
+          <PalettePicker
+            value={colorId}
+            onChange={setColorId}
+            variant="compact"
+            label="Color"
+          />
+        </div>
+        <AdField label="Name" htmlFor="create-group-name">
+          <AdInput
+            id="create-group-name"
+            value={name}
+            onChange={(event) => setName(event.target.value)}
+            placeholder="My group"
+            required
+          />
+        </AdField>
       </div>
-
-      <AdIconPicker
-        value={icon}
-        onChange={(value) => setIcon(value as CreateIconKey)}
-      />
-      <AdColorPicker value={color} onChange={setColor} />
 
       <div className={formStyles.actions}>
         <button
@@ -109,7 +108,7 @@ const CreateGroupForm: FC<CreateGroupFormProps> = ({
           className={formStyles.btnPrimary}
           disabled={!name.trim()}
         >
-          {isEdit ? 'Save' : 'Create'}
+          {isEdit ? 'Save changes' : 'Create group'}
         </button>
       </div>
     </form>

@@ -24,13 +24,19 @@ const Header: FC<HeaderProps> = ({
   onEdit,
   onToggleNotification,
 }) => {
-  const { name, description, icon, color, iconBg, notificationEnabled } =
+  const { name, description, icon, paletteSoft, paletteMain, paletteStrong, iconBg, notificationEnabled } =
     identity;
 
   return (
     <header
       className={styles.root}
-      style={{ '--panel-color': color } as CSSProperties}
+      style={
+        {
+          '--panel-soft': paletteSoft,
+          '--panel-main': paletteMain,
+          '--panel-strong': paletteStrong,
+        } as CSSProperties
+      }
     >
       <div className={styles.identity}>
         <span
@@ -38,7 +44,7 @@ const Header: FC<HeaderProps> = ({
           style={{ background: iconBg }}
           aria-hidden
         >
-          <AdIcon icon={icon} size={24} />
+          <AdIcon icon={icon} source="lucide" size={24} />
         </span>
         <h2 className={styles.name}>{name}</h2>
         {description ? (

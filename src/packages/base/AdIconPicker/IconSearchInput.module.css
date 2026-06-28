@@ -1,0 +1,40 @@
+.iconSearch {
+  width: 100%;
+}
+
+.iconSearchInput {
+  width: 100%;
+  padding: 0.5rem 0.65rem 0.5rem 2rem;
+  border: 1px solid var(--field-border, var(--border-soft));
+  border-radius: var(--radius-lg);
+  font-family: inherit;
+  font-size: var(--font-sm);
+  background: var(--field-bg, var(--surface));
+  color: var(--text);
+  outline: none;
+  transition:
+    border-color var(--transition-fast),
+    box-shadow var(--transition-fast);
+}
+
+.iconSearchInput:focus {
+  border-color: var(--field-border-focus);
+  box-shadow: var(--field-ring);
+}
+
+.iconSearchInput::placeholder {
+  color: var(--text-soft);
+}
+
+.iconSearchWrap {
+  position: relative;
+}
+
+.iconSearchIcon {
+  position: absolute;
+  top: 50%;
+  left: 0.65rem;
+  transform: translateY(-50%);
+  color: var(--text-soft);
+  pointer-events: none;
+}

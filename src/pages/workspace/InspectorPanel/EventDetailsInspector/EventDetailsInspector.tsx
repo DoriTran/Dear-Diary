@@ -3,6 +3,7 @@ import type { FC } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 import { AdChip } from '@/packages/base';
+import { DEFAULT_COLOR_ID } from '@/packages/color';
 import { useAppStore, useDiaryStore, useWorkspaceStore } from '@/store';
 import type { WorkspaceRecord } from '@/store/workspace/type';
 
@@ -143,7 +144,7 @@ const EventDetailsInspector: FC<EventDetailsInspectorProps> = ({ record }) => {
               <AdChip
                 key={tag}
                 label={tag.replace(/^#/, '')}
-                color={sourceMeta.color}
+                colorId={DEFAULT_COLOR_ID}
                 size="small"
               />
             ))}

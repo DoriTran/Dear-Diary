@@ -136,7 +136,7 @@ const Group: FC<GroupProps> = ({
               </button>
             )}
             <span className={styles.groupIcon} aria-hidden>
-              <AdIcon icon={groupIcon} size={14} />
+              <AdIcon icon={groupIcon} source="lucide" size={14} />
             </span>
             <span className={styles.titleText}>{title}</span>
           </div>

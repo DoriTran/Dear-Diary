@@ -1,0 +1,64 @@
+.tooltip {
+  max-width: 16rem;
+  padding: 0.75rem;
+  border: 1px solid
+    color-mix(in srgb, var(--accent-purple) 20%, var(--border-soft));
+  border-radius: var(--radius-lg);
+  background: var(--surface);
+  box-shadow: var(--shadow-md);
+}
+
+.root {
+  display: flex;
+  flex-direction: column;
+  gap: 0.65rem;
+}
+
+.header {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.45rem;
+}
+
+.icon {
+  font-size: 1.1rem;
+  line-height: 1;
+}
+
+.name {
+  margin: 0;
+  font-size: var(--font-sm);
+  font-weight: var(--font-semibold);
+  color: var(--text);
+}
+
+.personality {
+  margin: 0.1rem 0 0;
+  font-size: var(--font-xs);
+  font-weight: var(--font-medium);
+}
+
+.shades {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 0.35rem;
+}
+
+.shade {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.2rem;
+}
+
+.shadeSwatch {
+  width: 100%;
+  height: 1.5rem;
+  border-radius: var(--radius-sm);
+  border: 1px solid rgb(0 0 0 / 6%);
+}
+
+.shadeLabel {
+  font-size: var(--font-2xs);
+  color: var(--text-muted);
+}

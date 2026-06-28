@@ -11,6 +11,8 @@ export type WorkspaceType =
   | 'finance'
   | 'custom';
 
+import type { ColorId } from '@/packages/color';
+
 export type Workspace = {
   id: string;
 
@@ -22,7 +24,7 @@ export type Workspace = {
 
   icon: string;
 
-  color: string;
+  colorId: ColorId;
 
   sourceIds: string[];
 

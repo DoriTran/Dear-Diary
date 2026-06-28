@@ -1,13 +1,14 @@
 import { useMemo, useState, type FC } from 'react';
 
-import AdIcon from '../AdIcon/AdIcon';
-import { AD_ICON_KEYS, resolveAdIcon } from '../AdIconPicker/iconPresets';
+import { LucideIconById } from '@/packages/icon';
+import type { IconId } from '@/packages/icon';
+
 import styles from './AdEmojiPicker.module.css';
-import { AD_COMPOSER_EMOJIS } from './emojiPresets';
+import { AD_COMPOSER_EMOJIS, AD_COMPOSER_ICON_IDS } from './emojiPresets';
 
 export type AdEmojiPickerProps = {
   emojis?: readonly string[];
-  iconKeys?: readonly string[];
+  iconIds?: readonly IconId[];
   showIcons?: boolean;
   searchPlaceholder?: string;
   emojiLabel?: string;
@@ -17,7 +18,7 @@ export type AdEmojiPickerProps = {
 
 const AdEmojiPicker: FC<AdEmojiPickerProps> = ({
   emojis = AD_COMPOSER_EMOJIS,
-  iconKeys = AD_ICON_KEYS,
+  iconIds = AD_COMPOSER_ICON_IDS,
   showIcons = false,
   searchPlaceholder = 'Search emojis',
   emojiLabel = 'Emoji',
@@ -30,11 +31,11 @@ const AdEmojiPicker: FC<AdEmojiPickerProps> = ({
     const normalized = query.trim().toLowerCase();
 
     if (!normalized || !showIcons) {
-      return iconKeys;
+      return iconIds;
     }
 
-    return iconKeys.filter((key) => key.toLowerCase().includes(normalized));
-  }, [iconKeys, query, showIcons]);
+    return iconIds.filter((id) => id.toLowerCase().includes(normalized));
+  }, [iconIds, query, showIcons]);
 
   const filteredEmojis = useMemo(() => {
     if (!query.trim()) {
@@ -70,15 +71,15 @@ const AdEmojiPicker: FC<AdEmojiPickerProps> = ({
         <>
           <p className={styles.sectionLabel}>{iconLabel}</p>
           <div className={styles.iconGrid}>
-            {filteredIcons.map((iconKey) => (
+            {filteredIcons.map((iconId) => (
               <button
-                key={iconKey}
+                key={iconId}
                 type="button"
                 className={styles.iconBtn}
-                aria-label={iconKey}
-                onClick={() => onSelect(`[${iconKey}]`)}
+                aria-label={iconId}
+                onClick={() => onSelect(`[${iconId}]`)}
               >
-                <AdIcon icon={resolveAdIcon(iconKey)} size={12} />
+                <LucideIconById iconId={iconId} size={12} />
               </button>
             ))}
           </div>

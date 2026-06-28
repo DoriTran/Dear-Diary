@@ -7,6 +7,7 @@ export const diaryInitialState: DiaryStore = {
   chatboxes: {},
   messages: {},
   tags: {},
+  customPalettes: {},
   orders: {
     rootOrders: [],
     groupChatboxOrders: {},
@@ -25,24 +26,24 @@ export const diaryDummyState: DiaryStore = {
     'gr:personal': {
       id: 'gr:personal',
       name: 'Personal',
-      icon: 'faHeart',
-      color: '#F8BBD9',
+      icon: 'Heart',
+      colorId: 'rose',
       createdAt: '2026-01-01T00:00:00.000Z',
       updatedAt: null,
     },
     'gr:work': {
       id: 'gr:work',
       name: 'Work',
-      icon: 'faBriefcase',
-      color: '#B39DDB',
+      icon: 'Briefcase',
+      colorId: 'violet',
       createdAt: '2026-01-01T00:00:00.000Z',
       updatedAt: null,
     },
     'gr:entertainment': {
       id: 'gr:entertainment',
       name: 'Entertainment',
-      icon: 'faGamepad',
-      color: '#AED581',
+      icon: 'Gamepad2',
+      colorId: 'matcha',
       createdAt: '2026-01-01T00:00:00.000Z',
       updatedAt: null,
     },
@@ -56,37 +57,37 @@ export const diaryDummyState: DiaryStore = {
     'tag:important': {
       id: 'tag:important',
       label: 'Important',
-      color: '#FF8A80',
+      colorId: 'coral',
     },
     'tag:japanese': {
       id: 'tag:japanese',
       label: 'Japanese',
-      color: '#81D4FA',
+      colorId: 'sky',
     },
     'tag:project': {
       id: 'tag:project',
       label: 'Project',
-      color: '#CE93D8',
+      colorId: 'plum',
     },
     'tag:anime': {
       id: 'tag:anime',
       label: 'Anime',
-      color: '#A5D6A7',
+      colorId: 'mint',
     },
     'tag:vocabulary': {
       id: 'tag:vocabulary',
       label: 'vocabulary',
-      color: '#F8BBD9',
+      colorId: 'rose',
     },
     'tag:grammar': {
       id: 'tag:grammar',
       label: 'grammar',
-      color: '#A5D6A7',
+      colorId: 'mint',
     },
     'tag:diary': {
       id: 'tag:diary',
       label: 'diary',
-      color: '#F8BBD9',
+      colorId: 'rose',
     },
   },
 
@@ -99,8 +100,8 @@ export const diaryDummyState: DiaryStore = {
       id: 'cb:study',
       groupId: 'gr:personal',
       name: 'Japanese Study',
-      icon: 'faBookOpen',
-      color: '#E1BEE7',
+      icon: 'BookOpen',
+      colorId: 'lavender',
       description:
         "A place to organize my Japanese study materials, vocabulary, grammar, and daily progress. Let's grow together!",
       pinned: true,
@@ -123,8 +124,8 @@ export const diaryDummyState: DiaryStore = {
       id: 'cb:diary',
       groupId: 'gr:personal',
       name: 'Daily Diary',
-      icon: 'faPenFancy',
-      color: '#F8BBD9',
+      icon: 'PenLine',
+      colorId: 'rose',
       description: 'Personal reflections and daily notes.',
       pinned: false,
       archived: true,
@@ -141,8 +142,8 @@ export const diaryDummyState: DiaryStore = {
       id: 'cb:project',
       groupId: 'gr:work',
       name: 'Dear Diary',
-      icon: 'faPenFancy',
-      color: '#B39DDB',
+      icon: 'PenLine',
+      colorId: 'violet',
       description: 'Dear Diary architecture and development.',
       pinned: false,
       archived: false,
@@ -162,8 +163,8 @@ export const diaryDummyState: DiaryStore = {
       id: 'cb:anime',
       groupId: 'gr:entertainment',
       name: 'Anime Watchlist',
-      icon: 'faTv',
-      color: '#AED581',
+      icon: 'Tv',
+      colorId: 'matcha',
       description: 'Anime watchlist and episode notes.',
       pinned: false,
       archived: false,
@@ -379,6 +380,8 @@ export const diaryDummyState: DiaryStore = {
   },
 
   // #endregion
+
+  customPalettes: {},
 
   // #region Orders
 

@@ -4,6 +4,7 @@ import {
   useCombobox,
   type ComboboxLikeRenderOptionInput,
 } from '@mantine/core';
+import clsx from 'clsx';
 import {
   useCallback,
   useMemo,
@@ -13,6 +14,7 @@ import {
 } from 'react';
 
 import AdChip from '../AdChip/AdChip';
+import fieldStyles from '../formField/formField.module.css';
 import styles from './AdSelect.module.css';
 import {
   CREATE_OPTION_VALUE,
@@ -152,7 +154,7 @@ const AdSelectMultiple: FC<AdSelectMultipleProps> = ({
     (input: AdSelectRenderPillInput) => (
       <AdChip
         label={input.option.label}
-        color={input.option.color}
+        colorId={input.option.colorId}
         onRemove={input.onRemove}
       />
     ),
@@ -188,10 +190,12 @@ const AdSelectMultiple: FC<AdSelectMultipleProps> = ({
         <Input.Wrapper
           label={label}
           required={required}
-          classNames={{ label: classNames?.label ?? styles.label }}
+          classNames={{
+            label: clsx(fieldStyles.label, styles.label, classNames?.label),
+          }}
         >
           <div
-            className={styles.multiField}
+            className={clsx(fieldStyles.controlMulti, classNames?.input)}
             onClick={() => combobox.openDropdown()}
             onKeyDown={() => undefined}
             role="presentation"

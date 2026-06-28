@@ -8,7 +8,9 @@ import {
   faPlus,
 } from '@fortawesome/free-solid-svg-icons';
 
-import { AdActionButton } from '@/packages/base';
+import { AdActionButton, AdIcon } from '@/packages/base';
+import { ColorMainSwatch } from '@/packages/color';
+import { normalizeIconId } from '@/packages/icon';
 import type { Workspace, WorkspaceSource } from '@/store/workspace/type';
 import type { Chatbox } from '@/store/diary/type';
 
@@ -33,13 +35,9 @@ const ContentHeader: FC<ContentHeaderProps> = ({
     <header className={styles.root}>
       <div className={styles.main}>
         <div className={styles.titleRow}>
-          <span
-            className={styles.icon}
-            style={{ background: workspace.color }}
-            aria-hidden
-          >
-            {workspace.icon}
-          </span>
+          <ColorMainSwatch className={styles.icon} colorId={workspace.colorId} aria-hidden>
+            <AdIcon icon={normalizeIconId(workspace.icon)} source="lucide" size={22} />
+          </ColorMainSwatch>
           <div className={styles.copy}>
             <div className={styles.nameRow}>
               <h1 className={styles.title}>{workspace.name}</h1>

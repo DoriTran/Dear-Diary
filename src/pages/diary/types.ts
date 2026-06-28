@@ -1,11 +1,12 @@
-﻿import type { IconDefinition } from '@fortawesome/fontawesome-svg-core';
+﻿import type { IconId } from '@/packages/icon';
+import type { ColorId } from '@/packages/color';
 
 export type TagTone = 'purple' | 'pink' | 'yellow' | 'teal' | 'blue';
 
 export type ChatboxListTag = {
   label: string;
   count: number;
-  color: string;
+  colorId: ColorId;
 };
 
 export type HeaderTag = {
@@ -19,8 +20,11 @@ export type ChatboxData = {
   description: string;
   preview: string;
   tags: ChatboxListTag[];
-  icon: IconDefinition;
-  color: string;
+  icon: IconId;
+  colorId: ColorId;
+  paletteSoft: string;
+  paletteMain: string;
+  paletteStrong: string;
   iconBg: string;
   pinned: boolean;
   archived: boolean;
@@ -35,7 +39,7 @@ export type GroupData = {
   id: string;
   title: string;
   brushColor: string;
-  groupIcon: IconDefinition;
+  groupIcon: IconId;
   chatboxes: ChatboxData[];
 };
 

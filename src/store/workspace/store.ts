@@ -3,6 +3,11 @@ import { v4 as uuidv4 } from 'uuid';
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 
+import { DEFAULT_COLOR_ID } from '@/packages/color';
+import { DEFAULT_ICON_ID } from '@/packages/icon';
+
+import { migrateWorkspacePersistedState } from '../migrateColorId';
+import { migrateWorkspaceIconState } from '../migrateIconId';
 import type {
   Workspace,
   WorkspaceStore,
@@ -44,9 +49,9 @@ const useWorkspaceStoreBase = create<WorkspaceStore & WorkspaceStoreActions>()(
 
           description: data.description ?? '',
 
-          icon: data.icon ?? '',
+          icon: data.icon ?? DEFAULT_ICON_ID,
 
-          color: data.color ?? '',
+          colorId: data.colorId ?? DEFAULT_COLOR_ID,
 
           sourceIds: data.sourceIds ?? [],
 
@@ -425,8 +430,7 @@ const useWorkspaceStoreBase = create<WorkspaceStore & WorkspaceStoreActions>()(
 
       merge: (persistedState, currentState) => {
         const persisted = persistedState as Partial<WorkspaceStore> | undefined;
-
-        return {
+        const merged = {
           ...currentState,
           ...persisted,
           ui: {
@@ -438,6 +442,8 @@ const useWorkspaceStoreBase = create<WorkspaceStore & WorkspaceStoreActions>()(
             ...persisted?.orders,
           },
         };
+
+        return migrateWorkspaceIconState(migrateWorkspacePersistedState(merged));
       },
     },
   ),

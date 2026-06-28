@@ -1,48 +1,75 @@
-import type { IconDefinition } from '@fortawesome/fontawesome-svg-core';
-import type { CSSProperties, FC } from 'react';
+import { useState, type FC } from 'react';
 
-import AdIcon from '../AdIcon/AdIcon';
-import styles from './AdIconPicker.module.css';
-import { AD_ICON_KEYS, resolveAdIcon } from './iconPresets';
+import type { IconId } from '@/packages/icon';
+import { useAppStore } from '@/store';
+
+import AdPopover from '../AdPopover/AdPopover';
+import fieldStyles from '../formField/formField.module.css';
+import IconPickerPopover from './IconPickerPopover';
+import IconPickerTrigger, {
+  iconPickerTriggerClassNames,
+} from './IconPickerTrigger';
 
 export type AdIconPickerProps = {
-  value: string;
-  onChange: (value: string) => void;
-  icons?: readonly string[];
-  resolveIcon?: (key: string) => IconDefinition;
+  value: IconId;
+  onChange: (value: IconId) => void;
   label?: string;
-  columns?: number;
+  variant?: 'popover' | 'compact';
 };
 
 const AdIconPicker: FC<AdIconPickerProps> = ({
   value,
   onChange,
-  icons = AD_ICON_KEYS,
-  resolveIcon = resolveAdIcon,
   label = 'Icon',
-  columns = 6,
+  variant = 'popover',
 }) => {
-  return (
-    <div
-      className={styles.field}
-      style={{ '--ad-icon-picker-columns': columns } as CSSProperties}
+  const addRecentIcon = useAppStore('addRecentIcon');
+  const [opened, setOpened] = useState(false);
+
+  const handleChange = (next: IconId) => {
+    onChange(next);
+    addRecentIcon(next);
+    setOpened(false);
+  };
+
+  const trigger = (
+    <button
+      type="button"
+      className={iconPickerTriggerClassNames({ variant, opened })}
+      aria-label={`Selected icon: ${value}`}
+      aria-expanded={opened}
+      onClick={() => setOpened((current) => !current)}
     >
-      {label ? <span className={styles.label}>{label}</span> : null}
-      <div className={styles.grid}>
-        {icons.map((iconKey) => (
-          <button
-            key={iconKey}
-            type="button"
-            className={styles.iconBtn}
-            data-selected={iconKey === value || undefined}
-            aria-label={iconKey}
-            aria-pressed={iconKey === value}
-            onClick={() => onChange(iconKey)}
-          >
-            <AdIcon icon={resolveIcon(iconKey)} size={14} />
-          </button>
-        ))}
-      </div>
+      <IconPickerTrigger value={value} variant={variant} />
+    </button>
+  );
+
+  return (
+    <div className={fieldStyles.field}>
+      {label ? <span className={fieldStyles.label}>{label}</span> : null}
+
+      <AdPopover
+        opened={opened}
+        onChange={setOpened}
+        position="bottom-start"
+        width="max-content"
+        shadow="md"
+        radius="lg"
+        styles={{
+          dropdown: {
+            padding: 0,
+            maxWidth: 'calc(100vw - 2rem)',
+            width: 'auto',
+          },
+        }}
+        anchor={trigger}
+      >
+        <IconPickerPopover
+          value={value}
+          onChange={handleChange}
+          onClose={() => setOpened(false)}
+        />
+      </AdPopover>
     </div>
   );
 };

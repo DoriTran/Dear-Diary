@@ -8,6 +8,8 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { CircleQuestionMark } from 'lucide-react';
 import { ReactSVG } from 'react-svg';
 
+import { isValidIconId, LucideIconById } from '@/packages/icon';
+
 import { svgIcon } from './svgIcon';
 
 type LucideIcon = ComponentType<LucideProps>;
@@ -83,6 +85,20 @@ const AdIcon: FC<IconProps> = ({
   }
 
   if (source === 'lucide') {
+    if (typeof icon === 'string' && isValidIconId(icon)) {
+      return (
+        <LucideIconById
+          iconId={icon}
+          size={size}
+          color={color}
+          strokeWidth={strokeWidth}
+          onClick={onClick}
+          style={commonStyle}
+          {...restProps}
+        />
+      );
+    }
+
     const LucideComponent = isLucideIcon(icon) ? icon : CircleQuestionMark;
 
     return (
