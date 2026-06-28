@@ -2,7 +2,7 @@ import { useState, type FC } from 'react';
 
 import type { ColorId } from '@/packages/color';
 
-import { AdPopover } from '@/packages/base';
+import { AdPopover, type AdPopoverProps } from '@/packages/base';
 import { ColorSwatchCircle } from '@/packages/base/AdColorPicker';
 import fieldStyles from '@/packages/base/formField/formField.module.css';
 import { pickerTriggerClassNames } from '@/packages/base/formField/pickerTriggerClassNames';
@@ -16,6 +16,7 @@ export type PalettePickerProps = {
   onChange: (value: ColorId) => void;
   label?: string;
   variant?: 'popover' | 'compact';
+  offset?: AdPopoverProps['offset'];
 };
 
 const COMPACT_SWATCH_SIZE = 26;
@@ -25,6 +26,7 @@ const PalettePicker: FC<PalettePickerProps> = ({
   onChange,
   label = 'Color',
   variant = 'popover',
+  offset,
 }) => {
   const customPalettes = useDiaryStore('customPalettes');
   const addRecentColor = useAppStore('addRecentColor');
@@ -68,6 +70,7 @@ const PalettePicker: FC<PalettePickerProps> = ({
         opened={opened}
         onChange={setOpened}
         position="bottom-start"
+        offset={offset}
         width="max-content"
         shadow="md"
         radius="lg"

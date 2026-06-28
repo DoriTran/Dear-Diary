@@ -85,12 +85,14 @@ const AdIcon: FC<IconProps> = ({
   }
 
   if (source === 'lucide') {
+    const lucideColor = color === 'inherit' ? 'currentColor' : color;
+
     if (typeof icon === 'string' && isValidIconId(icon)) {
       return (
         <LucideIconById
           iconId={icon}
           size={size}
-          color={color}
+          color={lucideColor}
           strokeWidth={strokeWidth}
           onClick={onClick}
           style={commonStyle}
@@ -104,7 +106,7 @@ const AdIcon: FC<IconProps> = ({
     return (
       <LucideComponent
         size={size}
-        color={color}
+        color={lucideColor}
         strokeWidth={strokeWidth}
         onClick={onClick}
         style={commonStyle}

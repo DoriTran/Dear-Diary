@@ -15,6 +15,7 @@ import {
 
 import { AdIcon, AdMenu, AdMenuItem } from '@/packages/base';
 import { BrushHighlight } from '@/packages/ui';
+import { useColorBrightness } from '@/hooks';
 import LayoutCard from '@/packages/ui/LayoutCard/LayoutCard';
 import { useAppStore } from '@/store';
 
@@ -53,6 +54,7 @@ const Group: FC<GroupProps> = ({
   ]);
   const isEmpty = chatboxes.length === 0;
   const isExpanded = !isEmpty && diaryPage.expandedGroupIds.has(id);
+  const { textColor: brushTextColor } = useColorBrightness(brushColor);
 
   useLayoutEffect(() => {
     if (isEmpty && diaryPage.expandedGroupIds.has(id)) {
@@ -115,10 +117,14 @@ const Group: FC<GroupProps> = ({
           spacing={{ left: 12, right: 30 }}
           id={titleId}
         >
-          <div data-handle className={styles.brushInner}>
+          <div
+            data-handle
+            className={styles.brushInner}
+            style={{ color: brushTextColor }}
+          >
             {isEmpty ? (
               <span className={styles.grip} aria-hidden>
-                <AdIcon icon={faGripVertical} size={10} />
+                <AdIcon icon={faGripVertical} size={10} color="currentColor" />
               </span>
             ) : (
               <button
@@ -131,7 +137,7 @@ const Group: FC<GroupProps> = ({
                 onPointerDown={(event) => event.stopPropagation()}
               >
                 <span className={styles.caret} aria-hidden>
-                  <AdIcon icon={faChevronRight} size={10} />
+                  <AdIcon icon={faChevronRight} size={10} color="currentColor" />
                 </span>
               </button>
             )}

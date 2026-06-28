@@ -1,12 +1,16 @@
 .root {
   --palette-card-max: 5rem;
   --palette-card-gap: 0.375rem;
-  --palette-grid-max: calc(5 * var(--palette-card-max) + 4 * var(--palette-card-gap));
+  --palette-grid-max: calc(
+    5 * var(--palette-card-max) + 4 * var(--palette-card-gap)
+  );
   --palette-panel-padding-x: 0.85rem;
   --palette-panel-padding-y: 0.85rem;
   --palette-panel-padding-bottom: 1rem;
   --palette-create-inner-width: 25rem;
-  --palette-selection-width: calc(var(--palette-grid-max) + 2 * var(--palette-panel-padding-x));
+  --palette-selection-width: calc(
+    var(--palette-grid-max) + 2 * var(--palette-panel-padding-x)
+  );
   --palette-create-panel-width: calc(
     var(--palette-create-inner-width) + 2 * var(--palette-panel-padding-x)
   );
@@ -65,7 +69,12 @@
   flex: 0 1 auto;
   width: fit-content;
   min-width: min(24rem, calc(100vw - 2rem));
-  max-width: min(calc(var(--palette-create-inner-width) + 2 * var(--palette-panel-padding-x)), calc(100vw - 2rem));
+  max-width: min(
+    calc(
+      var(--palette-create-inner-width) + 2 * var(--palette-panel-padding-x)
+    ),
+    calc(100vw - 2rem)
+  );
   border-left: none;
 }
 

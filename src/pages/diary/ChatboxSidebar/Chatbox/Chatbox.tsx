@@ -43,7 +43,6 @@ const Chatbox: FC<ChatboxProps> = ({
     paletteSoft,
     paletteMain,
     paletteStrong,
-    iconBg,
     pinned,
     archived,
     hasUnread,
@@ -71,6 +70,8 @@ const Chatbox: FC<ChatboxProps> = ({
       position="right"
       withArrow={false}
       multiline
+      withinPortal
+      floatingStrategy="fixed"
       disabled={suppressTooltip}
       classNames={{
         tooltip: styles.tooltip,
@@ -99,11 +100,7 @@ const Chatbox: FC<ChatboxProps> = ({
           <div className={styles.mainRow}>
             <div className={styles.leftZone}>
               <div className={styles.iconArea}>
-                <span
-                  className={styles.iconWrap}
-                  style={{ background: iconBg }}
-                  aria-hidden
-                >
+                <span className={styles.iconWrap} aria-hidden>
                   <AdIcon icon={icon} source="lucide" size={16} />
                 </span>
                 {pinned ? (

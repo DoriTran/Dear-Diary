@@ -1,9 +1,10 @@
 import { useState, type FC } from 'react';
 
 import type { IconId } from '@/packages/icon';
+
 import { useAppStore } from '@/store';
 
-import AdPopover from '../AdPopover/AdPopover';
+import AdPopover, { type AdPopoverProps } from '../AdPopover/AdPopover';
 import fieldStyles from '../formField/formField.module.css';
 import IconPickerPopover from './IconPickerPopover';
 import IconPickerTrigger, {
@@ -15,6 +16,7 @@ export type AdIconPickerProps = {
   onChange: (value: IconId) => void;
   label?: string;
   variant?: 'popover' | 'compact';
+  offset?: AdPopoverProps['offset'];
 };
 
 const AdIconPicker: FC<AdIconPickerProps> = ({
@@ -22,6 +24,7 @@ const AdIconPicker: FC<AdIconPickerProps> = ({
   onChange,
   label = 'Icon',
   variant = 'popover',
+  offset,
 }) => {
   const addRecentIcon = useAppStore('addRecentIcon');
   const [opened, setOpened] = useState(false);
@@ -52,6 +55,7 @@ const AdIconPicker: FC<AdIconPickerProps> = ({
         opened={opened}
         onChange={setOpened}
         position="bottom-start"
+        offset={offset}
         width="max-content"
         shadow="md"
         radius="lg"

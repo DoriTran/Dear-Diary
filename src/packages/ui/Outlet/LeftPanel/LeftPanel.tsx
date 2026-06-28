@@ -127,7 +127,7 @@ const LeftPanel: FC = () => {
                     type="button"
                     onClick={() => goToStoryChatbox(chatbox.id)}
                   >
-                    <AdIcon icon={chatbox.icon} size={16} />
+                    <AdIcon icon={chatbox.icon} source="lucide" size={16} />
                     <span className={styles.navItemLabel}>{chatbox.name}</span>
                   </button>
                 </li>

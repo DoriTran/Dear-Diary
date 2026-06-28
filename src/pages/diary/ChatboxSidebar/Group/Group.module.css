@@ -98,15 +98,14 @@
   display: flex;
   flex-shrink: 0;
   align-items: center;
-  color: var(--text-soft);
-  opacity: 0.45;
+  opacity: 0.72;
 }
 
 .caret {
   display: flex;
   flex-shrink: 0;
   align-items: center;
-  color: var(--text-soft);
+  opacity: 0.72;
   transform: rotate(0deg);
 }
 
@@ -121,7 +120,6 @@
 .groupIcon {
   display: flex;
   flex-shrink: 0;
-  color: var(--text);
 }
 
 .titleText {
@@ -129,7 +127,6 @@
   font-size: var(--font-sm);
   font-weight: var(--font-semibold);
   line-height: 1.2;
-  color: var(--text);
   white-space: nowrap;
 }
 
@@ -223,6 +220,7 @@
 }
 
 .root[data-expanded] .listShell {
+  overflow: visible;
   max-height: var(--list-height, 0px);
 }
 
@@ -238,11 +236,13 @@
   display: flex;
   flex-direction: column;
   gap: 0.4rem;
+  padding: 6px 0;
 }
 
 .listItem {
   opacity: 0;
   transform: translateY(-8px);
+  overflow: visible;
 }
 
 /* Initial paint: skip enter animation for pre-expanded groups */

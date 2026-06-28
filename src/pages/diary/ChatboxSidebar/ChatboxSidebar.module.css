@@ -25,6 +25,6 @@
   min-height: 0;
   margin-top: 0.15rem;
   overflow-y: auto;
-  padding-top: 0.35rem;
-  padding-right: 0.2rem;
+  scrollbar-gutter: stable only-if-needed;
+  padding: 0.35rem 0.5rem 0.5rem;
 }

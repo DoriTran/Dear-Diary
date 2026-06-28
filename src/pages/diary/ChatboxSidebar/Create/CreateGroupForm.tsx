@@ -1,4 +1,4 @@
-import { useState, type FC, type FormEvent } from 'react';
+import { useSyncExternalStore, useState, type FC, type FormEvent } from 'react';
 
 import { AdField, AdIconPicker, AdInput } from '@/packages/base';
 import { PalettePicker } from '@/packages/ui';
@@ -10,6 +10,18 @@ import { useAppStore, useDiaryStore } from '@/store';
 
 import { resolveCreateIconId } from './create.constants';
 import formStyles from './CreateForm.module.css';
+
+const PICKER_OFFSET_VH = 25;
+
+const useNegativeVhOffset = (vh: number) =>
+  useSyncExternalStore(
+    (onStoreChange) => {
+      window.addEventListener('resize', onStoreChange);
+      return () => window.removeEventListener('resize', onStoreChange);
+    },
+    () => -window.innerHeight * (vh / 100),
+    () => -800 * (vh / 100),
+  );
 
 export type CreateGroupFormProps = {
   groupId?: string;
@@ -37,6 +49,8 @@ const CreateGroupForm: FC<CreateGroupFormProps> = ({
   const [colorId, setColorId] = useState<ColorId>(
     existing?.colorId ?? DEFAULT_COLOR_ID,
   );
+
+  const pickerOffset = useNegativeVhOffset(PICKER_OFFSET_VH);
 
   const handleSubmit = (event: FormEvent) => {
     event.preventDefault();
@@ -76,12 +90,14 @@ const CreateGroupForm: FC<CreateGroupFormProps> = ({
             onChange={setIcon}
             variant="compact"
             label="Icon"
+            offset={pickerOffset}
           />
           <PalettePicker
             value={colorId}
             onChange={setColorId}
             variant="compact"
             label="Color"
+            offset={pickerOffset}
           />
         </div>
         <AdField label="Name" htmlFor="create-group-name">

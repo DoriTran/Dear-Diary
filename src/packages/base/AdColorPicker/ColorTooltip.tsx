@@ -71,6 +71,8 @@ const ColorTooltip: FC<ColorTooltipProps> = ({
       position="right"
       withArrow={false}
       multiline
+      withinPortal
+      floatingStrategy="fixed"
       openDelay={canHover ? 300 : 0}
       events={{
         hover: canHover,

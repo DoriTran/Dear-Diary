@@ -2,7 +2,7 @@
   position: relative;
   display: flex;
   align-items: stretch;
-  overflow: hidden;
+  overflow: visible;
   border-radius: var(--radius-md);
   border: 1px solid var(--border-soft);
   background: var(--surface);
@@ -160,7 +160,23 @@
   width: 2.35rem;
   height: 2.35rem;
   border-radius: var(--radius-sm);
-  color: var(--text);
+  background: var(--chatbox-soft);
+  color: var(--chatbox-strong);
+  transition:
+    background-color 180ms ease,
+    color 180ms ease;
+}
+
+.root[data-active] .iconWrap {
+  background: var(--chatbox-main);
+}
+
+:global([data-mode='dark']) .root[data-active] .iconWrap {
+  color: var(--chatbox-soft);
+}
+
+.iconWrap svg {
+  flex-shrink: 0;
 }
 
 .overlayPin,

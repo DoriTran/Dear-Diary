@@ -3,4 +3,10 @@
   flex-direction: column;
   width: 100%;
   min-width: 0;
+  overflow: visible;
+}
+
+.item[data-sortable-item-of='diary-list'] {
+  box-sizing: border-box;
+  padding-inline: 2px;
 }
