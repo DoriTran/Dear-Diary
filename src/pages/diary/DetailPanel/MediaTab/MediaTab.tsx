@@ -8,6 +8,7 @@ import clsx from 'clsx';
 import { useMemo, useState, type FC } from 'react';
 
 import { AdIcon } from '@/packages/base';
+import { resolveAttachmentThumbnail } from '@/api';
 
 import type { MediaFilter } from '../../types';
 import {
@@ -106,9 +107,9 @@ const MediaTab: FC<MediaTabProps> = ({ mediaItems, onJumpToMessage }) => {
             }
 
             const thumbnail =
-              attachment.type === 'image'
-                ? attachment.url
-                : attachment.thumbnail;
+              attachment.type === 'image' || attachment.type === 'video'
+                ? resolveAttachmentThumbnail(attachment)
+                : undefined;
 
             return (
               <button

@@ -32,36 +32,39 @@ const AttachmentTray: FC<AttachmentTrayProps> = ({
 
   return (
     <div
-      className={`${styles.tray} ${focused ? '' : styles.trayDimmed}`}
+      className={`${styles.trayAnchor} ${focused ? '' : styles.trayDimmed}`}
       aria-label="Attachments"
     >
-      {attachments.map((attachment) => (
-        <AttachmentCard
-          key={attachment.id}
-          attachment={attachment}
-          onRemove={() => onRemove(attachment.id)}
+      <div className={styles.tray}>
+        {attachments.map((attachment) => (
+          <AttachmentCard
+            key={attachment.id}
+            attachment={attachment}
+            variant="tray"
+            onRemove={() => onRemove(attachment.id)}
+          />
+        ))}
+        <button
+          type="button"
+          className={styles.addBtn}
+          aria-label="Add attachment"
+          onClick={() => fileInputRef.current?.click()}
+        >
+          <AdIcon icon={faPlus} size={14} />
+        </button>
+        <input
+          ref={fileInputRef}
+          type="file"
+          className={styles.hiddenInput}
+          multiple
+          onChange={(event) => {
+            if (event.target.files?.length) {
+              onAddFiles(event.target.files, 'file');
+              event.target.value = '';
+            }
+          }}
         />
-      ))}
-      <button
-        type="button"
-        className={styles.addBtn}
-        aria-label="Add attachment"
-        onClick={() => fileInputRef.current?.click()}
-      >
-        <AdIcon icon={faPlus} size={14} />
-      </button>
-      <input
-        ref={fileInputRef}
-        type="file"
-        className={styles.hiddenInput}
-        multiple
-        onChange={(event) => {
-          if (event.target.files?.length) {
-            onAddFiles(event.target.files, 'file');
-            event.target.value = '';
-          }
-        }}
-      />
+      </div>
     </div>
   );
 };

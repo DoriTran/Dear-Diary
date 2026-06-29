@@ -13,6 +13,7 @@ import styles from './DecoratedEditor.module.css';
 export type DecoratedEditorProps = {
   decorations: MessageDecoration[];
   composing?: boolean;
+  borderless?: boolean;
   onUpdateDecoration?: (index: number, decoration: MessageDecoration) => void;
   children: ReactNode;
 };
@@ -20,6 +21,7 @@ export type DecoratedEditorProps = {
 const DecoratedEditor: FC<DecoratedEditorProps> = ({
   decorations,
   composing = true,
+  borderless = false,
   onUpdateDecoration,
   children,
 }) => {
@@ -57,11 +59,14 @@ const DecoratedEditor: FC<DecoratedEditorProps> = ({
     );
   }
 
-  return (
-    <div className={ticket || countdown ? styles.decorated : styles.plain}>
-      {content}
-    </div>
-  );
+  const shellClass =
+    ticket || countdown
+      ? styles.decorated
+      : borderless
+        ? styles.plainBorderless
+        : styles.plain;
+
+  return <div className={shellClass}>{content}</div>;
 };
 
 export default DecoratedEditor;

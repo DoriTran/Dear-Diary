@@ -100,12 +100,17 @@ const MessageComposer: FC<MessageComposerProps> = ({
       <TextEditor
         ref={editorRef}
         value={draft.text}
+        maxRows={5}
         onChange={setText}
         onFocus={handleFocus}
         onBlur={handleBlur}
       />
     );
   };
+
+  const fileAttachments = draft.attachments.filter(
+    (attachment) => attachment.type !== 'link',
+  );
 
   return (
     <footer className={styles.root}>
@@ -117,40 +122,43 @@ const MessageComposer: FC<MessageComposerProps> = ({
         />
       ) : null}
 
-      <AttachmentTray
-        attachments={draft.attachments.filter(
-          (attachment) => attachment.type !== 'link',
-        )}
-        focused={draft.focused}
-        onRemove={removeAttachment}
-        onAddFiles={handleAddFiles}
-      />
+      <div className={styles.dock}>
+        <div className={styles.editorStack}>
+          <AttachmentTray
+            attachments={fileAttachments}
+            focused={draft.focused}
+            onRemove={removeAttachment}
+            onAddFiles={handleAddFiles}
+          />
 
-      <div className={styles.editorArea}>
-        <DecoratedEditor
+          <div className={styles.composerCard}>
+            <DecoratedEditor
+              decorations={draft.decorations}
+              composing
+              borderless
+              onUpdateDecoration={updateDecoration}
+            >
+              {renderEditor()}
+            </DecoratedEditor>
+          </div>
+        </div>
+
+        <ActionBar
+          type={draft.type}
           decorations={draft.decorations}
-          composing
-          onUpdateDecoration={updateDecoration}
-        >
-          {renderEditor()}
-        </DecoratedEditor>
+          canSend={canSend}
+          onClear={clearAll}
+          onAddFiles={handleAddFiles}
+          onToggleDecoration={toggleDecoration}
+          onTypeSwitch={requestTypeSwitch}
+          reactionPicker={
+            draft.type === 'text' || draft.type === 'ai' ? (
+              <ReactionIconPicker onSelect={insertReactionIcon} />
+            ) : null
+          }
+          onSend={() => void send()}
+        />
       </div>
-
-      <ActionBar
-        type={draft.type}
-        decorations={draft.decorations}
-        canSend={canSend}
-        onClear={clearAll}
-        onAddFiles={handleAddFiles}
-        onToggleDecoration={toggleDecoration}
-        onTypeSwitch={requestTypeSwitch}
-        reactionPicker={
-          draft.type === 'text' || draft.type === 'ai' ? (
-            <ReactionIconPicker onSelect={insertReactionIcon} />
-          ) : null
-        }
-        onSend={() => void send()}
-      />
 
       <TypeSwitchModal
         nextType={pendingTypeSwitch?.nextType ?? null}

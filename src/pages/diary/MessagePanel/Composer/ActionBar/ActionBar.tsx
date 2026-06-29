@@ -143,7 +143,7 @@ const ActionBar: FC<ActionBarProps> = ({
 
       <button
         type="button"
-        className={styles.sendBtn}
+        className={`${styles.btn} ${styles.sendBtn}`}
         aria-label="Send message"
         disabled={!canSend}
         onClick={onSend}

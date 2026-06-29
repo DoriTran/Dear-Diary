@@ -30,9 +30,9 @@
 }
 
 .cell[data-selected] {
-  border-color: var(--accent-purple);
-  background: color-mix(in srgb, var(--accent-purple) 8%, var(--surface-soft));
-  color: var(--accent-purple);
+  border-color: var(--primary);
+  background: color-mix(in srgb, var(--primary) 8%, var(--surface-soft));
+  color: var(--primary);
 }
 
 .checkBadge {
@@ -45,7 +45,7 @@
   width: 0.85rem;
   height: 0.85rem;
   border-radius: 999px;
-  background: var(--accent-green, #5cb88a);
-  color: white;
+  background: var(--primary);
+  color: var(--text-contrast);
   box-shadow: 0 1px 2px rgb(0 0 0 / 12%);
 }

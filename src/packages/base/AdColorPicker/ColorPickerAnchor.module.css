@@ -35,7 +35,7 @@
 }
 
 .swatchBtn:hover:not(:disabled) {
-  box-shadow: 0 0 0 2px color-mix(in srgb, var(--accent-purple) 35%, transparent);
+  box-shadow: 0 0 0 2px color-mix(in srgb, var(--primary) 35%, transparent);
 }
 
 .swatchBtn:disabled {
@@ -44,7 +44,7 @@
 }
 
 .swatchBtn[data-open] {
-  box-shadow: 0 0 0 2px var(--accent-purple);
+  box-shadow: 0 0 0 2px var(--primary);
 }
 
 .hex {

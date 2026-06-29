@@ -1,12 +1,14 @@
 import type { FC } from 'react';
 
-import { faFile, faPlay } from '@fortawesome/free-solid-svg-icons';
+import { faFile } from '@fortawesome/free-solid-svg-icons';
 
 import type { Attachment } from '@/store/diary/type';
 
 import { AdIcon } from '@/packages/base';
+import { resolveAttachmentUrl } from '@/api';
 
 import AttachmentCard from '../../Composer/AttachmentTray/AttachmentCard';
+import VideoAttachment from '../../Composer/AttachmentTray/VideoAttachment';
 import styles from './AttachmentList.module.css';
 
 export type AttachmentListProps = {
@@ -40,16 +42,18 @@ const AttachmentList: FC<AttachmentListProps> = ({
         }
 
         if (attachment.type === 'image') {
+          const imageUrl = resolveAttachmentUrl(attachment.url, 'image');
+
           return (
             <a
               key={attachment.id}
-              href={attachment.url}
+              href={imageUrl}
               className={styles.imageLink}
               target="_blank"
               rel="noreferrer"
             >
               <img
-                src={attachment.url}
+                src={imageUrl}
                 alt={attachment.name ?? 'Image attachment'}
                 className={styles.image}
               />
@@ -59,10 +63,11 @@ const AttachmentList: FC<AttachmentListProps> = ({
 
         if (attachment.type === 'video') {
           return (
-            <div key={attachment.id} className={styles.videoCard}>
-              <AdIcon icon={faPlay} size={12} />
-              <span>{attachment.name ?? 'Video'}</span>
-            </div>
+            <VideoAttachment
+              key={attachment.id}
+              attachment={attachment}
+              variant="player"
+            />
           );
         }
 

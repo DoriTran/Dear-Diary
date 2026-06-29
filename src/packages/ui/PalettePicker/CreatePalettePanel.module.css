@@ -203,20 +203,20 @@
 }
 
 .createBtn {
-  border: 1px solid color-mix(in srgb, var(--accent-purple) 45%, var(--border-soft));
-  background: color-mix(in srgb, var(--accent-purple) 8%, var(--surface));
-  color: var(--accent-purple);
+  border: 1px solid color-mix(in srgb, var(--primary) 45%, var(--border-soft));
+  background: color-mix(in srgb, var(--primary) 8%, var(--surface));
+  color: var(--primary);
 }
 
 .createBtn:hover {
-  background: color-mix(in srgb, var(--accent-purple) 14%, var(--surface));
-  color: var(--accent-purple);
+  background: color-mix(in srgb, var(--primary) 14%, var(--surface));
+  color: var(--primary);
 }
 
 .primaryBtn {
   border: none;
-  background: var(--accent-purple);
-  color: #fff;
+  background: var(--button-bg);
+  color: var(--button-text);
 }
 
 .primaryBtn:disabled {

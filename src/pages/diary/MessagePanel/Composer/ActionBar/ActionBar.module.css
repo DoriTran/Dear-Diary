@@ -2,11 +2,7 @@
   display: flex;
   align-items: center;
   gap: 0.35rem;
-  padding: 0.35rem 0.5rem;
-  border: 1px solid var(--border-soft);
-  border-radius: var(--radius-lg);
-  background: var(--surface);
-  box-shadow: var(--shadow-sm);
+  padding: 0 0.15rem;
 }
 
 .group {
@@ -16,6 +12,7 @@
 }
 
 .divider {
+  flex-shrink: 0;
   width: 1px;
   height: 1.35rem;
   background: var(--border-soft);
@@ -67,18 +64,7 @@
 }
 
 .sendBtn {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: 2.25rem;
-  height: 2.25rem;
   margin-left: auto;
-  border: none;
-  border-radius: var(--radius-md);
-  color: var(--text-contrast);
-  background: color-mix(in srgb, #78350f 85%, var(--primary-dark));
-  cursor: pointer;
-  box-shadow: var(--shadow-sm);
 }
 
 .sendBtn:disabled {
@@ -86,10 +72,11 @@
   cursor: not-allowed;
 }
 
-.hiddenInput {
-  display: none;
+.sendBtn:disabled:hover {
+  color: var(--text-muted);
+  background: transparent;
 }
 
-.spacer {
-  flex: 1;
+.hiddenInput {
+  display: none;
 }

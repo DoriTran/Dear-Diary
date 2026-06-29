@@ -21,13 +21,13 @@
 }
 
 .root:hover {
-  background: color-mix(in srgb, var(--accent-purple) 6%, var(--surface-soft));
+  background: color-mix(in srgb, var(--primary) 6%, var(--surface-soft));
   transform: translateY(-1px);
 }
 
 .root[data-selected] {
-  border-color: var(--accent-purple);
-  background: color-mix(in srgb, var(--accent-purple) 8%, var(--surface-soft));
+  border-color: var(--primary);
+  background: color-mix(in srgb, var(--primary) 8%, var(--surface-soft));
 }
 
 .check {
@@ -40,8 +40,8 @@
   width: 1rem;
   height: 1rem;
   border-radius: 999px;
-  background: var(--accent-purple);
-  color: #fff;
+  background: var(--primary);
+  color: var(--text-contrast);
 }
 
 .icon {

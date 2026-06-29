@@ -8,8 +8,8 @@
   width: 0.9rem;
   height: 0.9rem;
   border-radius: 999px;
-  background: var(--accent-green, #5cb88a);
-  color: white;
+  background: var(--primary);
+  color: var(--text-contrast);
   box-shadow: 0 1px 2px rgb(0 0 0 / 12%);
 }
 

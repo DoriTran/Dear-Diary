@@ -21,10 +21,10 @@
 }
 
 .iconBtn:hover {
-  background: color-mix(in srgb, var(--accent-purple) 8%, var(--surface-soft));
+  background: color-mix(in srgb, var(--primary) 8%, var(--surface-soft));
 }
 
 .iconBtn[data-selected] {
-  border-color: var(--accent-purple);
-  background: color-mix(in srgb, var(--accent-purple) 12%, var(--surface-soft));
+  border-color: var(--primary);
+  background: color-mix(in srgb, var(--primary) 12%, var(--surface-soft));
 }

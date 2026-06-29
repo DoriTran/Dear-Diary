@@ -109,7 +109,7 @@ const IconGridCell: FC<IconGridCellProps> = ({
       <LucideIconById iconId={iconId} size={16} />
       {showCheck && selected ? (
         <span className={styles.checkBadge} aria-hidden>
-          <LucideIconById iconId="Check" size={8} color="white" strokeWidth={3} />
+          <LucideIconById iconId="Check" size={8} color="currentColor" strokeWidth={3} />
         </span>
       ) : null}
     </button>

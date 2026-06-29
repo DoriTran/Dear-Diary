@@ -1,7 +1,5 @@
-import { resolvePalette } from '@/packages/color';
-import type { AppMode } from '@/store/app/type';
 import type { CustomPalette } from '@/packages/color';
-import { normalizeIconId, type IconId } from '@/packages/icon';
+import type { AppMode } from '@/store/app/type';
 import type {
   Attachment,
   Chatbox,
@@ -10,12 +8,17 @@ import type {
   Tag,
 } from '@/store/diary/type';
 
+import { resolveAttachmentThumbnail } from '@/api';
+import { resolvePalette } from '@/packages/color';
+import { normalizeIconId, type IconId } from '@/packages/icon';
+
+import type { MediaFilter } from '../types';
+
 import {
   formatChatboxTime,
   formatHeaderUpdatedAt,
   type ResolvedChatboxTag,
 } from '../ChatboxSidebar/Chatbox/chatbox.utils';
-import type { MediaFilter } from '../types';
 
 export type DetailPanelStats = {
   totalMessages: number;
@@ -241,16 +244,10 @@ export const filterMessagesByTags = (
   );
 };
 
-export const getMessageThumbnail = (
-  message: Message,
-): string | undefined => {
+export const getMessageThumbnail = (message: Message): string | undefined => {
   for (const attachment of collectMessageAttachments(message)) {
-    if (attachment.type === 'image') {
-      return attachment.url;
-    }
-
-    if (attachment.type === 'video' && attachment.thumbnail) {
-      return attachment.thumbnail;
+    if (attachment.type === 'image' || attachment.type === 'video') {
+      return resolveAttachmentThumbnail(attachment);
     }
   }
 

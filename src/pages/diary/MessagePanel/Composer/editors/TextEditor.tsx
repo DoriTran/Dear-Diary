@@ -1,5 +1,5 @@
 import { faWandMagicSparkles } from '@fortawesome/free-solid-svg-icons';
-import { forwardRef, useEffect, useImperativeHandle, useRef } from 'react';
+import { forwardRef, useImperativeHandle, useLayoutEffect, useRef } from 'react';
 
 import { AdIcon } from '@/packages/base';
 
@@ -15,6 +15,8 @@ export type TextEditorProps = {
   onBlur?: () => void;
   showAiIcon?: boolean;
   rows?: number;
+  /** Auto-grow height up to this many lines. */
+  maxRows?: number;
 };
 
 const TextEditor = forwardRef<ComposerEditorRef, TextEditorProps>(
@@ -27,6 +29,7 @@ const TextEditor = forwardRef<ComposerEditorRef, TextEditorProps>(
       onBlur,
       showAiIcon = false,
       rows = 2,
+      maxRows,
     },
     ref,
   ) => {
@@ -58,16 +61,34 @@ const TextEditor = forwardRef<ComposerEditorRef, TextEditorProps>(
       },
     }));
 
-    useEffect(() => {
+    useLayoutEffect(() => {
       const textarea = textareaRef.current;
 
       if (!textarea) {
         return;
       }
 
-      textarea.style.height = 'auto';
-      textarea.style.height = `${textarea.scrollHeight}px`;
-    }, [value]);
+      const style = getComputedStyle(textarea);
+      const lineHeight = parseFloat(style.lineHeight) || 20;
+      const paddingY =
+        parseFloat(style.paddingTop) + parseFloat(style.paddingBottom);
+      const minHeight = lineHeight + paddingY;
+
+      textarea.style.height = '0';
+      const scrollHeight = textarea.scrollHeight;
+
+      if (maxRows != null) {
+        const maxHeight = lineHeight * maxRows + paddingY;
+        const nextHeight = Math.min(Math.max(scrollHeight, minHeight), maxHeight);
+
+        textarea.style.height = `${nextHeight}px`;
+        textarea.style.overflowY = scrollHeight > maxHeight ? 'auto' : 'hidden';
+        return;
+      }
+
+      textarea.style.height = `${Math.max(scrollHeight, minHeight)}px`;
+      textarea.style.overflowY = 'hidden';
+    }, [maxRows, value]);
 
     const handleFocus = () => {
       onFocus?.();
@@ -77,10 +98,10 @@ const TextEditor = forwardRef<ComposerEditorRef, TextEditorProps>(
       <div className={showAiIcon ? styles.aiWrap : styles.root}>
         <textarea
           ref={textareaRef}
-          className={styles.input}
+          className={`${styles.input} ${maxRows != null ? styles.inputGrow : ''}`}
           value={value}
           placeholder={placeholder}
-          rows={rows}
+          rows={maxRows != null ? undefined : rows}
           aria-label={placeholder}
           onChange={(event) => onChange(event.target.value)}
           onFocus={handleFocus}

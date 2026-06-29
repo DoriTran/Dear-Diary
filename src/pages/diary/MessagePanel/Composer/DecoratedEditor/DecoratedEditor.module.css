@@ -5,6 +5,14 @@
   box-shadow: var(--shadow-inset);
 }
 
+.plainBorderless {
+  display: block;
+  border: none;
+  border-radius: var(--radius-lg);
+  background: transparent;
+  box-shadow: none;
+}
+
 .decorated {
   overflow: hidden;
   border-radius: var(--radius-lg);
