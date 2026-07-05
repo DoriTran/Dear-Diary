@@ -34,7 +34,6 @@ const DecoratedSurface: FC<DecoratedSurfaceProps> = ({
   });
 
   const pipeline = useCharmPipeline(draft.decorators, ctx);
-  const hasTimer = draft.decorators.some((d) => d.type === 'timer');
 
   useDecoratorRuntime({
     ctx,
@@ -46,7 +45,6 @@ const DecoratedSurface: FC<DecoratedSurfaceProps> = ({
       pipeline={pipeline}
       ctx={ctx}
       borderless={borderless}
-      hasTimer={hasTimer}
     >
       {children}
     </ComposerSurface>

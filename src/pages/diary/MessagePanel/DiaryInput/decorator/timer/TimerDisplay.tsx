@@ -42,8 +42,8 @@ const TimerDisplay: FC<TimerDisplayProps> = ({
     const parts = durationMsToParts(timer.durationMs);
 
     return (
-      <div className={styles.displayRow}>
-        <AdIcon icon={faStopwatch} size={12} />
+      <div className={styles.displayRowEditing}>
+        <AdIcon icon={faStopwatch} size={14} />
         <div className={styles.durationEditor}>
           <AdInput
             type="number"
@@ -77,8 +77,8 @@ const TimerDisplay: FC<TimerDisplayProps> = ({
 
   if (composing && timer.mode === 'datetime') {
     return (
-      <div className={styles.displayRow}>
-        <AdIcon icon={faStopwatch} size={12} />
+      <div className={styles.displayRowEditing}>
+        <AdIcon icon={faStopwatch} size={14} />
         <AdDateTimePicker
           compact
           value={timer.targetDate}
@@ -99,7 +99,7 @@ const TimerDisplay: FC<TimerDisplayProps> = ({
 
   return (
     <div className={styles.displayRow}>
-      <AdIcon icon={faStopwatch} size={12} />
+      <AdIcon icon={faStopwatch} size={18} />
       <span className={styles.displayText}>
         {composing && timer.mode === 'countup'
           ? '00:00'

@@ -1,5 +1,5 @@
 import clsx from 'clsx';
-import { useEffect, useRef, type FC, type ReactNode } from 'react';
+import { Fragment, useEffect, useRef, type FC, type ReactNode } from 'react';
 
 import type {
   CharmRegion,
@@ -14,17 +14,25 @@ export type ComposerSurfaceProps = {
   ctx: ComposerContext;
   children: ReactNode;
   borderless?: boolean;
-  hasTimer?: boolean;
 };
 
 const renderRegionElements = (
   pipeline: MergedPipeline,
   region: CharmRegion,
   ctx: ComposerContext,
+  flat = false,
 ) => {
   const elements = pipeline.regionElements[region];
   if (!elements?.length) {
     return null;
+  }
+
+  if (flat) {
+    return elements.map((element) => (
+      <Fragment key={`${region}-${element.order}`}>
+        {element.render(ctx)}
+      </Fragment>
+    ));
   }
 
   return elements.map((element) => (
@@ -37,11 +45,9 @@ const ComposerSurface: FC<ComposerSurfaceProps> = ({
   ctx,
   children,
   borderless = false,
-  hasTimer = false,
 }) => {
   const containerRef = useRef<HTMLDivElement>(null);
   const hasDecorators = ctx.decorators.length > 0;
-  const hasTicket = ctx.decorators.some((d) => d.type === 'ticket');
 
   useEffect(() => {
     const container = containerRef.current;
@@ -65,8 +71,6 @@ const ComposerSurface: FC<ComposerSurfaceProps> = ({
   const shellClass = clsx(
     styles.root,
     !hasDecorators && (borderless ? styles.plainBorderless : styles.plain),
-    hasTimer && !hasTicket && styles.hasTimerOnly,
-    hasTimer && styles.hasTimer,
   );
 
   const containerStyle = {
@@ -95,14 +99,14 @@ const ComposerSurface: FC<ComposerSurfaceProps> = ({
       <div className={styles.body}>
         {hasLeft ? (
           <div className={styles.leftRegion} style={leftStyle}>
-            {renderRegionElements(pipeline, 'left', ctx)}
+            {renderRegionElements(pipeline, 'left', ctx, true)}
           </div>
         ) : null}
 
         <div className={styles.center}>
           {hasTop ? (
             <div className={styles.topRegion} style={topStyle}>
-              {renderRegionElements(pipeline, 'top', ctx)}
+              {renderRegionElements(pipeline, 'top', ctx, true)}
             </div>
           ) : null}
 

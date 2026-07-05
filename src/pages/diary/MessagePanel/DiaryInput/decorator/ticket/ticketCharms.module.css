@@ -8,7 +8,7 @@
   padding: 0.35rem;
   border: none;
   background: transparent;
-  color: color-mix(in srgb, #ea580c 85%, var(--text));
+  color: color-mix(in srgb, var(--primary-dark) 85%, var(--text));
   cursor: pointer;
   text-align: center;
 }

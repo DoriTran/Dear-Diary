@@ -13,8 +13,9 @@ export const createTicketBorderCharm = (): Charm => ({
         overflow: 'hidden',
         borderRadius: 'var(--radius-lg)',
         border:
-          '2px dashed color-mix(in srgb, #f97316 70%, var(--border-soft))',
-        background: 'color-mix(in srgb, #ffedd5 40%, var(--surface))',
+          '2px dashed color-mix(in srgb, var(--primary) 70%, var(--border-soft))',
+        background:
+          'color-mix(in srgb, var(--primary-light) 40%, var(--surface))',
       },
     },
   ],

@@ -17,9 +17,8 @@ export const createTicketTearCharm = (decoratorIndex: number): Charm => ({
         justifyContent: 'center',
         width: '4.5rem',
         padding: '0.5rem',
-        background: 'color-mix(in srgb, #fed7aa 65%, var(--surface))',
-        borderRight:
-          '2px dashed color-mix(in srgb, #f97316 50%, var(--border-soft))',
+        background: 'color-mix(in srgb, var(--primary-light) 65%, var(--surface))',
+        borderRight: '2px dashed color-mix(in srgb, var(--primary) 50%, var(--border-soft))',
         maskImage:
           'radial-gradient(circle at 0 50%, transparent 6px, black 6px)',
         WebkitMaskImage:
