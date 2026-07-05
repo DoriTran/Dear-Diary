@@ -3,12 +3,12 @@ import { v4 as uuidv4 } from 'uuid';
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 
-import type { ColorId } from '@/packages/color';
-import { DEFAULT_COLOR_ID, toCustomColorId } from '@/packages/color';
-import { generatePaletteFromBase } from '@/packages/color';
+import {
+  DEFAULT_COLOR_ID,
+  toCustomColorId,
+  generatePaletteFromBase,
+} from '@/packages/color';
 
-import { migrateDiaryPersistedState } from '../migrateColorId';
-import { migrateDiaryIconState } from '../migrateIconId';
 import type {
   DiaryStore,
   DiaryStoreActions,
@@ -21,6 +21,8 @@ import type {
 } from './type';
 
 import { idbStorage, nowIso } from '../helper';
+import { migrateDiaryPersistedState } from '../migrateColorId';
+import { migrateDiaryIconState } from '../migrateIconId';
 import shallow from '../shallow';
 import { diaryDummyState, diaryInitialState } from './constants';
 
@@ -421,7 +423,7 @@ const useDiaryStoreBase = create<DiaryStore & DiaryStoreActions>()(
           sourceMessageId: data.sourceMessageId ?? null,
           reactions: data.reactions ?? [],
           attachments: data.attachments ?? [],
-          decorations: data.decorations ?? [],
+          decorators: data.decorators ?? [],
           edited: false,
           createdAt: nowIso(),
           updatedAt: null,
@@ -670,12 +672,12 @@ const useDiaryStoreBase = create<DiaryStore & DiaryStoreActions>()(
         return get().createMessage({
           chatboxId: targetChatboxId,
           sender: 'user',
-          type: 'text',
+          variant: 'text',
           content: { text: caption?.trim() ?? '' },
           sourceMessageId: rootSourceId,
           tagIds: [],
           attachments: [],
-          decorations: [],
+          decorators: [],
         });
       },
 
@@ -784,7 +786,7 @@ const useDiaryStoreBase = create<DiaryStore & DiaryStoreActions>()(
           },
         }));
 
-        return toCustomColorId(id) as ColorId;
+        return toCustomColorId(id);
       },
       deleteCustomPalette: (paletteId) =>
         set((state) => {
@@ -939,7 +941,8 @@ const useDiaryStoreBase = create<DiaryStore & DiaryStoreActions>()(
 
 export const useDiaryStore = shallow(useDiaryStoreBase);
 
-export const getDiaryCustomPalettes = () => useDiaryStoreBase.getState().customPalettes;
+export const getDiaryCustomPalettes = () =>
+  useDiaryStoreBase.getState().customPalettes;
 
 export const useDiaryHydrated = () => {
   const [hydrated, setHydrated] = useState(() =>

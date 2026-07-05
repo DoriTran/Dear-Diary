@@ -1,0 +1,12 @@
+.root {
+  min-width: 10rem;
+}
+
+.compact {
+  min-width: 8rem;
+}
+
+.compact :global(.mantine-Input-input) {
+  font-size: var(--font-sm);
+  padding: 0.2rem 0.4rem;
+}

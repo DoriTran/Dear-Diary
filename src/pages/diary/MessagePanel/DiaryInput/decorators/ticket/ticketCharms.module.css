@@ -1,0 +1,31 @@
+.tearBtn {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.35rem;
+  width: 100%;
+  padding: 0.35rem;
+  border: none;
+  background: transparent;
+  color: color-mix(in srgb, #ea580c 85%, var(--text));
+  cursor: pointer;
+  text-align: center;
+}
+
+.tearBtnDisabled {
+  cursor: not-allowed;
+  opacity: 0.55;
+}
+
+.tearBtnDone {
+  color: var(--success);
+}
+
+.tearLabel {
+  font-size: 0.55rem;
+  font-weight: var(--font-semibold);
+  line-height: 1.2;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}

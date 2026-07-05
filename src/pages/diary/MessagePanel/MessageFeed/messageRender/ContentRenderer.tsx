@@ -26,7 +26,7 @@ const ContentRenderer: FC<ContentRendererProps> = ({
     return <p className={styles.text}>{getMessagePreviewText(message)}</p>;
   }
 
-  if (message.type === 'todo') {
+  if (message.variant === 'todo') {
     return (
       <div>
         <div className={styles.header}>

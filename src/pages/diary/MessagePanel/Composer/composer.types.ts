@@ -2,8 +2,8 @@ import { v4 as uuidv4 } from 'uuid';
 
 import type {
   Attachment,
-  MessageDecoration,
-  MessageType,
+  MessageDecorator,
+  MessageVariant,
 } from '@/store/diary/type';
 
 export type DraftTodoItem = {
@@ -14,8 +14,8 @@ export type DraftTodoItem = {
 };
 
 export type ComposerDraft = {
-  type: MessageType;
-  decorations: MessageDecoration[];
+  variant: MessageVariant;
+  decorators: MessageDecorator[];
   attachments: Attachment[];
   text: string;
   todoItems: DraftTodoItem[];
@@ -36,8 +36,8 @@ export const createEmptyTodoItem = (): DraftTodoItem => ({
 });
 
 export const createInitialDraft = (): ComposerDraft => ({
-  type: 'text',
-  decorations: [],
+  variant: 'text',
+  decorators: [],
   attachments: [],
   text: '',
   todoItems: [createEmptyTodoItem()],
@@ -45,6 +45,6 @@ export const createInitialDraft = (): ComposerDraft => ({
   replyToMessageId: null,
 });
 
-export type PendingTypeSwitch = {
-  nextType: MessageType;
+export type PendingVariantSwitch = {
+  nextVariant: MessageVariant;
 } | null;

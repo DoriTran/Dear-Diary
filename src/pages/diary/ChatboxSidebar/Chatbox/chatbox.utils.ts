@@ -1,9 +1,12 @@
-import type { ColorId } from '@/packages/color';
+import type { ColorId, CustomPalette } from '@/packages/color';
+import type { AppMode } from '@/store/app/type';
+import type { Chatbox, Message, Tag } from '@/store/diary/type';
+
 import { iconBackground, resolvePalette } from '@/packages/color';
 import { normalizeIconId } from '@/packages/icon';
-import type { AppMode } from '@/store/app/type';
-import type { CustomPalette } from '@/packages/color';
-import type { Chatbox, Message, Tag } from '@/store/diary/type';
+import {
+  getTimerDisplayText,
+} from '@/pages/diary/MessagePanel/DiaryInput/decorators/timer/timer.utils';
 
 import type { ChatboxData } from '../../types';
 
@@ -121,7 +124,7 @@ export const getMessagePreview = (
     return '';
   }
 
-  switch (message.type) {
+  switch (message.variant) {
     case 'text':
     case 'ai': {
       const text = message.content.text.trim();
@@ -148,20 +151,20 @@ export const getMessagePreview = (
         return 'File';
       }
 
-      const countdown = message.decorations.find(
-        (decoration) => decoration.type === 'countdown',
+      const timer = message.decorators.find(
+        (decoration) => decoration.type === 'timer',
       );
 
-      if (countdown) {
-        return countdown.title;
+      if (timer && timer.type === 'timer') {
+        return getTimerDisplayText(timer);
       }
 
-      const ticket = message.decorations.find(
+      const ticket = message.decorators.find(
         (decoration) => decoration.type === 'ticket',
       );
 
       if (ticket) {
-        return ticket.title;
+        return ticket.state === 'done' ? 'Ticket completed' : 'Ticket';
       }
 
       return '';

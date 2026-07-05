@@ -42,7 +42,7 @@
   background: color-mix(in srgb, #c4b5fd 35%, var(--surface));
 }
 
-.btnActiveCountdown {
+.btnActiveTimer {
   color: color-mix(in srgb, #c2410c 85%, var(--text));
   background: color-mix(in srgb, #fdba74 35%, var(--surface));
 }

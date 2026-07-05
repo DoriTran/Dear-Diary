@@ -3,8 +3,8 @@ import { v4 as uuidv4 } from 'uuid';
 
 import type {
   Attachment,
-  MessageDecoration,
-  MessageType,
+  MessageDecorator,
+  MessageVariant,
 } from '@/store/diary/type';
 
 import { generateAiResponse, uploadAttachment } from '@/api';
@@ -16,14 +16,14 @@ import {
   type ComposerDraft,
   type ComposerEditorRef,
   type DraftTodoItem,
-  type PendingTypeSwitch,
+  type PendingVariantSwitch,
 } from './composer.types';
 import {
   buildMessagePayload,
-  convertDraftToType,
-  createCountdownDecoration,
-  createTicketDecoration,
-  draftHasTypeContent,
+  convertDraftToVariant,
+  createTimerDecorator,
+  createTicketDecorator,
+  draftHasVariantContent,
   fileToAttachmentType,
   hasDraftContent,
 } from './composer.utils';
@@ -38,8 +38,8 @@ export const useComposerDraft = (
 ) => {
   const createMessage = useDiaryStore('createMessage');
   const [draft, setDraft] = useState<ComposerDraft>(createInitialDraft);
-  const [pendingTypeSwitch, setPendingTypeSwitch] =
-    useState<PendingTypeSwitch>(null);
+  const [pendingVariantSwitch, setPendingVariantSwitch] =
+    useState<PendingVariantSwitch>(null);
   const [sending, setSending] = useState(false);
   const editorRef = useRef<ComposerEditorRef | null>(null);
 
@@ -66,45 +66,45 @@ export const useComposerDraft = (
     setDraft(createInitialDraft());
   }, []);
 
-  const applyTypeSwitch = useCallback((nextType: MessageType) => {
+  const applyVariantSwitch = useCallback((nextVariant: MessageVariant) => {
     setDraft((current) => ({
       ...current,
-      ...convertDraftToType(current, nextType),
+      ...convertDraftToVariant(current, nextVariant),
     }));
-    setPendingTypeSwitch(null);
+    setPendingVariantSwitch(null);
   }, []);
 
-  const requestTypeSwitch = useCallback(
-    (nextType: MessageType) => {
-      if (nextType === draft.type && nextType !== 'text') {
-        applyTypeSwitch('text');
+  const requestVariantSwitch = useCallback(
+    (nextVariant: MessageVariant) => {
+      if (nextVariant === draft.variant && nextVariant !== 'text') {
+        applyVariantSwitch('text');
         return;
       }
 
-      if (nextType === draft.type) {
+      if (nextVariant === draft.variant) {
         return;
       }
 
-      if (draftHasTypeContent(draft)) {
-        setPendingTypeSwitch({ nextType });
+      if (draftHasVariantContent(draft)) {
+        setPendingVariantSwitch({ nextVariant });
         return;
       }
 
-      applyTypeSwitch(nextType);
+      applyVariantSwitch(nextVariant);
     },
-    [applyTypeSwitch, draft],
+    [applyVariantSwitch, draft],
   );
 
-  const toggleDecoration = useCallback((type: MessageDecoration['type']) => {
+  const toggleDecorator = useCallback((type: MessageDecorator['type']) => {
     setDraft((current) => {
-      const exists = current.decorations.some(
+      const exists = current.decorators.some(
         (decoration) => decoration.type === type,
       );
 
       if (exists) {
         return {
           ...current,
-          decorations: current.decorations.filter(
+          decorators: current.decorators.filter(
             (decoration) => decoration.type !== type,
           ),
         };
@@ -112,21 +112,21 @@ export const useComposerDraft = (
 
       const decoration =
         type === 'ticket'
-          ? createTicketDecoration()
-          : createCountdownDecoration();
+          ? createTicketDecorator()
+          : createTimerDecorator();
 
       return {
         ...current,
-        decorations: [...current.decorations, decoration],
+        decorators: [...current.decorators, decoration],
       };
     });
   }, []);
 
-  const updateDecoration = useCallback(
-    (index: number, decoration: MessageDecoration) => {
+  const updateDecorator = useCallback(
+    (index: number, decoration: MessageDecorator) => {
       setDraft((current) => ({
         ...current,
-        decorations: current.decorations.map((item, itemIndex) =>
+        decorators: current.decorators.map((item, itemIndex) =>
           itemIndex === index ? decoration : item,
         ),
       }));
@@ -357,26 +357,26 @@ export const useComposerDraft = (
 
     try {
       const prompt =
-        payload.type === 'ai' && payload.content?.text
+        payload.variant === 'ai' && payload.content?.text
           ? payload.content.text
           : '';
 
       createMessage(payload);
 
-      if (payload.type === 'ai' && prompt) {
+      if (payload.variant === 'ai' && prompt) {
         const response = await generateAiResponse({ chatboxId, prompt });
 
         createMessage({
           chatboxId,
           sender: 'assistant',
-          type: 'text',
+          variant: 'text',
           content: {
             text: response.list
               ? `${response.text}\n\n${response.list.map((item) => `• ${item}`).join('\n')}`
               : response.text,
           },
           attachments: [],
-          decorations: [],
+          decorators: [],
           tagIds: [],
           pinned: false,
           archived: false,
@@ -397,19 +397,27 @@ export const useComposerDraft = (
     editorRef.current?.insertAtCursor(icon);
   }, []);
 
+  const updateDraft = useCallback(
+    (updater: (draft: ComposerDraft) => ComposerDraft) => {
+      setDraft(updater);
+    },
+    [],
+  );
+
   return {
     draft,
     editorRef,
     sending,
-    pendingTypeSwitch,
+    pendingVariantSwitch,
     setFocused,
     setText,
     clearAll,
-    requestTypeSwitch,
-    applyTypeSwitch,
-    cancelTypeSwitch: () => setPendingTypeSwitch(null),
-    toggleDecoration,
-    updateDecoration,
+    requestVariantSwitch,
+    applyVariantSwitch,
+    cancelVariantSwitch: () => setPendingVariantSwitch(null),
+    toggleDecorator,
+    updateDecorator,
+    updateDraft,
     removeAttachment,
     addFiles,
     addTodoRow,

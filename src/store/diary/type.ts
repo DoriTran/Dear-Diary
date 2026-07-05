@@ -225,26 +225,32 @@ export type LinkAttachment = AttachmentBase & {
 
 // #endregion
 
-// #region Message Decoration
-export type MessageDecoration = TicketDecoration | CountdownDecoration;
+// #region Message Decorator
+export type MessageDecorator = TicketDecorator | TimerDecorator;
 
-export type TicketDecoration = {
+export type TicketDecorator = {
   type: 'ticket';
-  title: string;
   state: 'todo' | 'doing' | 'done';
   ticked: boolean;
 };
 
-export type CountdownDecoration = {
-  type: 'countdown';
-  title: string;
-  targetDate: string;
+export type TimerMode = 'timer' | 'countup' | 'datetime';
+
+export type TimerDecorator = {
+  type: 'timer';
+  mode: TimerMode;
   pause: boolean;
+  running: boolean;
+  durationMs: number;
+  startedAt: string | null;
+  targetDate: string;
+  /** ISO deadline when timer/datetime mode is running */
+  deadlineAt: string | null;
 };
 
 // #endregion
 
-// #region Message Types
+// #region Message Variants
 export type Message = TextMessage | TodoMessage | AIMessage;
 
 export type MessageSender = 'user' | 'assistant';
@@ -261,7 +267,7 @@ export type MessageBase = {
   reactions: MessageReaction[];
   edited: boolean;
   attachments: Attachment[];
-  decorations: MessageDecoration[];
+  decorators: MessageDecorator[];
   createdAt: string;
   updatedAt: string | null;
 };
@@ -272,17 +278,17 @@ export type MessageReaction = {
 };
 
 export type TextMessage = MessageBase & {
-  type: 'text';
+  variant: 'text';
   content: RichTextContent;
 };
 
 export type AIMessage = MessageBase & {
-  type: 'ai';
+  variant: 'ai';
   content: RichTextContent;
 };
 
 export type TodoMessage = MessageBase & {
-  type: 'todo';
+  variant: 'todo';
   content: {
     items: TodoItem[];
   };
@@ -309,7 +315,7 @@ export type DiaryEntityId =
 export type DiaryRootItemId = Group['id'] | Chatbox['id'];
 /* eslint-enable @typescript-eslint/no-duplicate-type-constituents */
 
-export type MessageType = Message['type'];
+export type MessageVariant = Message['variant'];
 
 export type MessageUpdateData = Partial<
   Omit<Message, 'id' | 'chatboxId' | 'createdAt' | 'edited' | 'updatedAt'>

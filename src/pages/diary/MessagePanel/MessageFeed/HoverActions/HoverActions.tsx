@@ -1,7 +1,6 @@
 import { faReply, faSmile, faTags } from '@fortawesome/free-solid-svg-icons';
 import { useMemo, useState, type FC } from 'react';
 
-import { DEFAULT_COLOR_ID } from '@/packages/color';
 import type { Message } from '@/store/diary/type';
 
 import {
@@ -11,6 +10,7 @@ import {
   AdQuickReactionBar,
   AdSelect,
 } from '@/packages/base';
+import { DEFAULT_COLOR_ID } from '@/packages/color';
 import { useDiaryStore } from '@/store';
 
 import type { MessageActionsAPI } from '../../hooks/useMessageActions';

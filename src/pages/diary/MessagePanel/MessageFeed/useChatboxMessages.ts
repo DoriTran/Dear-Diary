@@ -25,9 +25,7 @@ export const useChatboxMessages = (
     const chatMessages = ids
       .map((id) => messages[id])
       .filter((message): message is Message => Boolean(message))
-      .filter(
-        (message) => forcedIds.has(message.id) || !message.archived,
-      )
+      .filter((message) => forcedIds.has(message.id) || !message.archived)
       .filter((message) => messageMatchesSearch(message, searchQuery));
 
     return {

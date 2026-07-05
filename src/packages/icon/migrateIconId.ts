@@ -1,6 +1,7 @@
 import type { IconId } from './types';
-import { DEFAULT_ICON_ID } from './presets';
+
 import { isValidIconId } from './iconRegistry';
+import { DEFAULT_ICON_ID } from './presets';
 
 const FA_TO_LUCIDE: Record<string, IconId> = {
   faBookOpen: 'BookOpen',

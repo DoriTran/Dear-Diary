@@ -59,7 +59,7 @@ export type DetailPanelIdentity = {
 const collectMessageAttachments = (message: Message): Attachment[] => {
   const attachments = [...message.attachments];
 
-  if (message.type === 'todo') {
+  if (message.variant === 'todo') {
     for (const item of message.content.items) {
       attachments.push(...item.attachments);
     }

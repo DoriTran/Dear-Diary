@@ -12,7 +12,7 @@ import { formatMessageTime } from '../message.utils';
 import AttachmentList from '../messageRender/AttachmentList';
 import ContentRenderer from '../messageRender/ContentRenderer';
 import ForwardCard from '../messageRender/ForwardCard';
-import MessageDecorationShell from '../messageRender/MessageDecorationShell';
+import MessageDecoratorShell from '../messageRender/MessageDecoratorShell';
 import MessageTagRow from '../messageRender/MessageTagRow';
 import ReactionBar from '../messageRender/ReactionBar';
 import ReplyPreview from '../messageRender/ReplyPreview';
@@ -31,7 +31,7 @@ const MessageBubble: FC<MessageBubbleProps> = ({
   const isAssistant = (message.sender ?? 'user') === 'assistant';
   const time = formatMessageTime(message.createdAt);
   const captionText =
-    message.type === 'todo' ? '' : message.content.text.trim();
+    message.variant === 'todo' ? '' : message.content.text.trim();
   const showBody = !message.sourceMessageId || captionText.length > 0;
 
   const bubbleBody = (
@@ -67,12 +67,12 @@ const MessageBubble: FC<MessageBubbleProps> = ({
         <AttachmentList attachments={message.attachments} />
       ) : null}
       {!message.sourceMessageId ? (
-        <MessageDecorationShell
+        <MessageDecoratorShell
           messageId={message.id}
-          decorations={message.decorations}
+          decorators={message.decorators}
         >
           {showBody ? <ContentRenderer message={message} /> : null}
-        </MessageDecorationShell>
+        </MessageDecoratorShell>
       ) : showBody ? (
         <ContentRenderer message={message} />
       ) : null}

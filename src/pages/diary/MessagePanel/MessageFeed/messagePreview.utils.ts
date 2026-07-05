@@ -5,7 +5,7 @@ export const getMessagePreviewText = (message: Message | undefined): string => {
     return 'Message unavailable';
   }
 
-  if (message.type === 'todo') {
+  if (message.variant === 'todo') {
     const firstItem = message.content.items[0];
 
     if (!firstItem) {
@@ -75,7 +75,7 @@ export const messageMatchesSearch = (
     return true;
   }
 
-  if (message.type === 'todo') {
+  if (message.variant === 'todo') {
     return message.content.items.some((item) =>
       item.content.text.toLowerCase().includes(normalized),
     );

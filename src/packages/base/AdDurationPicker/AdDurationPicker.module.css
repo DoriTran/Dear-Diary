@@ -1,0 +1,16 @@
+.root {
+  min-width: 7rem;
+}
+
+.compact {
+  min-width: 6rem;
+}
+
+.compact :global(.mantine-TimePicker-field) {
+  font-size: var(--font-sm);
+  padding: 0.15rem 0.25rem;
+}
+
+.field {
+  font-family: inherit;
+}

@@ -1,10 +1,10 @@
-import { type CSSProperties, type FC } from 'react';
-
 import { CircleQuestionMark, type LucideProps } from 'lucide-react';
 import { DynamicIcon, iconNames, type IconName } from 'lucide-react/dynamic';
+import { type CSSProperties, type FC } from 'react';
+
+import type { IconId } from './types';
 
 import { getIcon } from './iconRegistry';
-import type { IconId } from './types';
 
 export const iconIdToKebab = (id: IconId): string =>
   getIcon(id)?.kebab ??

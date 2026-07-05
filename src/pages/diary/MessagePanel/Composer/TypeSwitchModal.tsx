@@ -2,24 +2,24 @@ import type { FC } from 'react';
 
 import { Button, Group, Text } from '@mantine/core';
 
-import type { MessageType } from '@/store/diary/type';
+import type { MessageVariant } from '@/store/diary/type';
 
 import { AdModal } from '@/packages/base';
 
 export type TypeSwitchModalProps = {
-  nextType: MessageType | null;
+  nextVariant: MessageVariant | null;
   onConfirm: () => void;
   onCancel: () => void;
 };
 
 const TypeSwitchModal: FC<TypeSwitchModalProps> = ({
-  nextType,
+  nextVariant,
   onConfirm,
   onCancel,
 }) => {
   return (
     <AdModal
-      opened={nextType !== null}
+      opened={nextVariant !== null}
       onClose={onCancel}
       title="Switch type?"
       size="sm"

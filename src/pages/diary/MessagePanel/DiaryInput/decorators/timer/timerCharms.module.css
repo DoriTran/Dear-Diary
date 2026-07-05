@@ -1,0 +1,73 @@
+.displayRow {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex: 1;
+  min-width: 0;
+}
+
+.icon {
+  flex-shrink: 0;
+  color: color-mix(in srgb, #2563eb 80%, var(--text));
+}
+
+.displayText {
+  font-size: var(--font-sm);
+  font-weight: var(--font-bold);
+  color: color-mix(in srgb, #1d4ed8 85%, var(--text));
+  font-variant-numeric: tabular-nums;
+}
+
+.durationEditor {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  flex-wrap: wrap;
+}
+
+.daysInput {
+  width: 2.5rem;
+  padding: 0.15rem 0.3rem;
+  font-size: var(--font-sm);
+  text-align: center;
+}
+
+.daysLabel {
+  font-size: var(--font-xs);
+  color: var(--text-soft);
+}
+
+.modeSelect {
+  min-width: 7rem;
+}
+
+.controls {
+  display: flex;
+  gap: 0.25rem;
+  margin-left: auto;
+}
+
+.controlBtn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 1.75rem;
+  height: 1.75rem;
+  border: 1px solid color-mix(in srgb, #3b82f6 30%, var(--border-soft));
+  border-radius: 999px;
+  color: color-mix(in srgb, #2563eb 85%, var(--text));
+  background: var(--surface);
+  cursor: pointer;
+}
+
+.controlBtn:hover {
+  background: color-mix(in srgb, #93c5fd 25%, var(--surface));
+}
+
+.topRow {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem;
+  width: 100%;
+}

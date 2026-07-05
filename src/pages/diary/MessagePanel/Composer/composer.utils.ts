@@ -1,39 +1,42 @@
 import type {
   Attachment,
   Message,
-  MessageDecoration,
-  MessageType,
+  MessageDecorator,
+  MessageVariant,
   TodoItem,
 } from '@/store/diary/type';
 
 import { createEmptyTodoItem, type ComposerDraft } from './composer.types';
 
-export const defaultCountdownTargetDate = (): string => {
+export const defaultTimerTargetDate = (): string => {
   const date = new Date();
   date.setDate(date.getDate() + 7);
   return date.toISOString();
 };
 
-export const createTicketDecoration = (): MessageDecoration => ({
+export const createTicketDecorator = (): MessageDecorator => ({
   type: 'ticket',
-  title: '',
   state: 'todo',
   ticked: false,
 });
 
-export const createCountdownDecoration = (): MessageDecoration => ({
-  type: 'countdown',
-  title: '',
-  targetDate: defaultCountdownTargetDate(),
+export const createTimerDecorator = (): MessageDecorator => ({
+  type: 'timer',
+  mode: 'timer',
   pause: false,
+  running: false,
+  durationMs: 25 * 60 * 1000,
+  startedAt: null,
+  targetDate: defaultTimerTargetDate(),
+  deadlineAt: null,
 });
 
 export const hasDraftContent = (draft: ComposerDraft): boolean => {
-  if (draft.attachments.length > 0 || draft.decorations.length > 0) {
+  if (draft.attachments.length > 0 || draft.decorators.length > 0) {
     return true;
   }
 
-  if (draft.type === 'todo') {
+  if (draft.variant === 'todo') {
     return draft.todoItems.some(
       (item) => item.text.trim() || item.attachments.length > 0,
     );
@@ -42,27 +45,27 @@ export const hasDraftContent = (draft: ComposerDraft): boolean => {
   return draft.text.trim().length > 0;
 };
 
-export const draftHasTypeContent = (draft: ComposerDraft): boolean => {
-  if (draft.type === 'todo') {
+export const draftHasVariantContent = (draft: ComposerDraft): boolean => {
+  if (draft.variant === 'todo') {
     return draft.todoItems.some((item) => item.text.trim());
   }
 
   return draft.text.trim().length > 0;
 };
 
-export const convertDraftToType = (
+export const convertDraftToVariant = (
   draft: ComposerDraft,
-  nextType: MessageType,
-): Pick<ComposerDraft, 'type' | 'text' | 'todoItems'> => {
-  if (draft.type === nextType) {
+  nextVariant: MessageVariant,
+): Pick<ComposerDraft, 'variant' | 'text' | 'todoItems'> => {
+  if (draft.variant === nextVariant) {
     return {
-      type: draft.type,
+      variant: draft.variant,
       text: draft.text,
       todoItems: draft.todoItems,
     };
   }
 
-  if (nextType === 'todo') {
+  if (nextVariant === 'todo') {
     const lines = draft.text
       .split('\n')
       .map((line) => line.trim())
@@ -76,20 +79,20 @@ export const convertDraftToType = (
           }))
         : [createEmptyTodoItem()];
 
-    return { type: 'todo', text: '', todoItems: items };
+    return { variant: 'todo', text: '', todoItems: items };
   }
 
-  if (draft.type === 'todo') {
+  if (draft.variant === 'todo') {
     const text = draft.todoItems
       .map((item) => item.text.trim())
       .filter(Boolean)
       .join('\n');
 
-    return { type: nextType, text, todoItems: [createEmptyTodoItem()] };
+    return { variant: nextVariant, text, todoItems: [createEmptyTodoItem()] };
   }
 
   return {
-    type: nextType,
+    variant: nextVariant,
     text: draft.text,
     todoItems: [createEmptyTodoItem()],
   };
@@ -107,7 +110,7 @@ export const buildMessagePayload = (
     chatboxId,
     sender: 'user' as const,
     attachments: draft.attachments,
-    decorations: draft.decorations,
+    decorators: draft.decorators,
     tagIds: [],
     pinned: false,
     archived: false,
@@ -116,7 +119,7 @@ export const buildMessagePayload = (
     reactions: [],
   };
 
-  if (draft.type === 'todo') {
+  if (draft.variant === 'todo') {
     const items = draft.todoItems
       .filter((item) => item.text.trim() || item.attachments.length > 0)
       .map(
@@ -134,22 +137,22 @@ export const buildMessagePayload = (
 
     return {
       ...base,
-      type: 'todo',
+      variant: 'todo',
       content: { items },
     };
   }
 
-  if (draft.type === 'ai') {
+  if (draft.variant === 'ai') {
     return {
       ...base,
-      type: 'ai',
+      variant: 'ai',
       content: { text: draft.text.trim() },
     };
   }
 
   return {
     ...base,
-    type: 'text',
+    variant: 'text',
     content: { text: draft.text.trim() },
   };
 };

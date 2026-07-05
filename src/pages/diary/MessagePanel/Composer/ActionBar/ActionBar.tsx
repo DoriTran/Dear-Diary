@@ -10,35 +10,35 @@ import {
 } from '@fortawesome/free-solid-svg-icons';
 import { useRef, type FC, type ReactNode } from 'react';
 
-import type { MessageDecoration, MessageType } from '@/store/diary/type';
+import type { MessageDecorator, MessageVariant } from '@/store/diary/type';
 
 import { AdIcon } from '@/packages/base';
 
 import styles from './ActionBar.module.css';
 
 export type ActionBarProps = {
-  type: MessageType;
-  decorations: MessageDecoration[];
+  variant: MessageVariant;
+  decorators: MessageDecorator[];
   canSend: boolean;
   onClear: () => void;
   onAddFiles: (
     files: FileList | File[],
     kind: 'file' | 'image' | 'video',
   ) => void;
-  onToggleDecoration: (type: MessageDecoration['type']) => void;
-  onTypeSwitch: (type: MessageType) => void;
+  onToggleDecorator: (type: MessageDecorator['type']) => void;
+  onVariantSwitch: (variant: MessageVariant) => void;
   reactionPicker?: ReactNode;
   onSend: () => void;
 };
 
 const ActionBar: FC<ActionBarProps> = ({
-  type,
-  decorations,
+  variant,
+  decorators,
   canSend,
   onClear,
   onAddFiles,
-  onToggleDecoration,
-  onTypeSwitch,
+  onToggleDecorator,
+  onVariantSwitch,
   reactionPicker,
   onSend,
 }) => {
@@ -46,8 +46,8 @@ const ActionBar: FC<ActionBarProps> = ({
   const imageInputRef = useRef<HTMLInputElement>(null);
   const videoInputRef = useRef<HTMLInputElement>(null);
 
-  const hasTicket = decorations.some((d) => d.type === 'ticket');
-  const hasCountdown = decorations.some((d) => d.type === 'countdown');
+  const hasTicket = decorators.some((d) => d.type === 'ticket');
+  const hasTimer = decorators.some((d) => d.type === 'timer');
 
   return (
     <div className={styles.root}>
@@ -99,16 +99,16 @@ const ActionBar: FC<ActionBarProps> = ({
           className={`${styles.btn} ${hasTicket ? styles.btnActiveTicket : ''}`}
           aria-label="Ticket decoration"
           aria-pressed={hasTicket}
-          onClick={() => onToggleDecoration('ticket')}
+          onClick={() => onToggleDecorator('ticket')}
         >
           <AdIcon icon={faTicket} size={14} />
         </button>
         <button
           type="button"
-          className={`${styles.btn} ${hasCountdown ? styles.btnActiveCountdown : ''}`}
-          aria-label="Countdown decoration"
-          aria-pressed={hasCountdown}
-          onClick={() => onToggleDecoration('countdown')}
+          className={`${styles.btn} ${hasTimer ? styles.btnActiveTimer : ''}`}
+          aria-label="Timer decorator"
+          aria-pressed={hasTimer}
+          onClick={() => onToggleDecorator('timer')}
         >
           <AdIcon icon={faStopwatch} size={14} />
         </button>
@@ -119,19 +119,19 @@ const ActionBar: FC<ActionBarProps> = ({
       <div className={styles.group}>
         <button
           type="button"
-          className={`${styles.btn} ${type === 'todo' ? styles.btnActiveTodo : ''}`}
+          className={`${styles.btn} ${variant === 'todo' ? styles.btnActiveTodo : ''}`}
           aria-label="Todo type"
-          aria-pressed={type === 'todo'}
-          onClick={() => onTypeSwitch('todo')}
+          aria-pressed={variant === 'todo'}
+          onClick={() => onVariantSwitch('todo')}
         >
           <AdIcon icon={faCheckSquare} size={14} />
         </button>
         <button
           type="button"
-          className={`${styles.btn} ${type === 'ai' ? styles.btnActiveAi : ''}`}
+          className={`${styles.btn} ${variant === 'ai' ? styles.btnActiveAi : ''}`}
           aria-label="AI type"
-          aria-pressed={type === 'ai'}
-          onClick={() => onTypeSwitch('ai')}
+          aria-pressed={variant === 'ai'}
+          onClick={() => onVariantSwitch('ai')}
         >
           <span className={styles.aiLabel}>AI</span>
         </button>

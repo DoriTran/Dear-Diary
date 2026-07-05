@@ -1,6 +1,7 @@
-import { COLOR_PRESETS, DEFAULT_COLOR_ID } from './presets';
-import { colorDistance, normalizeHex } from './colorUtils';
 import type { ColorId, PresetColorId } from './types';
+
+import { colorDistance, normalizeHex } from './colorUtils';
+import { COLOR_PRESETS, DEFAULT_COLOR_ID } from './presets';
 
 const isPresetColorId = (value: string): value is PresetColorId =>
   value in COLOR_PRESETS;
