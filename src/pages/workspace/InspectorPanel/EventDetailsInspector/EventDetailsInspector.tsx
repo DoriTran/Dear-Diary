@@ -7,10 +7,10 @@ import { DEFAULT_COLOR_ID } from '@/packages/color';
 import { useAppStore, useDiaryStore, useWorkspaceStore } from '@/store';
 import type { WorkspaceRecord } from '@/store/workspace/type';
 
-import { getMessagePreviewText } from '@/pages/diary/MessagePanel/MessageFeed/messagePreview.utils';
+import { getMessagePreviewText } from '@/pages/diary/MessagePanel/messagePanel.utils';
 import type { Message } from '@/store/diary/type';
 
-import { useWorkspacePageData } from '../../hooks/useWorkspacePageData';
+import { useWorkspacePageData } from '../../.hooks/useWorkspacePageData';
 import {
   formatEventDate,
   formatEventTimeRange,

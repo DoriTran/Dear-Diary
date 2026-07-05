@@ -5,7 +5,7 @@ import { useWorkspaceStore } from '@/store';
 import type { WorkspaceType } from '@/store/workspace/type';
 
 import InfoCallout from '@/pages/diary/DetailPanel/components/InfoCallout';
-import { useWorkspacePageData } from '../hooks/useWorkspacePageData';
+import { useWorkspacePageData } from '../.hooks/useWorkspacePageData';
 import ByToolSection from './ByToolSection/ByToolSection';
 import CreateWorkspaceModal from './CreateWorkspaceModal/CreateWorkspaceModal';
 import ExplorerHeader from './ExplorerHeader/ExplorerHeader';

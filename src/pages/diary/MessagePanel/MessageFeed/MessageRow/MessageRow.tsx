@@ -2,10 +2,10 @@ import { memo, useEffect, useRef, type FC } from 'react';
 
 import type { Message } from '@/store/diary/type';
 
-import type { MessageActionsAPI } from '../../hooks/useMessageActions';
+import type { MessageActionsAPI } from '../../.hooks/useMessageActions';
 
-import HoverActions from '../HoverActions/HoverActions';
-import MessageBubble from '../MessageBubble/MessageBubble';
+import HoverActions from './HoverActions/HoverActions';
+import MessageBubble from './MessageBubble/MessageBubble';
 import styles from './MessageRow.module.css';
 
 export type MessageRowProps = {

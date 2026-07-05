@@ -9,7 +9,7 @@ import {
   formatChatboxTime,
   getMessagePreview,
 } from '../../ChatboxSidebar/Chatbox/chatbox.utils';
-import { getMessagePreviewText } from '../../MessagePanel/MessageFeed/messagePreview.utils';
+import { getMessagePreviewText } from '../../MessagePanel/messagePanel.utils';
 import { getMessageThumbnail } from '../detailPanel.utils';
 
 import styles from './DetailMessagePreviewRow.module.css';

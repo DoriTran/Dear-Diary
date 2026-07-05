@@ -1,4 +1,181 @@
-# Dear Diary - DiaryInput Composer Architecture
+# Dear Diary - MessagePanel Architecture
+
+## Folder structure
+
+Principle: **each UI feature owns its sub-components**. Cross-feature imports go through public `index.ts` barrels only.
+
+```text
+MessagePanel/
+├── MessagePanel.tsx                 # root orchestrator (Header + Feed + DiaryInput)
+├── MessagePanel.module.css
+├── messagePanel.utils.ts            # panel utils exported outside MessagePanel
+├── _architecture.md
+│
+├── .hooks/                          # dot-prefix → sorts first; panel orchestration
+│   ├── useMessageActions.ts         # reply, delete, forward, reactions, tags, pin
+│   └── useMessageScroll.ts          # message element refs, scrollToMessage
+│
+├── Header/
+│   ├── Header.tsx                   # chatbox title, search, detail-panel toggle
+│   ├── Header.module.css
+│   └── useMessageHeaderData.ts      # resolves chatbox metadata from store
+│
+├── MessageFeed/
+│   ├── MessageFeed.tsx              # day groups → MessageRow list
+│   ├── MessageFeed.module.css
+│   ├── useChatboxMessages.ts        # filter/group messages from store
+│   ├── message.utils.ts           # day grouping, time labels (feed-local)
+│   ├── DateSeparator/
+│   │   ├── DateSeparator.tsx
+│   │   └── DateSeparator.module.css
+│   └── MessageRow/
+│       ├── MessageRow.tsx           # row shell: HoverActions + MessageBubble
+│       ├── MessageRow.module.css
+│       ├── HoverActions/
+│       │   ├── HoverActions.tsx     # reply, reactions, tags, more menu
+│       │   ├── HoverActions.module.css
+│       │   ├── MoreMenu.tsx
+│       │   └── ForwardModal.tsx     # colocated; rendered by MessagePanel
+│       └── MessageBubble/
+│           ├── MessageBubble.tsx    # unified user/assistant bubble
+│           ├── styles/
+│           │   ├── userBubble.module.css
+│           │   └── assistantBubble.module.css
+│           └── Content/             # bubble internals (feed-only rendering)
+│               ├── ContentRenderer.tsx
+│               ├── AttachmentList.tsx
+│               ├── ReplyPreview.tsx
+│               ├── ForwardCard.tsx
+│               ├── ReactionBar.tsx
+│               ├── MessageTagRow.tsx
+│               └── MessageDecoratorShell.tsx
+│
+└── DiaryInput/                      # compose system — five expandable categories
+    ├── index.ts                     # PUBLIC API (only cross-feature entry)
+    ├── DiaryInput.tsx               # compose root component
+    ├── DiaryInput.module.css
+    │
+    ├── input/                       # draft lifecycle, relationships in composer
+    │   ├── index.ts
+    │   ├── useComposerDraft.ts
+    │   ├── composer.types.ts
+    │   ├── composer.utils.ts
+    │   ├── ReplyPreviewInput.tsx
+    │   └── ReplyPreviewInput.module.css
+    │
+    ├── attachment/                  # file/link attachments
+    │   ├── index.ts
+    │   ├── linkAttachments.utils.ts
+    │   └── AttachmentTray/
+    │       ├── AttachmentTray.tsx
+    │       ├── AttachmentCard.tsx
+    │       ├── VideoAttachment.tsx
+    │       └── *.module.css
+    │
+    ├── variant/                     # message type editors
+    │   ├── index.ts
+    │   ├── TypeSwitchModal.tsx
+    │   └── editors/
+    │       ├── TextEditor.tsx
+    │       ├── TodoEditor.tsx
+    │       ├── AIEditor.tsx
+    │       └── *.module.css
+    │
+    ├── decorator/                   # charm pipeline + decorator plugins
+    │   ├── index.ts
+    │   ├── decoratorRegistry.ts     # wires ticket + timer plugins
+    │   ├── charms/                  # engine (generic — no plugin specifics)
+    │   │   ├── charm.types.ts
+    │   │   ├── buildComposerContext.ts
+    │   │   ├── collectCharms.ts
+    │   │   ├── mergeContributions.ts
+    │   │   ├── decoratorIndex.ts
+    │   │   ├── useCharmPipeline.ts
+    │   │   └── useDecoratorRuntime.ts
+    │   ├── DecoratedSurface/      # shared compose + feed decorator wrapper
+    │   ├── ComposerSurface/         # region layout (header/top/left/…/overlay)
+    │   ├── ticket/                  # ticket plugin (NOT inside charms/)
+    │   │   ├── ticket.decorator.ts
+    │   │   ├── ticketBorderCharm.ts
+    │   │   ├── ticketTearCharm.tsx
+    │   │   ├── TicketTear.tsx
+    │   │   └── ticketCharms.module.css
+    │   └── timer/                   # timer plugin (NOT inside charms/)
+    │       ├── timer.decorator.ts
+    │       ├── timer.utils.ts       # single source for timer factory + tick math
+    │       ├── displayCharm.tsx
+    │       ├── timerModeCharm.tsx
+    │       ├── timerControlsCharm.tsx
+    │       ├── RuntimeCharm.ts
+    │       ├── TimerDisplay.tsx
+    │       ├── TimerControls.tsx
+    │       ├── TimerModeSelect.tsx
+    │       └── timerCharms.module.css
+    │
+    └── actions/                     # compose action bar
+        ├── index.ts
+        ├── ActionDock/              # send, clear, decorator toggles, variant switch
+        │   ├── ActionDock.tsx
+        │   └── ActionDock.module.css
+        └── ReactionIconPicker.tsx
+```
+
+### Why `ticket/` and `timer/` are siblings of `charms/`, not inside it
+
+| Folder | Role |
+| ------ | ---- |
+| `charms/` | Charm **engine** — types, collect, merge, runtime tick loop |
+| `ticket/`, `timer/` | Decorator **plugins** — implement `DecoratorDefinition`, register charms |
+| `DecoratedSurface/`, `ComposerSurface/` | Render shell that runs the pipeline |
+
+New decorators (priority, reminder, …) add a sibling folder under `decorator/` and one line in `decoratorRegistry.ts`. The `charms/` engine stays unchanged.
+
+### Public API (`DiaryInput/index.ts`)
+
+Cross-feature imports use namespace exports only:
+
+```ts
+import DiaryInput, { decorator, attachment, input } from '../DiaryInput';
+
+// compose entry
+<DiaryInput chatboxId={id} … />
+
+// MessageFeed examples
+decorator.DecoratedSurface
+attachment.AttachmentCard
+input.createInitialDraft
+```
+
+Do **not** deep-import into `DiaryInput/input/…` or `DiaryInput/decorator/ticket/…` from MessageFeed.
+
+### Panel-level exports outside MessagePanel
+
+| Export | Path | Consumers |
+| ------ | ---- | --------- |
+| `getMessagePreviewText`, `messageMatchesSearch`, … | `messagePanel.utils.ts` | DetailPanel, workspace |
+| `decorator.getTimerDisplayText`, … | `DiaryInput/index.ts` | ChatboxSidebar |
+
+### Infra conventions
+
+- **`.hooks/`** — dot-prefix folders sort first; panel orchestration hooks only.
+- **`messagePanel.utils.ts`** — co-located with `MessagePanel.tsx`; not a `shared/` folder.
+- **Feature colocation** — `ForwardModal` lives under `HoverActions/` (triggered there; rendered by `MessagePanel.tsx`).
+
+### Expansion guide
+
+| Category | Add next… | Where |
+| -------- | --------- | ----- |
+| `input/` | draft persistence, relationship layer | new files + `input/index.ts` |
+| `attachment/` | audio, workspace refs | `attachment/` subfolder |
+| `variant/` | chart, poll editors | `variant/editors/` + switch wiring |
+| `decorator/` | new plugin | `decorator/{name}/` + `decoratorRegistry.ts` |
+| `actions/` | schedule send, voice input | `actions/` + `actions/index.ts` |
+
+---
+
+# DiaryInput Composer Architecture
+
+# DiaryInput Composer Architecture
 
 ## Philosophy
 
@@ -68,7 +245,7 @@ Examples:
 ```text
 text
 + ticket
-+ countdown
++ timer
 + priority
 + reminder
 ```
@@ -168,7 +345,7 @@ Decorators control how the composer behaves and visually renders.
 Examples:
 
 - ticket
-- countdown
+- timer
 - reminder
 - priority
 - scheduled
@@ -181,7 +358,7 @@ Decorators **DO NOT wrap each other**.
 ### Wrong
 
 ```text
-Countdown
+Timer
  └ Ticket
  └ Reminder
  └ Input
@@ -208,7 +385,7 @@ Ticket
 ├── TicketBorderCharm
 └── TicketTearCharm
 
-Countdown
+Timer
 ├── DisplayCharm
 ├── ModeCharm
 ├── ControlsCharm
@@ -286,7 +463,7 @@ priority decorator:  priority 200
   region: "top",
   order: 1,
   render: (ctx) => (
-    <CountdownDisplay />
+    <TimerDisplay />
   ),
 }
 ```
@@ -326,7 +503,7 @@ type RuntimeContribution = {
 };
 ```
 
-Decorators that need ticking (countdown, pomodoro, reminder, repeat, alarm) register via `RuntimeCharm`. **Visual charms must not own intervals.**
+Decorators that need ticking (timer, pomodoro, reminder, repeat, alarm) register via `RuntimeCharm`. **Visual charms must not own intervals.**
 
 ```text
 active decorators
@@ -354,7 +531,7 @@ Actions:
 - drag
 - swipe
 
-# Countdown Decorator
+# Timer Decorator
 
 Mostly interactive + some visual.
 
@@ -367,14 +544,14 @@ Charm responsibilities:
 
 | Charm | Role |
 | ----- | ---- |
-| DisplayCharm | Render countdown / countup / datetime display only (no ticking) |
-| ModeCharm | Mode selector (countdown / countup / datetime) |
+| DisplayCharm | Render timer / countup / datetime display only (no ticking) |
+| ModeCharm | Mode selector (timer / countup / datetime) |
 | ControlsCharm | Play / pause / reset buttons |
 | RuntimeCharm | Register tick behavior with `useDecoratorRuntime` |
 
 Modes:
 
-- countdown — relative duration (days + time); Mantine duration picker while composing
+- timer — relative duration (days + time); Mantine duration picker while composing
 - countup — elapsed time display
 - datetime — exact date + time; Mantine DateTimePicker while composing
 
@@ -461,8 +638,8 @@ Structured events scale better than string-based names:
 
 ```ts
 emit({ decorator: "ticket", action: "complete" });
-emit({ decorator: "countdown", action: "play" });
-emit({ decorator: "countdown", action: "pause" });
+emit({ decorator: "timer", action: "play" });
+emit({ decorator: "timer", action: "pause" });
 ```
 
 Expanded context slices (`variant`, `decorators`, `attachments`, `relationships`) allow charms to read cross-axis state (e.g. reply, forward, other active decorators) without reaching into `draft` internals.
@@ -472,7 +649,7 @@ Expanded context slices (`variant`, `decorators`, `attachments`, `relationships`
 ```ts
 const decoratorRegistry = {
   ticket,
-  countdown,
+  timer,
 };
 
 const variantRegistry = {
@@ -513,20 +690,22 @@ tick / update draft
 # React Component Tree
 
 ```text
-DiaryInput
-├── RelationshipLayer
-├── AttachmentLayer
-├── ComposerSurface
-│   ├── HeaderRegion
-│   ├── TopRegion
-│   ├── LeftRegion
-│   ├── VariantEditor
-│   ├── RightRegion
-│   ├── BottomRegion
-│   ├── FooterRegion
-│   └── OverlayRegion
-├── useDecoratorRuntime
-└── ActionDock
+MessagePanel
+├── Header
+├── MessageFeed
+│   └── MessageRow
+│       ├── HoverActions (+ ForwardModal)
+│       └── MessageBubble
+│           └── Content/
+└── DiaryInput
+    ├── ReplyPreviewInput          (input/)
+    ├── AttachmentTray             (attachment/)
+    ├── DecoratedSurface           (decorator/)
+    │   └── ComposerSurface
+    │       ├── regions…
+    │       └── VariantEditor      (variant/)
+    ├── ActionDock                 (actions/)
+    └── TypeSwitchModal            (variant/)
 ```
 
 # Long-Term Goal

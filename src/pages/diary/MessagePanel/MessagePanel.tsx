@@ -3,15 +3,15 @@ import { useEffect, type FC, type RefObject } from 'react';
 import { AdConfirmDialog } from '@/packages/base';
 import LayoutCard from '@/packages/ui/LayoutCard/LayoutCard';
 
-import MessageComposer from './Composer/MessageComposer';
+import { useMessageActions } from './.hooks/useMessageActions';
+import { useMessageScroll } from './.hooks/useMessageScroll';
+import DiaryInput from './DiaryInput';
 import Header from './Header/Header';
 import { useMessageHeaderData } from './Header/useMessageHeaderData';
-import { useMessageActions } from './hooks/useMessageActions';
-import { useMessageScroll } from './hooks/useMessageScroll';
 import MessageFeed from './MessageFeed/MessageFeed';
+import ForwardModal from './MessageFeed/MessageRow/HoverActions/ForwardModal';
 import { useChatboxMessages } from './MessageFeed/useChatboxMessages';
 import styles from './MessagePanel.module.css';
-import ForwardModal from './modals/ForwardModal';
 
 export type MessagePanelProps = {
   chatboxId: string;
@@ -100,7 +100,7 @@ const MessagePanel: FC<MessagePanelProps> = ({
         registerRef={scroll.registerRef}
         actions={actions}
       />
-      <MessageComposer
+      <DiaryInput
         chatboxId={chatboxId}
         replyToMessageId={actions.replyToMessageId}
         onCancelReply={actions.cancelReply}

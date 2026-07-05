@@ -6,7 +6,7 @@ import { AdActionButton } from '@/packages/base';
 import LayoutCard from '@/packages/ui/LayoutCard/LayoutCard';
 import { useWorkspaceStore } from '@/store';
 
-import { useWorkspacePageData } from '../hooks/useWorkspacePageData';
+import { useWorkspacePageData } from '../.hooks/useWorkspacePageData';
 import EventDetailsInspector from './EventDetailsInspector/EventDetailsInspector';
 import styles from './InspectorPanel.module.css';
 

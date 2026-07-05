@@ -4,8 +4,8 @@ import type { Message } from '@/store/diary/type';
 
 import { useDiaryStore } from '@/store';
 
+import { messageMatchesSearch } from '../messagePanel.utils';
 import { groupMessagesByDay, type MessageDayGroup } from './message.utils';
-import { messageMatchesSearch } from './messagePreview.utils';
 
 export type UseChatboxMessagesOptions = {
   searchQuery?: string;

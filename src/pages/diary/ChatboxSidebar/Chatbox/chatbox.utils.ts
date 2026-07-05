@@ -4,9 +4,9 @@ import type { Chatbox, Message, Tag } from '@/store/diary/type';
 
 import { iconBackground, resolvePalette } from '@/packages/color';
 import { normalizeIconId } from '@/packages/icon';
-import {
-  getTimerDisplayText,
-} from '@/pages/diary/MessagePanel/DiaryInput/decorators/timer/timer.utils';
+import { decorator } from '@/pages/diary/MessagePanel/DiaryInput';
+
+const { getTimerDisplayText } = decorator;
 
 import type { ChatboxData } from '../../types';
 

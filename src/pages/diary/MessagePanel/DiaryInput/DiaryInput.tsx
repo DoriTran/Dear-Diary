@@ -1,16 +1,16 @@
 import type { FC } from 'react';
 
-import AttachmentTray from '../Composer/AttachmentTray/AttachmentTray';
-import AIEditor from '../Composer/editors/AIEditor';
-import TextEditor from '../Composer/editors/TextEditor';
-import TodoEditor from '../Composer/editors/TodoEditor';
-import styles from '../Composer/MessageComposer.module.css';
-import ReactionIconPicker from '../Composer/ReactionIconPicker';
-import ReplyPreviewInput from '../Composer/ReplyPreviewInput';
-import TypeSwitchModal from '../Composer/TypeSwitchModal';
-import { useComposerDraft } from '../Composer/useComposerDraft';
-import ActionDock from './ActionDock';
-import DecoratedSurface from './DecoratedSurface/DecoratedSurface';
+import ActionDock from './actions/ActionDock/ActionDock';
+import ReactionIconPicker from './actions/ReactionIconPicker';
+import AttachmentTray from './attachment/AttachmentTray/AttachmentTray';
+import DecoratedSurface from './decorator/DecoratedSurface/DecoratedSurface';
+import styles from './DiaryInput.module.css';
+import ReplyPreviewInput from './input/ReplyPreviewInput';
+import { useComposerDraft } from './input/useComposerDraft';
+import AIEditor from './variant/editors/AIEditor';
+import TextEditor from './variant/editors/TextEditor';
+import TodoEditor from './variant/editors/TodoEditor';
+import TypeSwitchModal from './variant/TypeSwitchModal';
 
 export type DiaryInputProps = {
   chatboxId: string;
@@ -110,7 +110,7 @@ const DiaryInput: FC<DiaryInputProps> = ({
   };
 
   const fileAttachments = draft.attachments.filter(
-    (attachment) => attachment.type !== 'link',
+    (item) => item.type !== 'link',
   );
 
   return (

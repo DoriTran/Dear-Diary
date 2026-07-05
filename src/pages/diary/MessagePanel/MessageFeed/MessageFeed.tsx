@@ -1,6 +1,6 @@
 import type { FC } from 'react';
 
-import type { MessageActionsAPI } from '../hooks/useMessageActions';
+import type { MessageActionsAPI } from '../.hooks/useMessageActions';
 import type { MessageDayGroup } from './message.utils';
 
 import DateSeparator from './DateSeparator/DateSeparator';

@@ -4,9 +4,7 @@ import { resolvePalette } from '@/packages/color';
 import { normalizeIconId, type IconId } from '@/packages/icon';
 import { useAppStore, useDiaryStore } from '@/store';
 
-import {
-  formatHeaderUpdatedAt,
-} from '../../ChatboxSidebar/Chatbox/chatbox.utils';
+import { formatHeaderUpdatedAt } from '../../ChatboxSidebar/Chatbox/chatbox.utils';
 
 export type MessageHeaderData = {
   id: string;

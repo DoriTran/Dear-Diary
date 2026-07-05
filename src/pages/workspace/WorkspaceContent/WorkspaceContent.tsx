@@ -3,7 +3,7 @@ import type { FC } from 'react';
 import LayoutCard from '@/packages/ui/LayoutCard/LayoutCard';
 import { useWorkspaceStore } from '@/store';
 
-import { useWorkspacePageData } from '../hooks/useWorkspacePageData';
+import { useWorkspacePageData } from '../.hooks/useWorkspacePageData';
 import { workspaceToolRenderers } from '../tools/registry';
 import ContentHeader from './ContentHeader/ContentHeader';
 import EmptyState from './EmptyState/EmptyState';
