@@ -9,6 +9,7 @@ export const createTicketBorderCharm = (): Charm => ({
       target: 'container',
       priority: 100,
       styles: {
+        position: 'relative',
         display: 'flex',
         overflow: 'hidden',
         borderRadius: 'var(--radius-lg)',

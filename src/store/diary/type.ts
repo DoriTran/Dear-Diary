@@ -232,6 +232,7 @@ export type TicketDecorator = {
   type: 'ticket';
   state: 'todo' | 'doing' | 'done';
   ticked: boolean;
+  placement?: 'inside' | 'outside';
 };
 
 export type TimerMode = 'timer' | 'countup' | 'datetime';

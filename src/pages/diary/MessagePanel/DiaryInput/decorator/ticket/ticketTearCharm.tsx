@@ -1,36 +1,25 @@
-import type { Charm } from '../charms/charm.types';
+import type { Charm, CharmPlacement } from '../charms/charm.types';
 
+import styles from './ticketCharms.module.css';
 import TicketTear from './TicketTear';
 
-export const createTicketTearCharm = (decoratorIndex: number): Charm => ({
+export const createTicketTearCharm = (
+  decoratorIndex: number,
+  placement: CharmPlacement,
+): Charm => ({
   id: 'ticket-tear',
   region: 'left',
   order: 1,
-  styles: [
-    {
-      target: 'left',
-      priority: 100,
-      styles: {
-        display: 'flex',
-        flexShrink: 0,
-        alignItems: 'center',
-        justifyContent: 'center',
-        width: '4.5rem',
-        padding: '0.5rem',
-        background: 'color-mix(in srgb, var(--primary-light) 65%, var(--surface))',
-        borderRight: '2px dashed color-mix(in srgb, var(--primary) 50%, var(--border-soft))',
-        maskImage:
-          'radial-gradient(circle at 0 50%, transparent 6px, black 6px)',
-        WebkitMaskImage:
-          'radial-gradient(circle at 0 50%, transparent 6px, black 6px)',
-      },
-    },
-  ],
+  placement,
   elements: [
     {
       region: 'left',
       order: 1,
-      render: (ctx) => <TicketTear decoratorIndex={decoratorIndex} ctx={ctx} />,
+      render: (ctx) => (
+        <div className={styles.tearWrap}>
+          <TicketTear decoratorIndex={decoratorIndex} ctx={ctx} />
+        </div>
+      ),
     },
   ],
 });

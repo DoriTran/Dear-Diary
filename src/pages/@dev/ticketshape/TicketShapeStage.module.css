@@ -1,0 +1,97 @@
+.root {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  min-width: 0;
+}
+
+.stageWrap {
+  max-width: 100%;
+  overflow: auto;
+}
+
+.stage {
+  position: relative;
+  resize: both;
+  overflow: hidden;
+  min-width: 180px;
+  min-height: 220px;
+  width: 280px;
+  height: 320px;
+  max-width: none;
+  border: 1px solid rgba(139, 105, 20, 0.25);
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(92, 61, 74, 0.12);
+}
+
+.stageInner {
+  position: absolute;
+  inset: 0;
+}
+
+.stage[data-bg='solid'] {
+  background: #e8d5f0;
+}
+
+.stage[data-bg='gradient'] {
+  background: linear-gradient(135deg, #ffc9a3, #ffb3d9, #b8e8c8);
+}
+
+.stage[data-bg='image'] {
+  background-color: #e8d5f0;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='20' height='20' viewBox='0 0 20 20'%3E%3Crect width='10' height='10' fill='%23d4b8e8'/%3E%3Crect x='10' y='10' width='10' height='10' fill='%23d4b8e8'/%3E%3Crect x='10' width='10' height='10' fill='%23c9a8dc'/%3E%3Crect y='10' width='10' height='10' fill='%23c9a8dc'/%3E%3C/svg%3E");
+  background-size: 20px 20px;
+}
+
+.stage[data-grid] {
+  background-image:
+    linear-gradient(rgba(92, 61, 74, 0.08) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(92, 61, 74, 0.08) 1px, transparent 1px),
+    var(--stage-bg, none);
+  background-size:
+    16px 16px,
+    16px 16px,
+    auto;
+}
+
+.stage[data-grid][data-bg='solid'] {
+  --stage-bg: #e8d5f0;
+}
+
+.stage[data-grid][data-bg='gradient'] {
+  --stage-bg: linear-gradient(135deg, #ffc9a3, #ffb3d9, #b8e8c8);
+}
+
+.stage[data-grid][data-bg='image'] {
+  --stage-bg: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='20' height='20' viewBox='0 0 20 20'%3E%3Crect width='10' height='10' fill='%23d4b8e8'/%3E%3Crect x='10' y='10' width='10' height='10' fill='%23d4b8e8'/%3E%3Crect x='10' width='10' height='10' fill='%23c9a8dc'/%3E%3Crect y='10' width='10' height='10' fill='%23c9a8dc'/%3E%3C/svg%3E");
+}
+
+.debug {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem 1.25rem;
+  margin: 0;
+  padding: 0.5rem 0.625rem;
+  border-radius: 6px;
+  background: rgba(139, 105, 20, 0.06);
+  font-size: 0.75rem;
+}
+
+.debug div {
+  display: flex;
+  gap: 0.35rem;
+  align-items: baseline;
+}
+
+.debug dt {
+  margin: 0;
+  font-weight: 600;
+  color: #7a5a66;
+  text-transform: lowercase;
+}
+
+.debug dd {
+  margin: 0;
+  font-family: ui-monospace, monospace;
+  color: #5c3d4a;
+}

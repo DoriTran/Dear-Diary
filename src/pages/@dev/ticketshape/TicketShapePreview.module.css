@@ -1,0 +1,23 @@
+.svg {
+  position: absolute;
+  inset: 0;
+  display: block;
+  pointer-events: none;
+}
+
+.root {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+
+.contentOverlay {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+  padding-right: 3rem;
+  pointer-events: none;
+}

@@ -1,0 +1,115 @@
+.root {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+  width: 100%;
+  padding: 1.5rem;
+  box-sizing: border-box;
+}
+
+.pageHeader {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.pageTitle {
+  margin: 0;
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: #2f4a60;
+}
+
+.pageIntro {
+  margin: 0;
+  font-size: 0.875rem;
+  color: #5a7388;
+  line-height: 1.5;
+  max-width: 52rem;
+}
+
+.pageIntro code {
+  font-size: 0.8em;
+  padding: 0.1em 0.35em;
+  border-radius: 4px;
+  background: rgba(61, 90, 115, 0.1);
+}
+
+.controls {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  padding: 1.25rem;
+  border-radius: 10px;
+  border: 1px solid rgba(61, 90, 115, 0.2);
+  background: rgba(238, 244, 248, 0.7);
+}
+
+.controlsTitle {
+  margin: 0;
+  font-size: 1rem;
+  font-weight: 700;
+  color: #2f4a60;
+}
+
+.controlsRow {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem 1.5rem;
+  align-items: flex-end;
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  font-size: 0.85rem;
+  color: #2f4a60;
+}
+
+.field input[type='number'] {
+  padding: 0.4rem 0.5rem;
+  border: 1px solid rgba(61, 90, 115, 0.35);
+  border-radius: 6px;
+  font: inherit;
+  min-width: 5rem;
+  width: 6.5rem;
+}
+
+.bgButtons {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.bgButton {
+  padding: 0.4rem 0.85rem;
+  border: 1px solid rgba(61, 90, 115, 0.35);
+  border-radius: 6px;
+  background: #fff;
+  font: inherit;
+  font-size: 0.85rem;
+  color: #2f4a60;
+  cursor: pointer;
+  transition:
+    background 0.15s,
+    border-color 0.15s;
+}
+
+.bgButton:hover {
+  background: rgba(61, 90, 115, 0.08);
+}
+
+.bgButton[data-active] {
+  background: color-mix(in srgb, #3d5a73 18%, #fff);
+  border-color: #3d5a73;
+  font-weight: 600;
+}
+
+.checkboxField {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.85rem;
+  color: #2f4a60;
+  cursor: pointer;
+}

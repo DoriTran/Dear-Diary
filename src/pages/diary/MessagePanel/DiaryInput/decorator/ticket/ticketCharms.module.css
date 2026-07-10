@@ -1,3 +1,15 @@
+.tearWrap {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  padding: 0.5rem;
+  box-sizing: border-box;
+  pointer-events: auto;
+}
+
 .tearBtn {
   display: flex;
   flex-direction: column;

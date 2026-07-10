@@ -4,14 +4,25 @@ import type {
 } from '../charms/charm.types';
 
 import { findDecoratorIndex } from '../charms/decoratorIndex';
+import { getTicketPlacement } from './ticket.utils';
 import { createTicketBorderCharm } from './ticketBorderCharm';
-import { createTicketTearCharm } from './ticketTearCharm';
+import { createTicketShapeCharm } from './ticketShapeCharm.tsx';
+import { createTicketTearCharm } from './ticketTearCharm.tsx';
 
 export const ticketDecorator: DecoratorDefinition = {
-  createCharms: (_decoration, decoratorIndex) => [
-    createTicketBorderCharm(),
-    createTicketTearCharm(decoratorIndex),
-  ],
+  createCharms: (decoration, decoratorIndex) => {
+    if (decoration.type !== 'ticket') {
+      return [];
+    }
+
+    const placement = getTicketPlacement(decoration);
+
+    return [
+      createTicketBorderCharm(),
+      createTicketShapeCharm(placement),
+      createTicketTearCharm(decoratorIndex, placement),
+    ];
+  },
   handleEvent: {
     complete: (ctx, decoratorIndex) => {
       const decoration = ctx.decorators[decoratorIndex];

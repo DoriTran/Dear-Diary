@@ -20,6 +20,10 @@ export type CharmRegion =
   | 'overlay'
   | 'container';
 
+export type CharmPlacement = 'inside' | 'outside';
+
+export type OutsideCharmRegion = 'left' | 'right' | 'top' | 'bottom';
+
 export type StyleTarget = 'container' | CharmRegion;
 
 export type StyleContribution = {
@@ -49,6 +53,7 @@ export type Charm = {
   id: string;
   region: CharmRegion;
   order: number;
+  placement?: CharmPlacement;
   styles?: StyleContribution[];
   elements?: ElementContribution[];
   interactions?: InteractionContribution[];
@@ -97,10 +102,16 @@ export type MergedRegionElements = Partial<
   Record<CharmRegion, ElementContribution[]>
 >;
 
+export type MergedOutsideRegionElements = Partial<
+  Record<OutsideCharmRegion, ElementContribution[]>
+>;
+
 export type MergedPipeline = {
   containerStyles: CSSProperties;
   regionStyles: Partial<Record<CharmRegion, CSSProperties>>;
   regionElements: MergedRegionElements;
+  outsideRegionStyles: Partial<Record<OutsideCharmRegion, CSSProperties>>;
+  outsideRegionElements: MergedOutsideRegionElements;
   interactions: InteractionContribution[];
   runtimes: RuntimeContribution[];
 };

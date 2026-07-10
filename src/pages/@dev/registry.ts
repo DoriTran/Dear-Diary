@@ -2,6 +2,8 @@ import type { ComponentType } from 'react';
 
 import BrushHighlightDev from './brushhighlight';
 import DragDropSortableDev from './dragdropsortable';
+import TicketShapeDev from './ticketshape';
+import TicketShape2Dev from './ticketshape2';
 
 export type DevTestEntry = {
   key: string;
@@ -19,6 +21,16 @@ export const devTests: readonly DevTestEntry[] = [
     key: 'brushhighlight',
     displayName: 'BrushHighlight',
     component: BrushHighlightDev,
+  },
+  {
+    key: 'ticketshape',
+    displayName: 'Ticket Shape',
+    component: TicketShapeDev,
+  },
+  {
+    key: 'ticketshape2',
+    displayName: 'Ticket Shape 2 (ShapePath DSL)',
+    component: TicketShape2Dev,
   },
 ] as const;
 

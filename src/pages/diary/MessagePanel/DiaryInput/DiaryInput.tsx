@@ -132,17 +132,15 @@ const DiaryInput: FC<DiaryInputProps> = ({
             onAddFiles={handleAddFiles}
           />
 
-          <div className={styles.composerCard}>
-            <DecoratedSurface
-              draft={draft}
-              composing
-              borderless
-              updateDecorator={updateDecorator}
-              updateDraft={updateDraft}
-            >
-              {renderEditor()}
-            </DecoratedSurface>
-          </div>
+          <DecoratedSurface
+            draft={draft}
+            composing
+            borderless
+            updateDecorator={updateDecorator}
+            updateDraft={updateDraft}
+          >
+            {renderEditor()}
+          </DecoratedSurface>
         </div>
 
         <ActionDock

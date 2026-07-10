@@ -13,6 +13,7 @@ export const createTicketDecorator = (): MessageDecorator => ({
   type: 'ticket',
   state: 'todo',
   ticked: false,
+  placement: 'outside',
 });
 
 export const createTimerDecorator = (): MessageDecorator =>
