@@ -69,7 +69,7 @@ const DecoratedSurface: FC<DecoratedSurfaceProps> = ({
   );
 
   const content = (
-    <div className={surfaceClass}>
+    <div className={surfaceClass} data-decorated-surface-card>
       <ComposerSurface pipeline={pipeline} ctx={ctx} borderless={borderless}>
         {children}
       </ComposerSurface>
@@ -81,7 +81,7 @@ const DecoratedSurface: FC<DecoratedSurfaceProps> = ({
   }
 
   return (
-    <div className={styles.shell}>
+    <div className={styles.shell} data-decorated-shell>
       <div
         className={styles.outsideLeft}
         style={pipeline.outsideRegionStyles.left}

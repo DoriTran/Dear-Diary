@@ -1,3 +1,24 @@
+.column {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+
+.stub {
+  position: absolute;
+  left: 0;
+  right: 0;
+  pointer-events: none;
+}
+
+.svg {
+  position: absolute;
+  inset: 0;
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
 .tearWrap {
   position: relative;
   z-index: 1;
@@ -5,9 +26,17 @@
   align-items: center;
   justify-content: center;
   width: 100%;
-  padding: 0.5rem;
+  height: 100%;
   box-sizing: border-box;
   pointer-events: auto;
+}
+
+.tearWrapCompact {
+  padding: 0.15rem;
+}
+
+.tearWrapStandard {
+  padding: 0.5rem;
 }
 
 .tearBtn {
@@ -23,6 +52,11 @@
   color: color-mix(in srgb, var(--primary-dark) 85%, var(--text));
   cursor: pointer;
   text-align: center;
+  transform: translateX(6px);
+}
+
+.tearBtnCompact {
+  padding: 0.15rem;
 }
 
 .tearBtnDisabled {

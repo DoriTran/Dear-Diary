@@ -86,7 +86,12 @@ const ComposerSurface: FC<ComposerSurfaceProps> = ({
   const hasRight = Boolean(pipeline.regionElements.right?.length);
 
   return (
-    <div ref={containerRef} className={shellClass} style={containerStyle}>
+    <div
+      ref={containerRef}
+      className={shellClass}
+      style={containerStyle}
+      data-composer-surface
+    >
       {renderRegionElements(pipeline, 'header', ctx) ? (
         <div
           className={styles.headerRegion}
@@ -110,7 +115,7 @@ const ComposerSurface: FC<ComposerSurfaceProps> = ({
             </div>
           ) : null}
 
-          <div className={styles.variantEditor}>
+          <div className={styles.variantEditor} data-composer-variant-editor>
             {children}
             {renderRegionElements(pipeline, 'bottom', ctx)}
           </div>
