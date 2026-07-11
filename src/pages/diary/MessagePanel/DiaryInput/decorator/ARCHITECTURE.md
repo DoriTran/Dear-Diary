@@ -223,7 +223,7 @@ DecoratedSurface
 
 **Important:** Outside elements render as **direct children** of the outside region div (wrapped in `Fragment` only). There is no per-charm wrapper. Style contributions from all outside-left charms merge onto the shared `.outsideLeft` column.
 
-`TicketStub` sizes itself to the editor region height (via `useTicketEditorMetrics` observing `[data-composer-variant-editor]`) and vertically offsets to align with the input when a `top` region (e.g. timer) is present.
+`TicketStub` layout follows full composer surface height (`[data-composer-surface]`). Compact mode uses inner body height (`[data-composer-body]`) so dashed borders do not block the `< 40px` threshold; timer top region keeps body tall enough for standard mode.
 
 ---
 
@@ -282,11 +282,11 @@ Also add:
 | Charm ID | Contributions | Region | Placement | Notes |
 |----------|---------------|--------|-----------|-------|
 | `ticket-border` | styles | `container` | inside | Dashed border + background on composer surface root |
-| `ticket-stub` | styles + element | `left` | configurable | `TicketStub`: SVG path + tear button; editor-height sizing |
+| `ticket-stub` | styles + element | `left` | configurable | `TicketStub`: SVG path + tear button; full-surface sizing |
 
 Default placement: **`outside`** (`createTicketDecorator` + `getTicketPlacement`).
 
-**Compact mode** (editor height `< 40px`): single centered left notch, smaller corner radii (`compactBorderRadius: 6`), icon-only tear button. Standard mode uses a **vertically centered** multi-notch cluster (only adds notches when a symmetric group fits), `85px` stub width, and full tear label offset 6px right of center.
+**Compact mode** (body height `< 40px`, excluding container border): single centered left notch with smaller radius (`compactNotchRadius: 5`), smaller corner radii (`compactBorderRadius: 6`), icon-only tear button. Timer or multi-line input grows the body past the threshold → standard mode with vertically centered multi-notch cluster, `85px` stub width, and full tear label offset 6px right of center.
 
 ### Timer (`timer/`)
 
@@ -343,6 +343,6 @@ Prefer **multiple small charms** over one monolithic charm — the merge step co
 ## Known constraints and caveats
 
 - **Outside elements have no per-charm wrapper** — shared region styles affect all elements in that outside column.
-- **`TicketStub` tracks editor height**, not full column height — use `marginRight` on the outside-left column for gap to the input card (not `padding`, which does not inset absolutely positioned layers).
+- **`TicketStub` layout uses full composer surface height; compact uses body height** (`[data-composer-body]`) so borders do not inflate the threshold. Use `marginRight` on the outside-left column for gap to the input card.
 - **Outside top/right/bottom slots** exist in types and merge logic but are not yet rendered in `DecoratedSurface` (only `outsideLeft` is implemented).
 - **Interaction contributions** are wired in `ComposerSurface` but unused by any decorator.

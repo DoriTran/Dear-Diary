@@ -5,16 +5,10 @@ import type { TicketDecoratorConfig } from './ticket.config';
 export type TicketStubVariant = 'standard' | 'compact';
 
 function resolveNotchRadius(
-  height: number,
   config: TicketDecoratorConfig,
   variant: TicketStubVariant,
 ): number {
-  const base = config.notchRadius;
-  if (variant === 'standard') {
-    return base;
-  }
-
-  return Math.min(base, height * 0.35);
+  return variant === 'compact' ? config.compactNotchRadius : config.notchRadius;
 }
 
 function resolveBorderRadius(
@@ -102,7 +96,7 @@ export function buildTicketStubPath(
   variant: TicketStubVariant = 'standard',
 ): string {
   const br = resolveBorderRadius(config, variant);
-  const r = resolveNotchRadius(height, config, variant);
+  const r = resolveNotchRadius(config, variant);
   const path = new ShapePath({ width, height });
 
   path
@@ -122,10 +116,10 @@ export function buildTicketStubPath(
 }
 
 export function resolveTicketStubVariant(
-  editorHeight: number,
+  surfaceHeight: number,
   config: TicketDecoratorConfig,
 ): TicketStubVariant {
-  return editorHeight < config.compactHeightThreshold ? 'compact' : 'standard';
+  return surfaceHeight < config.compactHeightThreshold ? 'compact' : 'standard';
 }
 
 export function svgViewBoxAttr(
@@ -134,6 +128,6 @@ export function svgViewBoxAttr(
   config: TicketDecoratorConfig,
   variant: TicketStubVariant = 'standard',
 ): string {
-  const pad = resolveNotchRadius(height, config, variant);
+  const pad = resolveNotchRadius(config, variant);
   return `${-pad} 0 ${width + pad} ${height}`;
 }

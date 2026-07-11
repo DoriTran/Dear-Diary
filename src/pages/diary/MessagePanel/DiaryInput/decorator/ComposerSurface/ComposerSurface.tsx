@@ -101,7 +101,7 @@ const ComposerSurface: FC<ComposerSurfaceProps> = ({
         </div>
       ) : null}
 
-      <div className={styles.body}>
+      <div className={styles.body} data-composer-body>
         {hasLeft ? (
           <div className={styles.leftRegion} style={leftStyle}>
             {renderRegionElements(pipeline, 'left', ctx, true)}

@@ -5,7 +5,8 @@ import { resolveTicketStubVariant } from './ticket.shape';
 
 const SHELL_SELECTOR = '[data-decorated-shell]';
 const COMPOSER_SURFACE_SELECTOR = '[data-composer-surface]';
-const VARIANT_EDITOR_SELECTOR = '[data-composer-variant-editor]';
+const COMPOSER_BODY_SELECTOR = '[data-composer-body]';
+const SURFACE_CARD_SELECTOR = '[data-decorated-surface-card]';
 
 export type TicketEditorMetrics = {
   width: number;
@@ -21,21 +22,20 @@ const EMPTY_METRICS: TicketEditorMetrics = {
   isCompact: false,
 };
 
-function findVariantEditor(column: HTMLElement): HTMLElement | null {
+function findComposerInputSurface(column: HTMLElement): HTMLElement | null {
   const shell = column.closest(SHELL_SELECTOR);
   if (shell) {
-    const surfaceCard = shell.querySelector<HTMLElement>(
-      '[data-decorated-surface-card]',
-    );
+    const surfaceCard = shell.querySelector<HTMLElement>(SURFACE_CARD_SELECTOR);
     return (
-      surfaceCard?.querySelector<HTMLElement>(VARIANT_EDITOR_SELECTOR) ?? null
+      surfaceCard?.querySelector<HTMLElement>(COMPOSER_SURFACE_SELECTOR) ?? null
     );
   }
 
-  const composerSurface = column.closest(COMPOSER_SURFACE_SELECTOR);
-  return (
-    composerSurface?.querySelector<HTMLElement>(VARIANT_EDITOR_SELECTOR) ?? null
-  );
+  return column.closest(COMPOSER_SURFACE_SELECTOR);
+}
+
+function findComposerBody(inputSurface: HTMLElement): HTMLElement | null {
+  return inputSurface.querySelector<HTMLElement>(COMPOSER_BODY_SELECTOR);
 }
 
 export function useTicketEditorMetrics(
@@ -55,35 +55,43 @@ export function useTicketEditorMetrics(
         return;
       }
 
-      const editor = findVariantEditor(currentColumn);
-      if (!editor) {
+      const inputSurface = findComposerInputSurface(currentColumn);
+      if (!inputSurface) {
         setMetrics(EMPTY_METRICS);
         return;
       }
 
+      const composerBody = findComposerBody(inputSurface);
       const columnRect = currentColumn.getBoundingClientRect();
-      const editorRect = editor.getBoundingClientRect();
-      const height = Math.round(editorRect.height);
+      const inputRect = inputSurface.getBoundingClientRect();
+      const height = Math.round(inputRect.height);
       const width = Math.round(columnRect.width);
-      const topOffset = Math.round(editorRect.top - columnRect.top);
+      const topOffset = Math.round(inputRect.top - columnRect.top);
+      const bodyHeight = composerBody
+        ? Math.round(composerBody.getBoundingClientRect().height)
+        : height;
 
       setMetrics({
         width,
         height,
         topOffset,
         isCompact:
-          resolveTicketStubVariant(height, TICKET_DECORATOR_CONFIG) ===
+          resolveTicketStubVariant(bodyHeight, TICKET_DECORATOR_CONFIG) ===
           'compact',
       });
     };
 
     measure();
 
-    const editor = findVariantEditor(column);
+    const inputSurface = findComposerInputSurface(column);
+    const composerBody = inputSurface ? findComposerBody(inputSurface) : null;
     const observer = new ResizeObserver(measure);
     observer.observe(column);
-    if (editor) {
-      observer.observe(editor);
+    if (inputSurface) {
+      observer.observe(inputSurface);
+    }
+    if (composerBody) {
+      observer.observe(composerBody);
     }
 
     window.addEventListener('scroll', measure, true);

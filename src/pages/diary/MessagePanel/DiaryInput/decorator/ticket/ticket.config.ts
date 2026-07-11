@@ -1,5 +1,6 @@
 export type TicketDecoratorConfig = {
   notchRadius: number;
+  compactNotchRadius: number;
   notchSpacing: number;
   borderRadius: number;
   compactBorderRadius: number;
@@ -9,6 +10,7 @@ export type TicketDecoratorConfig = {
 
 export const TICKET_DECORATOR_CONFIG: TicketDecoratorConfig = {
   notchRadius: 10,
+  compactNotchRadius: 5,
   notchSpacing: 28,
   borderRadius: 14,
   compactBorderRadius: 6,

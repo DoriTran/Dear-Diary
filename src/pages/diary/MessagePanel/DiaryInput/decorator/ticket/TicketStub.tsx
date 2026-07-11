@@ -11,11 +11,7 @@ import {
   TICKET_DECORATOR_STROKE,
   TICKET_DECORATOR_STROKE_WIDTH,
 } from './ticket.config';
-import {
-  buildTicketStubPath,
-  resolveTicketStubVariant,
-  svgViewBoxAttr,
-} from './ticket.shape';
+import { buildTicketStubPath, svgViewBoxAttr } from './ticket.shape';
 import styles from './TicketStub.module.css';
 import { useTicketEditorMetrics } from './useTicketEditorMetrics';
 
@@ -37,7 +33,7 @@ const TicketStub: FC<TicketStubProps> = ({ decoratorIndex, ctx }) => {
   const isDone = decoration.state === 'done';
   const disabled = ctx.composing;
   const config = TICKET_DECORATOR_CONFIG;
-  const variant = resolveTicketStubVariant(height, config);
+  const variant = isCompact ? 'compact' : 'standard';
   const path =
     width > 0 && height > 0
       ? buildTicketStubPath(width, height, config, variant)
