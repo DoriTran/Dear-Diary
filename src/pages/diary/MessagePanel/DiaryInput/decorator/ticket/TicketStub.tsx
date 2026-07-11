@@ -1,6 +1,5 @@
-import { useRef, type FC } from 'react';
-
 import { faCheck } from '@fortawesome/free-solid-svg-icons';
+import { useRef, type FC } from 'react';
 
 import { AdIcon } from '@/packages/base';
 
@@ -44,16 +43,19 @@ const TicketStub: FC<TicketStubProps> = ({ decoratorIndex, ctx }) => {
       ? buildTicketStubPath(width, height, config, variant)
       : '';
   const viewBox =
-    width > 0 && height > 0 ? svgViewBoxAttr(width, height, config, variant) : '0 0 0 0';
+    width > 0 && height > 0
+      ? svgViewBoxAttr(width, height, config, variant)
+      : '0 0 0 0';
 
   return (
     <div ref={columnRef} className={styles.column} aria-hidden={height <= 0}>
       {width > 0 && height > 0 ? (
-        <div
-          className={styles.stub}
-          style={{ top: topOffset, height }}
-        >
-          <svg className={styles.svg} viewBox={viewBox} preserveAspectRatio="none">
+        <div className={styles.stub} style={{ top: topOffset, height }}>
+          <svg
+            className={styles.svg}
+            viewBox={viewBox}
+            preserveAspectRatio="none"
+          >
             <path
               d={path}
               fill={TICKET_DECORATOR_FILL}

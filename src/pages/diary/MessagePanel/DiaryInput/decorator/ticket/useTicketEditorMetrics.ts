@@ -27,11 +27,15 @@ function findVariantEditor(column: HTMLElement): HTMLElement | null {
     const surfaceCard = shell.querySelector<HTMLElement>(
       '[data-decorated-surface-card]',
     );
-    return surfaceCard?.querySelector<HTMLElement>(VARIANT_EDITOR_SELECTOR) ?? null;
+    return (
+      surfaceCard?.querySelector<HTMLElement>(VARIANT_EDITOR_SELECTOR) ?? null
+    );
   }
 
   const composerSurface = column.closest(COMPOSER_SURFACE_SELECTOR);
-  return composerSurface?.querySelector<HTMLElement>(VARIANT_EDITOR_SELECTOR) ?? null;
+  return (
+    composerSurface?.querySelector<HTMLElement>(VARIANT_EDITOR_SELECTOR) ?? null
+  );
 }
 
 export function useTicketEditorMetrics(

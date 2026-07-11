@@ -32,9 +32,7 @@ export const createTicketStubCharm = (
     {
       region: 'left',
       order: 0,
-      render: (ctx) => (
-        <TicketStub decoratorIndex={decoratorIndex} ctx={ctx} />
-      ),
+      render: (ctx) => <TicketStub decoratorIndex={decoratorIndex} ctx={ctx} />,
     },
   ],
 });

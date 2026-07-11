@@ -1,10 +1,4 @@
-import {
-  BL,
-  BR,
-  ShapePath,
-  TL,
-  TR,
-} from '@/packages/shape';
+import { BL, BR, ShapePath, TL, TR } from '@/packages/shape';
 
 import type { TicketDecoratorConfig } from './ticket.config';
 
@@ -86,12 +80,7 @@ function appendLeftNotches(
     return;
   }
 
-  const notchCenters = computeCenteredNotchCenters(
-    height,
-    notchSpacing,
-    r,
-    br,
-  );
+  const notchCenters = computeCenteredNotchCenters(height, notchSpacing, r, br);
 
   for (let i = notchCenters.length - 1; i >= 0; i -= 1) {
     const cy = notchCenters[i];
