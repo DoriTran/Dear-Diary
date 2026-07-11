@@ -1,5 +1,7 @@
 import type { FC } from 'react';
 
+import clsx from 'clsx';
+
 import type { TimerMode } from '@/store/diary/type';
 
 import { AdSelect } from '@/packages/base';
@@ -32,7 +34,9 @@ const TimerModeSelect: FC<TimerModeSelectProps> = ({ decoratorIndex, ctx }) => {
     <AdSelect
       data={MODE_OPTIONS}
       value={timer.mode}
-      className={styles.modeSelect}
+      classNames={{
+        input: clsx(styles.composerPill, styles.modeSelect),
+      }}
       onChange={(value) => {
         if (!value) {
           return;

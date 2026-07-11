@@ -4,15 +4,11 @@ import { faStopwatch } from '@fortawesome/free-solid-svg-icons';
 
 import type { TimerDecorator } from '@/store/diary/type';
 
-import { AdDurationPicker, AdIcon, AdInput } from '@/packages/base';
+import { AdDurationPicker, AdIcon } from '@/packages/base';
 
 import type { ComposerContext } from '../charms/charm.types';
 
-import {
-  durationMsToParts,
-  getTimerDisplayText,
-  partsToDurationMs,
-} from './timer.utils';
+import { getTimerDisplayText } from './timer.utils';
 import styles from './timerCharms.module.css';
 
 type TimerModeTimerProps = {
@@ -34,38 +30,17 @@ const TimerModeTimer: FC<TimerModeTimerProps> = ({
   };
 
   if (composing) {
-    const parts = durationMsToParts(timer.durationMs);
-
     return (
       <div className={styles.modePanel}>
         <AdIcon icon={faStopwatch} size={18} />
-        <div className={styles.durationEditor}>
-          <AdInput
-            type="number"
-            min={0}
-            className={styles.daysInput}
-            value={parts.days}
-            aria-label="Days"
-            onChange={(event) => {
-              const days = Math.max(0, Number(event.target.value) || 0);
-              update({
-                ...timer,
-                durationMs: partsToDurationMs({ days, time: parts.time }),
-              });
-            }}
-          />
-          <span className={styles.daysLabel}>d</span>
-          <AdDurationPicker
-            compact
-            value={parts.time}
-            onChange={(time) => {
-              update({
-                ...timer,
-                durationMs: partsToDurationMs({ days: parts.days, time }),
-              });
-            }}
-          />
-        </div>
+        <AdDurationPicker
+          className={styles.composerPill}
+          compact
+          valueMs={timer.durationMs}
+          onChange={(durationMs) => {
+            update({ ...timer, durationMs });
+          }}
+        />
       </div>
     );
   }

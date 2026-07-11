@@ -1,12 +1,141 @@
+.shell {
+  display: inline-flex;
+  align-items: center;
+  width: fit-content;
+  flex-shrink: 0;
+  box-sizing: border-box;
+  height: 2.75rem;
+  padding: 0 16px;
+  border: 1px solid rgba(0, 0, 0, 0.1);
+  border-radius: 12px;
+  background: var(--surface);
+  font-size: var(--font-sm);
+  line-height: 1;
+}
+
 .root {
-  min-width: 10rem;
+  width: fit-content;
+  min-width: 0;
+  height: 100%;
+}
+
+.inline {
+  width: fit-content;
+  min-width: 0;
+  height: 100%;
 }
 
 .compact {
-  min-width: 8rem;
+  min-width: 0;
 }
 
-.compact :global(.mantine-Input-input) {
+.wrapper {
+  width: fit-content;
+  height: 100%;
+}
+
+.input {
+  display: inline-flex;
+  align-items: center;
+  width: fit-content;
+  min-width: 0;
+  height: 100%;
+  min-height: 0;
+  padding: 0;
+  border: none;
+  background: transparent;
+  box-shadow: none;
+  font-family: inherit;
+  font-size: inherit;
+  font-variant-numeric: tabular-nums;
+  color: var(--text);
+  line-height: 1;
+  cursor: pointer;
+}
+
+.shell :global(.mantine-DateTimePicker-root),
+.shell :global(.mantine-Input-wrapper),
+.shell :global(.mantine-Popover-target) {
+  width: fit-content;
+  height: 100%;
+}
+
+.section {
+  width: auto;
+  padding: 0;
+  color: var(--text-muted);
+}
+
+.dropdown {
+  border: 1px solid var(--field-border);
+  border-radius: var(--radius-md);
+  background: var(--surface);
+  box-shadow: var(--shadow-md);
+}
+
+.dropdown :global(.mantine-focus-auto:focus-visible) {
+  outline: 2px solid var(--primary);
+  outline-offset: 2px;
+}
+
+.day[data-selected],
+.pickerControl[data-selected],
+.dropdown :global([data-picker-control][data-selected]) {
+  background: var(--field-bg-selected);
+  color: var(--primary-dark);
+}
+
+@media (hover: hover) {
+  .day:hover:where(:not([data-static], [data-disabled], [data-selected], [data-in-range])),
+  .pickerControl:hover:where(:not([data-disabled], [data-selected], [data-in-range])),
+  .dropdown
+    :global([data-picker-control]:hover:not([data-disabled], [data-selected], [data-in-range])) {
+    background: var(--field-bg-hover);
+  }
+
+  .day[data-selected]:hover:where(:not([data-disabled], [data-static])),
+  .pickerControl[data-selected]:hover:where(:not([data-disabled])),
+  .dropdown :global([data-picker-control][data-selected]:hover:not([data-disabled])) {
+    background: var(--field-bg-hover-strong);
+    color: var(--primary-dark);
+  }
+}
+
+.timeField:focus {
+  background: var(--field-bg-selected);
+  color: var(--primary-dark);
+  outline: 0;
+}
+
+.timeField::selection {
+  background-color: transparent;
+}
+
+.timePickerInput:focus-within {
+  --input-bd: var(--field-border-focus);
+  --input-bd-focus: var(--field-border-focus);
+  box-shadow: var(--field-ring);
+}
+
+.submitButton {
+  --ai-radius: var(--radius-xs);
+  --ai-bg: var(--field-bg);
+  --ai-hover: var(--field-bg-selected);
+  --ai-color: var(--primary);
+  --ai-hover-color: var(--primary-dark);
+  --ai-bd: 1px solid var(--field-border);
+}
+
+.submitButton:hover {
+  --ai-bd: 1px solid var(--field-border-hover);
+}
+
+.submitButton:focus-visible {
+  --ai-bd: 1px solid var(--field-border-focus);
+  box-shadow: var(--field-ring);
+  outline: 0;
+}
+
+.compact .input {
   font-size: var(--font-sm);
-  padding: 0.2rem 0.4rem;
 }

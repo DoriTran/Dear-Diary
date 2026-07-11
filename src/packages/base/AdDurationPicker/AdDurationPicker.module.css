@@ -1,5 +1,71 @@
+.shell {
+  display: inline-flex;
+  align-items: center;
+  flex-shrink: 0;
+  box-sizing: border-box;
+  height: 2.75rem;
+  padding: 0 16px;
+  border: 1px solid rgba(0, 0, 0, 0.1);
+  border-radius: 12px;
+  background: var(--surface);
+  font-size: var(--font-sm);
+  font-variant-numeric: tabular-nums;
+  line-height: 1;
+}
+
+.durationRow {
+  display: inline-flex;
+  align-items: center;
+  height: 100%;
+  gap: 0;
+  line-height: 1;
+}
+
+.daysSegment {
+  display: inline-flex;
+  align-items: center;
+  flex-shrink: 0;
+  gap: 0;
+  margin-right: 0.35rem;
+}
+
+.unitSuffix {
+  flex-shrink: 0;
+  margin-left: 1px;
+  color: var(--text-soft);
+  font-size: inherit;
+  line-height: 1;
+  user-select: none;
+}
+
+.timeSegment {
+  display: inline-flex;
+  width: fit-content;
+  flex-shrink: 0;
+}
+
+.timeSegment .pickerRoot,
+.timeSegment .wrapper,
+.timeSegment .input,
+.timeSegment .fieldsRoot,
+.timeSegment .fieldsGroup {
+  width: fit-content;
+}
+
+.timeSegment :global(.mantine-TimePicker-root),
+.timeSegment :global(.mantine-Input-wrapper),
+.timeSegment :global(.mantine-TimePicker-input) {
+  width: fit-content;
+}
+
+.pickerRoot {
+  display: inline-flex;
+  align-items: center;
+  width: auto;
+}
+
 .root {
-  min-width: 7rem;
+  min-width: 0;
 }
 
 .inline {
@@ -11,8 +77,14 @@
   min-width: 0;
 }
 
-.pickerRoot {
-  width: auto;
+.compactGroup {
+  font-size: var(--font-sm);
+}
+
+.separator {
+  color: var(--text);
+  line-height: 1;
+  user-select: none;
 }
 
 .wrapper {
@@ -41,11 +113,20 @@
   height: auto;
 }
 
+.shell :global(.mantine-TimePicker-fieldsGroup),
+.shell :global(.mantine-TimePicker-fieldsRoot),
+.shell :global(.mantine-TimePicker-input) {
+  height: auto;
+  min-height: 0;
+}
+
 .field {
   width: calc(2ch + 0.3em);
+  height: auto;
   caret-color: transparent;
   font-family: inherit;
   font-variant-numeric: tabular-nums;
+  line-height: 1;
   color: var(--text);
   background: transparent;
   border: 0;
@@ -54,6 +135,19 @@
   text-align: center;
   text-align-last: center;
   appearance: none;
+}
+
+.field.daysField {
+  width: auto;
+  min-width: 1ch;
+  padding-inline: 0;
+  caret-color: auto;
+  text-align: right;
+  text-align-last: right;
+}
+
+.minutesField {
+  caret-color: auto;
 }
 
 .field::selection {

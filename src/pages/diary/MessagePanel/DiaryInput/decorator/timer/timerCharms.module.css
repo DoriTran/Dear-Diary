@@ -15,33 +15,33 @@
   line-height: 1;
 }
 
-.durationEditor {
-  display: flex;
+.composerPill {
+  display: inline-flex;
   align-items: center;
-  gap: 0.5rem;
-  flex-wrap: wrap;
-  min-width: 0;
-}
-
-.daysInput {
-  width: 2.5rem;
-  padding: 0.15rem 0.3rem;
-  font-size: var(--font-sm);
-  text-align: center;
-}
-
-.daysLabel {
-  font-size: var(--font-xs);
-  color: var(--text-soft);
-}
-
-.modeSelect {
   flex-shrink: 0;
-  min-width: 7rem;
-  padding: 12px 16px;
+  box-sizing: border-box;
+  height: 2.75rem;
+  padding: 0 16px;
   border: 1px solid rgba(0, 0, 0, 0.1);
   border-radius: 12px;
   background: var(--surface);
+  font-size: var(--font-sm);
+  line-height: 1;
+}
+
+.modeSelect {
+  min-width: 7rem;
+  width: auto;
+}
+
+.modeSelect.modeSelect {
+  height: 2.75rem;
+  min-height: 0;
+  padding: 0 16px;
+  border: 1px solid rgba(0, 0, 0, 0.1);
+  border-radius: 12px;
+  background: var(--surface);
+  box-shadow: none;
 }
 
 .controls {

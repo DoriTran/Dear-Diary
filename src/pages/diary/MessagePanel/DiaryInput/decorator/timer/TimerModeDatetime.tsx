@@ -35,6 +35,7 @@ const TimerModeDatetime: FC<TimerModeDatetimeProps> = ({
         <AdIcon icon={faStopwatch} size={18} />
         <AdDateTimePicker
           compact
+          className={styles.composerPill}
           value={timer.targetDate}
           onChange={(value) => {
             if (!value) {
