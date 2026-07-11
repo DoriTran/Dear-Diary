@@ -292,12 +292,15 @@ Default placement: **`outside`** (`createTicketDecorator` + `getTicketPlacement`
 
 | Charm ID | Contributions | Region | Notes |
 |----------|---------------|--------|-------|
-| `timer-display` | styles + element | `top` | Countdown display bar |
-| `timer-mode` | element | `top` | Mode selector |
-| `timer-controls` | element | `top` | Play / pause / reset |
+| `timer-top-layout` | styles | `top` | Shared top bar chrome (flex row, padding, min-height) |
+| `timer-mode-timer` | element | `top` | Timer duration editor / countdown; renders when `mode === 'timer'` |
+| `timer-mode-countup` | element | `top` | Countup display; renders when `mode === 'countup'` |
+| `timer-mode-datetime` | element | `top` | Datetime picker / display; renders when `mode === 'datetime'` |
+| `timer-mode` | element | `top` | Mode selector (Timer / Countup / Datetime) |
+| `timer-controls` | element | `top` | Play / pause / reset; disabled while composing |
 | `timer-runtime` | runtime | `overlay` | Ticks while running |
 
-All timer charms use default **`inside`** placement.
+All timer charms use default **`inside`** placement. Top row order: active mode panel → selector → controls.
 
 ---
 

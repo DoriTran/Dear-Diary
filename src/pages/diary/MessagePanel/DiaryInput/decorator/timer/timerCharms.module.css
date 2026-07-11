@@ -1,16 +1,10 @@
-.displayRow {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  min-width: 0;
-}
-
-.displayRowEditing {
+.modePanel {
   display: flex;
   align-items: center;
   gap: 12px;
   flex: 1;
   min-width: 0;
+  min-height: 40px;
 }
 
 .displayText {
@@ -26,6 +20,7 @@
   align-items: center;
   gap: 0.5rem;
   flex-wrap: wrap;
+  min-width: 0;
 }
 
 .daysInput {
@@ -41,7 +36,8 @@
 }
 
 .modeSelect {
-  min-width: 180px;
+  flex-shrink: 0;
+  min-width: 7rem;
   padding: 12px 16px;
   border: 1px solid rgba(0, 0, 0, 0.1);
   border-radius: 12px;
@@ -50,6 +46,7 @@
 
 .controls {
   display: flex;
+  flex-shrink: 0;
   gap: 12px;
   margin-left: auto;
 }
@@ -68,7 +65,12 @@
   transition: all 0.2s ease;
 }
 
-.controlBtn:hover {
+.controlBtn:hover:not(:disabled) {
   transform: scale(1.05);
   box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
+}
+
+.controlBtnDisabled {
+  cursor: not-allowed;
+  opacity: 0.55;
 }

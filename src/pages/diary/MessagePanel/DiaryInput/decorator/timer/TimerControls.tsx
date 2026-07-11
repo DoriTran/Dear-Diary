@@ -17,31 +17,36 @@ type TimerControlsProps = {
 };
 
 const TimerControls: FC<TimerControlsProps> = ({ ctx }) => {
+  const disabled = ctx.composing;
+
   return (
     <div className={styles.controls}>
       <button
         type="button"
-        className={styles.controlBtn}
+        className={`${styles.controlBtn} ${disabled ? styles.controlBtnDisabled : ''}`}
         aria-label="Play timer"
+        disabled={disabled}
         onClick={() => ctx.emit({ decorator: 'timer', action: 'play' })}
       >
-        <AdIcon icon={faPlay} size={10} />
+        <AdIcon icon={faPlay} size={18} />
       </button>
       <button
         type="button"
-        className={styles.controlBtn}
+        className={`${styles.controlBtn} ${disabled ? styles.controlBtnDisabled : ''}`}
         aria-label="Pause timer"
+        disabled={disabled}
         onClick={() => ctx.emit({ decorator: 'timer', action: 'pause' })}
       >
-        <AdIcon icon={faPause} size={10} />
+        <AdIcon icon={faPause} size={18} />
       </button>
       <button
         type="button"
-        className={styles.controlBtn}
+        className={`${styles.controlBtn} ${disabled ? styles.controlBtnDisabled : ''}`}
         aria-label="Reset timer"
+        disabled={disabled}
         onClick={() => ctx.emit({ decorator: 'timer', action: 'reset' })}
       >
-        <AdIcon icon={faRotateLeft} size={10} />
+        <AdIcon icon={faRotateLeft} size={18} />
       </button>
     </div>
   );

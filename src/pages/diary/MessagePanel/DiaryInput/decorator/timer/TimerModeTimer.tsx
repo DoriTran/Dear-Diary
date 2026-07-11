@@ -4,12 +4,7 @@ import { faStopwatch } from '@fortawesome/free-solid-svg-icons';
 
 import type { TimerDecorator } from '@/store/diary/type';
 
-import {
-  AdDateTimePicker,
-  AdDurationPicker,
-  AdIcon,
-  AdInput,
-} from '@/packages/base';
+import { AdDurationPicker, AdIcon, AdInput } from '@/packages/base';
 
 import type { ComposerContext } from '../charms/charm.types';
 
@@ -20,13 +15,13 @@ import {
 } from './timer.utils';
 import styles from './timerCharms.module.css';
 
-type TimerDisplayProps = {
+type TimerModeTimerProps = {
   decoration: TimerDecorator;
   decoratorIndex: number;
   ctx: ComposerContext;
 };
 
-const TimerDisplay: FC<TimerDisplayProps> = ({
+const TimerModeTimer: FC<TimerModeTimerProps> = ({
   decoration,
   decoratorIndex,
   ctx,
@@ -38,12 +33,12 @@ const TimerDisplay: FC<TimerDisplayProps> = ({
     updateDecorator(decoratorIndex, next);
   };
 
-  if (composing && timer.mode === 'timer') {
+  if (composing) {
     const parts = durationMsToParts(timer.durationMs);
 
     return (
-      <div className={styles.displayRowEditing}>
-        <AdIcon icon={faStopwatch} size={14} />
+      <div className={styles.modePanel}>
+        <AdIcon icon={faStopwatch} size={18} />
         <div className={styles.durationEditor}>
           <AdInput
             type="number"
@@ -75,38 +70,12 @@ const TimerDisplay: FC<TimerDisplayProps> = ({
     );
   }
 
-  if (composing && timer.mode === 'datetime') {
-    return (
-      <div className={styles.displayRowEditing}>
-        <AdIcon icon={faStopwatch} size={14} />
-        <AdDateTimePicker
-          compact
-          value={timer.targetDate}
-          onChange={(value) => {
-            if (!value) {
-              return;
-            }
-
-            update({
-              ...timer,
-              targetDate: new Date(value).toISOString(),
-            });
-          }}
-        />
-      </div>
-    );
-  }
-
   return (
-    <div className={styles.displayRow}>
+    <div className={styles.modePanel}>
       <AdIcon icon={faStopwatch} size={18} />
-      <span className={styles.displayText}>
-        {composing && timer.mode === 'countup'
-          ? '00:00'
-          : getTimerDisplayText(timer)}
-      </span>
+      <span className={styles.displayText}>{getTimerDisplayText(timer)}</span>
     </div>
   );
 };
 
-export default TimerDisplay;
+export default TimerModeTimer;

@@ -6,7 +6,6 @@ import type {
 } from '../charms/charm.types';
 
 import { findDecoratorIndex } from '../charms/decoratorIndex';
-import { createDisplayCharm } from './displayCharm';
 import { createRuntimeCharm } from './RuntimeCharm';
 import {
   isTimerDecorator,
@@ -16,6 +15,10 @@ import {
 } from './timer.utils';
 import { createControlsCharm } from './timerControlsCharm';
 import { createModeCharm } from './timerModeCharm';
+import { createTimerModeCountupCharm } from './timerModeCountupCharm';
+import { createTimerModeDatetimeCharm } from './timerModeDatetimeCharm';
+import { createTimerModeTimerCharm } from './timerModeTimerCharm';
+import { createTimerTopLayoutCharm } from './timerTopLayoutCharm';
 
 const handleTimerEvent = (
   ctx: ComposerContext,
@@ -44,7 +47,10 @@ const handleTimerEvent = (
 
 export const timerDecorator: DecoratorDefinition = {
   createCharms: (_decoration, decoratorIndex) => [
-    createDisplayCharm(decoratorIndex),
+    createTimerTopLayoutCharm(),
+    createTimerModeTimerCharm(decoratorIndex),
+    createTimerModeCountupCharm(decoratorIndex),
+    createTimerModeDatetimeCharm(decoratorIndex),
     createModeCharm(decoratorIndex),
     createControlsCharm(),
     createRuntimeCharm(),
