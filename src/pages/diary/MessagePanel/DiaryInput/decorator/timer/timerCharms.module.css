@@ -8,8 +8,16 @@
 }
 
 .displayText {
-  font-size: 36px;
+  font-size: 28px;
   font-weight: 700;
+  color: var(--primary);
+  font-variant-numeric: tabular-nums;
+  line-height: 1;
+}
+
+.composerStatusText {
+  font-size: var(--font-sm);
+  font-weight: 600;
   color: var(--primary);
   font-variant-numeric: tabular-nums;
   line-height: 1;
@@ -55,8 +63,8 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 52px;
-  height: 52px;
+  width: 2.75rem;
+  height: 2.75rem;
   border: 1px solid rgba(0, 0, 0, 0.08);
   border-radius: 50%;
   color: var(--primary);

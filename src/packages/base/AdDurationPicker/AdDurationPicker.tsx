@@ -127,7 +127,7 @@ const AdDurationPicker: FC<AdDurationPickerProps> = ({
               popoverProps={{
                 withinPortal: true,
                 position: 'bottom',
-                offset: { mainAxis: 8, crossAxis: crossAxisOffset },
+                offset: { mainAxis: 0, crossAxis: crossAxisOffset },
                 middlewares: { shift: false },
               }}
               onChange={(time) => {

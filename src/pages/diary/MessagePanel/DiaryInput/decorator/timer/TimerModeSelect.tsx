@@ -23,6 +23,10 @@ type TimerModeSelectProps = {
 };
 
 const TimerModeSelect: FC<TimerModeSelectProps> = ({ decoratorIndex, ctx }) => {
+  if (!ctx.composing) {
+    return null;
+  }
+
   const decoration = ctx.decorators[decoratorIndex];
   if (!decoration || decoration.type !== 'timer') {
     return null;

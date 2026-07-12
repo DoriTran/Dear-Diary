@@ -54,7 +54,7 @@ const TimerModeDatetime: FC<TimerModeDatetimeProps> = ({
 
   return (
     <div className={styles.modePanel}>
-      <AdIcon icon={faStopwatch} size={18} />
+      <AdIcon icon={faStopwatch} size={28} />
       <span className={styles.displayText}>{getTimerDisplayText(timer)}</span>
     </div>
   );

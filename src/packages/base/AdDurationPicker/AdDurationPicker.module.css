@@ -22,19 +22,20 @@
 }
 
 .daysSegment {
-  display: inline-flex;
-  align-items: center;
+  display: inline;
   flex-shrink: 0;
-  gap: 0;
   margin-right: 0.35rem;
+  white-space: nowrap;
+  line-height: 1;
 }
 
 .unitSuffix {
-  flex-shrink: 0;
   margin-left: 1px;
   color: var(--text-soft);
   font-size: inherit;
+  font-variant-numeric: tabular-nums;
   line-height: 1;
+  vertical-align: baseline;
   user-select: none;
 }
 
@@ -125,19 +126,24 @@
   height: auto;
   caret-color: transparent;
   font-family: inherit;
+  font-size: inherit;
   font-variant-numeric: tabular-nums;
   line-height: 1;
   color: var(--text);
   background: transparent;
   border: 0;
   border-radius: 2px;
+  margin: 0;
+  padding-block: 0;
   padding-inline: 0.15em;
   text-align: center;
   text-align-last: center;
+  vertical-align: baseline;
   appearance: none;
 }
 
 .field.daysField {
+  display: inline;
   width: auto;
   min-width: 1ch;
   padding-inline: 0;

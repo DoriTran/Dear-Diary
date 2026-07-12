@@ -85,6 +85,7 @@ const AdSelectSingle: FC<AdSelectSingleProps> = ({
       }}
       disabled={disabled}
       withinPortal
+      offset={0}
     >
       <Combobox.Target>
         <Input.Wrapper

@@ -185,6 +185,7 @@ const AdSelectMultiple: FC<AdSelectMultipleProps> = ({
       onOptionSubmit={handleOptionSubmit}
       disabled={disabled}
       withinPortal
+      offset={0}
     >
       <Combobox.DropdownTarget>
         <Input.Wrapper

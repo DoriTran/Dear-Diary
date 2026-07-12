@@ -28,7 +28,7 @@ const TimerControls: FC<TimerControlsProps> = ({ ctx }) => {
         disabled={disabled}
         onClick={() => ctx.emit({ decorator: 'timer', action: 'play' })}
       >
-        <AdIcon icon={faPlay} size={18} />
+        <AdIcon icon={faPlay} size={16} />
       </button>
       <button
         type="button"
@@ -37,7 +37,7 @@ const TimerControls: FC<TimerControlsProps> = ({ ctx }) => {
         disabled={disabled}
         onClick={() => ctx.emit({ decorator: 'timer', action: 'pause' })}
       >
-        <AdIcon icon={faPause} size={18} />
+        <AdIcon icon={faPause} size={16} />
       </button>
       <button
         type="button"
@@ -46,7 +46,7 @@ const TimerControls: FC<TimerControlsProps> = ({ ctx }) => {
         disabled={disabled}
         onClick={() => ctx.emit({ decorator: 'timer', action: 'reset' })}
       >
-        <AdIcon icon={faRotateLeft} size={18} />
+        <AdIcon icon={faRotateLeft} size={16} />
       </button>
     </div>
   );
