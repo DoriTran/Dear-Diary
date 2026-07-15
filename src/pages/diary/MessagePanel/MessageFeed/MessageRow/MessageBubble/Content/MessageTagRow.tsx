@@ -20,7 +20,6 @@ const MessageTagRow: FC<MessageTagRowProps> = ({ tagIds }) => {
         display: 'flex',
         flexWrap: 'wrap',
         gap: '0.25rem',
-        marginTop: '0.35rem',
       }}
     >
       {tagIds.map((tagId) => {

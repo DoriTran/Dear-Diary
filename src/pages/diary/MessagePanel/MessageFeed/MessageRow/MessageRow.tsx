@@ -31,18 +31,18 @@ const MessageRow: FC<MessageRowProps> = ({ message, registerRef, actions }) => {
       data-assistant={isAssistant || undefined}
       data-message-id={message.id}
     >
-      <HoverActions
+      <MessageBubble
         message={message}
-        actions={actions}
-        side={isAssistant ? 'left' : 'right'}
-        className={styles.hoverActions}
+        onNavigateToMessage={actions.navigateToMessage}
+        hoverActions={
+          <HoverActions
+            message={message}
+            actions={actions}
+            side={isAssistant ? 'left' : 'right'}
+            className={styles.hoverActions}
+          />
+        }
       />
-      <div className={styles.bubbleWrap}>
-        <MessageBubble
-          message={message}
-          onNavigateToMessage={actions.navigateToMessage}
-        />
-      </div>
     </article>
   );
 };

@@ -11,12 +11,14 @@ const { DecoratedSurface } = decorator;
 export type MessageDecoratorShellProps = {
   messageId: string;
   decorators: MessageDecorator[];
+  attached?: boolean;
   children: ReactNode;
 };
 
 const MessageDecoratorShell: FC<MessageDecoratorShellProps> = ({
   messageId,
   decorators,
+  attached = false,
   children,
 }) => {
   const updateMessage = useDiaryStore('updateMessage');
@@ -52,6 +54,7 @@ const MessageDecoratorShell: FC<MessageDecoratorShellProps> = ({
     <DecoratedSurface
       draft={{ ...input.createInitialDraft(), decorators }}
       composing={false}
+      attached={attached}
       updateDecorator={updateDecorator}
       updateDraft={updateDraft}
     >

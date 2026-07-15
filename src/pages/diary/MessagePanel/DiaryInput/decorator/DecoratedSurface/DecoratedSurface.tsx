@@ -19,6 +19,8 @@ export type DecoratedSurfaceProps = {
   draft: ComposerDraft;
   composing: boolean;
   borderless?: boolean;
+  /** Feed: shrink top-right radius when attachments sit above the body. */
+  attached?: boolean;
   children: ReactNode;
   updateDecorator: (index: number, decoration: MessageDecorator) => void;
   updateDraft: (updater: (draft: ComposerDraft) => ComposerDraft) => void;
@@ -45,6 +47,7 @@ const DecoratedSurface: FC<DecoratedSurfaceProps> = ({
   draft,
   composing,
   borderless = false,
+  attached = false,
   children,
   updateDecorator,
   updateDraft,
@@ -65,7 +68,8 @@ const DecoratedSurface: FC<DecoratedSurfaceProps> = ({
   });
 
   const surfaceClass = clsx(
-    composing ? styles.surfaceCard : styles.surfacePassThrough,
+    composing ? styles.surfaceCard : styles.surfaceFeed,
+    !composing && attached && styles.surfaceFeedAttached,
   );
 
   const content = (

@@ -1,7 +1,8 @@
-import { useCallback, useRef } from 'react';
+import { useCallback, useRef, type RefObject } from 'react';
 
 export const useMessageScroll = () => {
   const refs = useRef(new Map<string, HTMLElement>());
+  const feedRef = useRef<HTMLDivElement | null>(null);
 
   const registerRef = useCallback(
     (messageId: string, element: HTMLElement | null) => {
@@ -31,7 +32,23 @@ export const useMessageScroll = () => {
     return true;
   }, []);
 
-  return { registerRef, scrollToMessage };
+  const scrollToBottom = useCallback(() => {
+    const feed = feedRef.current;
+
+    if (!feed) {
+      return false;
+    }
+
+    // column-reverse: scrollTop 0 is the visual bottom
+    feed.scrollTop = 0;
+    return true;
+  }, []);
+  return {
+    feedRef: feedRef as RefObject<HTMLDivElement | null>,
+    registerRef,
+    scrollToMessage,
+    scrollToBottom,
+  };
 };
 
 export type MessageScrollAPI = ReturnType<typeof useMessageScroll>;

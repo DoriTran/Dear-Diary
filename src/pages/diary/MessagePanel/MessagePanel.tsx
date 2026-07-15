@@ -96,7 +96,9 @@ const MessagePanel: FC<MessagePanelProps> = ({
         onSearchActiveChange={onTimelineSearchActiveChange}
       />
       <MessageFeed
+        key={chatboxId}
         groups={groups}
+        feedRef={scroll.feedRef}
         registerRef={scroll.registerRef}
         actions={actions}
       />

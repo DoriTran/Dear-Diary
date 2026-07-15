@@ -2,6 +2,7 @@
   display: flex;
   align-items: stretch;
   min-width: 0;
+  max-width: 100%;
   overflow: visible;
 }
 
@@ -33,4 +34,23 @@
 
 .surfacePassThrough {
   min-width: 0;
+}
+
+/* Feed: same role as surfaceCard, themed via --message-surface-bg (charms may override container). */
+.surfaceFeed {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  border: 1px solid color-mix(in srgb, var(--primary) 22%, var(--border-soft));
+  border-radius: var(--radius-lg);
+  background: var(--message-surface-bg, var(--chat-user-bg));
+  box-shadow: var(--shadow-sm);
+}
+
+.surfaceFeedAttached {
+  border-top-right-radius: var(--radius-xs);
+}
+
+.surfaceFeed [data-composer-variant-editor]:has(*) {
+  padding: 0.65rem 0.85rem;
 }

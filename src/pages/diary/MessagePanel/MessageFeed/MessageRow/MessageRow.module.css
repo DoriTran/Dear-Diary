@@ -1,24 +1,19 @@
 .root {
   position: relative;
-  display: flex;
-  align-items: center;
-  gap: 0.35rem;
   width: 100%;
 }
 
 .root:not([data-assistant]) {
+  display: flex;
   justify-content: flex-end;
 }
 
 .root[data-assistant] {
+  display: flex;
   justify-content: flex-start;
 }
 
-.root[data-assistant] .hoverActions {
-  order: 2;
-}
-
-.root[data-highlighted] .bubbleWrap {
+.root[data-highlighted] {
   outline: 2px solid color-mix(in srgb, var(--primary) 55%, transparent);
   outline-offset: 2px;
   border-radius: var(--radius-lg);
@@ -38,14 +33,4 @@
 .root:focus-within .hoverActions {
   opacity: 1;
   pointer-events: auto;
-}
-
-.bubbleWrap {
-  min-width: 0;
-  max-width: 85%;
-}
-
-.root:not([data-assistant]) .bubbleWrap > * {
-  margin-left: 0;
-  max-width: 100%;
 }

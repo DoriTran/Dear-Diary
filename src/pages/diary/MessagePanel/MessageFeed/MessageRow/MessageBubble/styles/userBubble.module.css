@@ -1,8 +1,6 @@
 .root {
   display: flex;
-  align-items: flex-end;
   justify-content: flex-end;
-  gap: 0.55rem;
   max-width: 85%;
   margin-left: auto;
 }
@@ -13,15 +11,53 @@
   align-items: flex-end;
   gap: 0.25rem;
   min-width: 0;
+  width: 100%;
+}
+
+.mainRow {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  min-width: 0;
+  max-width: 100%;
+}
+
+.core {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 0.35rem;
+  min-width: 0;
+}
+
+.footer {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 0.35rem;
+  min-width: 0;
+}
+
+.pinned {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  font-size: var(--font-2xs);
+  color: var(--text-muted);
 }
 
 .bubble {
   position: relative;
+  max-width: 100%;
   padding: 0.65rem 0.85rem;
   border-radius: var(--radius-lg);
-  border: 1px solid var(--border-soft);
-  background: var(--chat-user-bg);
+  border: 1px solid color-mix(in srgb, var(--primary) 22%, var(--border-soft));
+  background: var(--message-surface-bg, var(--chat-user-bg));
   box-shadow: var(--shadow-sm);
+}
+
+.bubbleAttached {
+  border-top-right-radius: var(--radius-xs);
 }
 
 .text {
@@ -58,17 +94,4 @@
 .read {
   display: inline-flex;
   color: var(--primary);
-}
-
-.avatar {
-  display: flex;
-  flex-shrink: 0;
-  align-items: center;
-  justify-content: center;
-  width: 2rem;
-  height: 2rem;
-  border-radius: 999px;
-  font-size: 1.1rem;
-  background: color-mix(in srgb, var(--secondary) 15%, var(--surface));
-  border: 1px solid var(--border-soft);
 }

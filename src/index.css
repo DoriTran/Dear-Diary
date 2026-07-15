@@ -187,7 +187,8 @@ Each dark theme can override module colors inside [data-theme='...'][data-mode='
 --scrollbar-thumb-active: Thumb drag color (primary @ 100%).
 
 [Chat Blocks]
---chat-text-bg: Text block background.
+--chat-text-bg: Assistant/text block background (primary tint).
+--chat-user-bg: User message bubble background (primary tint).
 --chat-todo-bg: Todo/checklist background.
 --chat-link-bg: Link block background.
 --chat-image-bg: Image/media block background.
@@ -601,12 +602,28 @@ Each dark theme can override module colors inside [data-theme='...'][data-mode='
 
   --field-bg: var(--surface-soft);
   --field-border: var(--border-soft);
-  --field-border-hover: color-mix(in srgb, var(--primary) 22%, var(--border-soft));
-  --field-border-focus: color-mix(in srgb, var(--primary) 40%, var(--border-soft));
+  --field-border-hover: color-mix(
+    in srgb,
+    var(--primary) 22%,
+    var(--border-soft)
+  );
+  --field-border-focus: color-mix(
+    in srgb,
+    var(--primary) 40%,
+    var(--border-soft)
+  );
   --field-bg-hover: color-mix(in srgb, var(--primary) 4%, var(--surface-soft));
-  --field-bg-hover-strong: color-mix(in srgb, var(--primary) 8%, var(--surface-soft));
+  --field-bg-hover-strong: color-mix(
+    in srgb,
+    var(--primary) 8%,
+    var(--surface-soft)
+  );
   --field-bg-tint: color-mix(in srgb, var(--primary) 6%, var(--surface-soft));
-  --field-bg-selected: color-mix(in srgb, var(--primary) 12%, var(--surface-soft));
+  --field-bg-selected: color-mix(
+    in srgb,
+    var(--primary) 12%,
+    var(--surface-soft)
+  );
   --field-ring: 0 0 0 3px color-mix(in srgb, var(--primary) 15%, transparent);
   --field-padding-y: 0.625rem;
   --field-padding-x: 0.75rem;
@@ -615,13 +632,17 @@ Each dark theme can override module colors inside [data-theme='...'][data-mode='
     var(--field-padding-y) * 2 + 0.875rem * 1.5 + 2px
   );
 
-  --chat-text-bg: #f0e7ff;
-  --chat-user-bg: #fff0e6;
-  --chat-todo-bg: #fff8ee;
-  --chat-link-bg: #edf6ff;
-  --chat-image-bg: #fff0f4;
-  --chat-timer-bg: #eef4ff;
-  --chat-sticky-bg: #fff5c9;
+  --chat-text-bg: color-mix(in srgb, var(--primary) 18%, var(--surface));
+  --chat-user-bg: color-mix(in srgb, var(--primary) 14%, var(--surface));
+  --chat-todo-bg: color-mix(in srgb, var(--warning) 16%, var(--surface));
+  --chat-link-bg: color-mix(in srgb, var(--info) 16%, var(--surface));
+  --chat-image-bg: color-mix(in srgb, var(--secondary) 16%, var(--surface));
+  --chat-timer-bg: color-mix(in srgb, var(--accent-blue) 16%, var(--surface));
+  --chat-sticky-bg: color-mix(
+    in srgb,
+    var(--accent-yellow) 20%,
+    var(--surface)
+  );
 
   --scrollbar-size: 6px;
   --scrollbar-track: transparent;
@@ -631,8 +652,8 @@ Each dark theme can override module colors inside [data-theme='...'][data-mode='
 }
 
 [data-mode='dark'] {
-  --chat-text-bg: color-mix(in srgb, var(--primary) 18%, var(--surface));
-  --chat-user-bg: color-mix(in srgb, var(--warning) 14%, var(--surface));
+  --chat-text-bg: color-mix(in srgb, var(--primary) 22%, var(--surface));
+  --chat-user-bg: color-mix(in srgb, var(--primary) 18%, var(--surface));
   --chat-todo-bg: color-mix(in srgb, var(--warning) 16%, var(--surface));
   --chat-link-bg: color-mix(in srgb, var(--info) 16%, var(--surface));
   --chat-image-bg: color-mix(in srgb, var(--secondary) 16%, var(--surface));

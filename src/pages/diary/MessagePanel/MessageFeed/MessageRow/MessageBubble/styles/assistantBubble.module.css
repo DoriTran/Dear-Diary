@@ -20,6 +20,7 @@
 
 .content {
   display: flex;
+  flex: 1;
   flex-direction: column;
   gap: 0.25rem;
   min-width: 0;
@@ -31,8 +32,51 @@
   color: var(--primary);
 }
 
+.mainRow {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  min-width: 0;
+  max-width: 100%;
+}
+
+.core {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.35rem;
+  min-width: 0;
+}
+
+.footer {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.35rem;
+  min-width: 0;
+}
+
+.pinned {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  font-size: var(--font-2xs);
+  color: var(--text-muted);
+}
+
 .bubble {
+  position: relative;
+  max-width: 100%;
   padding: 0.65rem 0.85rem;
+  border-radius: var(--radius-lg);
+  border: 1px solid color-mix(in srgb, var(--primary) 22%, var(--border-soft));
+  background: var(--message-surface-bg, var(--chat-text-bg));
+  box-shadow: var(--shadow-sm);
+}
+
+.bubbleAttached {
+  border-top-right-radius: var(--radius-xs);
 }
 
 .text {
@@ -40,10 +84,6 @@
   font-size: var(--font-sm);
   line-height: 1.55;
   white-space: pre-wrap;
-}
-
-.bubble > * + * {
-  margin-top: 0.45rem;
 }
 
 .list {
