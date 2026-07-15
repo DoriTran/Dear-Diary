@@ -1,9 +1,10 @@
 import type { FC } from 'react';
 
-import moment from 'moment';
 import clsx from 'clsx';
+import moment from 'moment';
 
 import type { CalendarEventView } from '../scheduler.utils';
+
 import {
   getEventsForDay,
   getMonthGridDays,
@@ -37,7 +38,9 @@ const MonthCalendar: FC<MonthCalendarProps> = ({
   return (
     <div className={styles.root}>
       <div className={styles.nav}>
-        <div className={styles.monthLabel}>{currentMonth.format('MMMM YYYY')}</div>
+        <div className={styles.monthLabel}>
+          {currentMonth.format('MMMM YYYY')}
+        </div>
         <div className={styles.navActions}>
           <button
             type="button"

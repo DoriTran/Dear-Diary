@@ -1,10 +1,10 @@
 import { useMemo } from 'react';
 
-import { useAppStore } from '@/store';
-import { useDiaryStore } from '@/store';
+import { useAppStore, useDiaryStore } from '@/store';
+
+import type { ColorId, ResolvedPalette } from './types';
 
 import { resolveColor } from './resolvePalette';
-import type { ColorId, ResolvedPalette } from './types';
 
 export const useResolvedPalette = (colorId: ColorId): ResolvedPalette => {
   const mode = useAppStore('mode');

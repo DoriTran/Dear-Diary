@@ -224,7 +224,5 @@ export const colorDistance = (hexA: string, hexB: string): number => {
   const a = hexToRgb(hexA);
   const b = hexToRgb(hexB);
 
-  return Math.sqrt(
-    (a.r - b.r) ** 2 + (a.g - b.g) ** 2 + (a.b - b.b) ** 2,
-  );
+  return Math.sqrt((a.r - b.r) ** 2 + (a.g - b.g) ** 2 + (a.b - b.b) ** 2);
 };

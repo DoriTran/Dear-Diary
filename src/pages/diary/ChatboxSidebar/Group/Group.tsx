@@ -13,9 +13,9 @@ import {
   type ReactNode,
 } from 'react';
 
+import { useColorBrightness } from '@/hooks';
 import { AdIcon, AdMenu, AdMenuItem } from '@/packages/base';
 import { BrushHighlight } from '@/packages/ui';
-import { useColorBrightness } from '@/hooks';
 import LayoutCard from '@/packages/ui/LayoutCard/LayoutCard';
 import { useAppStore } from '@/store';
 
@@ -137,7 +137,11 @@ const Group: FC<GroupProps> = ({
                 onPointerDown={(event) => event.stopPropagation()}
               >
                 <span className={styles.caret} aria-hidden>
-                  <AdIcon icon={faChevronRight} size={10} color="currentColor" />
+                  <AdIcon
+                    icon={faChevronRight}
+                    size={10}
+                    color="currentColor"
+                  />
                 </span>
               </button>
             )}

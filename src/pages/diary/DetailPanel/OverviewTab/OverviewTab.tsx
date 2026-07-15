@@ -1,3 +1,5 @@
+import type { FC } from 'react';
+
 import {
   faComment,
   faFile,
@@ -5,15 +7,14 @@ import {
   faPaperclip,
   faVideo,
 } from '@fortawesome/free-solid-svg-icons';
-import type { FC } from 'react';
 
 import { AdIcon } from '@/packages/base';
 
 import type { DetailPanelStats, DetailPanelTag } from '../detailPanel.utils';
+
 import InfoCallout from '../components/InfoCallout';
 import ProgressBarRow from '../components/ProgressBarRow';
 import StatCard from '../components/StatCard';
-
 import styles from './OverviewTab.module.css';
 import TagFill from './TagFill';
 

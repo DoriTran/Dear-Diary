@@ -1,8 +1,9 @@
 import type { WorkspaceType } from '@/store/workspace/type';
 
+import type { WorkspaceToolRenderer } from './types';
+
 import PlaceholderTool from './PlaceholderTool/PlaceholderTool';
 import SchedulerTool from './scheduler/SchedulerTool';
-import type { WorkspaceToolRenderer } from './types';
 
 export const workspaceToolRenderers: Record<
   WorkspaceType,

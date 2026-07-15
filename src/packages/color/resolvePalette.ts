@@ -1,8 +1,14 @@
 import type { AppMode } from '@/store/app/type';
 
+import type {
+  ColorId,
+  ColorPalette,
+  CustomPalette,
+  ResolvedPalette,
+} from './types';
+
 import { getColorDefinition } from './colorRegistry';
 import { COLOR_PRESETS, DEFAULT_COLOR_ID } from './presets';
-import type { ColorId, ColorPalette, CustomPalette, ResolvedPalette } from './types';
 
 export const getAppMode = (): AppMode => {
   if (typeof document === 'undefined') {

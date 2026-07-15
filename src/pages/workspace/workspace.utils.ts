@@ -1,7 +1,6 @@
-import type { Chatbox } from '@/store/diary/type';
-import { DEFAULT_COLOR_ID, getAppMode, resolvePalette } from '@/packages/color';
-import type { CustomPalette } from '@/packages/color';
+import type { ColorId, CustomPalette } from '@/packages/color';
 import type { AppMode } from '@/store/app/type';
+import type { Chatbox } from '@/store/diary/type';
 import type {
   RecordSource,
   SchedulerEventPayload,
@@ -10,6 +9,8 @@ import type {
   WorkspaceSource,
   WorkspaceType,
 } from '@/store/workspace/type';
+
+import { DEFAULT_COLOR_ID, getAppMode, resolvePalette } from '@/packages/color';
 
 export const WORKSPACE_LOCAL_SOURCE_COLOR_ID = DEFAULT_COLOR_ID;
 
@@ -140,7 +141,7 @@ const resolveEntityMainColor = (
     return resolvePalette(DEFAULT_COLOR_ID, mode, customPalettes).main;
   }
 
-  return resolvePalette(colorId as import('@/packages/color').ColorId, mode, customPalettes).main;
+  return resolvePalette(colorId as ColorId, mode, customPalettes).main;
 };
 
 export const resolveRecordSourceMeta = (
@@ -153,14 +154,17 @@ export const resolveRecordSourceMeta = (
   if (source.type === 'local') {
     return {
       label: WORKSPACE_LOCAL_SOURCE_LABEL,
-      color: resolveEntityMainColor(WORKSPACE_LOCAL_SOURCE_COLOR_ID, mode, customPalettes),
+      color: resolveEntityMainColor(
+        WORKSPACE_LOCAL_SOURCE_COLOR_ID,
+        mode,
+        customPalettes,
+      ),
     };
   }
 
   if (source.type === 'chatbox') {
     const chatboxSource = sources.find(
-      (item) =>
-        item.type === 'chatbox' && item.chatboxId === source.chatboxId,
+      (item) => item.type === 'chatbox' && item.chatboxId === source.chatboxId,
     );
 
     const chatbox = chatboxes[source.chatboxId];
@@ -218,7 +222,7 @@ export const getSchedulerPayload = (
     return null;
   }
 
-  return record.payload as SchedulerEventPayload;
+  return record.payload;
 };
 
 export const countRecordsBySource = (

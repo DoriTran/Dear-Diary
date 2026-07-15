@@ -1,14 +1,12 @@
-import { useMemo, useState, type FC } from 'react';
-
 import moment from 'moment';
+import { useMemo, useState, type FC } from 'react';
 
 import { useAppStore, useDiaryStore } from '@/store';
 
 import type { WorkspaceToolRendererProps } from '../types';
+
 import EventListSection from './EventListSection/EventListSection';
 import MonthCalendar from './MonthCalendar/MonthCalendar';
-import SourceLegend from './SourceLegend/SourceLegend';
-import SourcesSummary from './SourcesSummary/SourcesSummary';
 import {
   buildCalendarEventViews,
   getLegendItems,
@@ -17,6 +15,8 @@ import {
   type SchedulerView,
 } from './scheduler.utils';
 import styles from './SchedulerTool.module.css';
+import SourceLegend from './SourceLegend/SourceLegend';
+import SourcesSummary from './SourcesSummary/SourcesSummary';
 import ViewTabs from './ViewTabs/ViewTabs';
 
 const SchedulerTool: FC<WorkspaceToolRendererProps> = ({

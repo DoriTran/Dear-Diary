@@ -117,7 +117,9 @@ const ProfileInfo: FC<ProfileInfoProps> = ({ collapsed, onToggleCollapse }) => {
                   <AdIcon icon={faBell} size={13} />
                 </div>
                 <span className={styles.statLabel}>Reminders</span>
-                <span className={clsx(styles.statValue, styles.statValueYellow)}>
+                <span
+                  className={clsx(styles.statValue, styles.statValueYellow)}
+                >
                   {REMINDER_COUNT} pending
                 </span>
               </div>

@@ -66,12 +66,7 @@ export const useSidebarRowViews = (
                 ? messages[chatbox.lastMessageId]
                 : null;
 
-              return mapChatboxData(
-                chatbox,
-                tags,
-                lastMessage,
-                mapOptions,
-              );
+              return mapChatboxData(chatbox, tags, lastMessage, mapOptions);
             })
             .filter((chatbox): chatbox is ChatboxData => chatbox !== null);
 

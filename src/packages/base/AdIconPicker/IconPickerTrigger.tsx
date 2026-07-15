@@ -1,10 +1,10 @@
 import type { FC } from 'react';
 
-import { LucideIconById } from '@/packages/icon';
 import type { IconId } from '@/packages/icon';
 
-import { pickerTriggerClassNames } from '../formField';
+import { LucideIconById } from '@/packages/icon';
 
+import { pickerTriggerClassNames } from '../formField';
 import styles from './IconPickerTrigger.module.css';
 
 export type IconPickerTriggerProps = {
@@ -25,7 +25,12 @@ const IconPickerTrigger: FC<IconPickerTriggerProps> = ({
       </span>
       {showCheck ? (
         <span className={styles.checkBadge} aria-hidden>
-          <LucideIconById iconId="Check" size={8} color="currentColor" strokeWidth={3} />
+          <LucideIconById
+            iconId="Check"
+            size={8}
+            color="currentColor"
+            strokeWidth={3}
+          />
         </span>
       ) : null}
     </>

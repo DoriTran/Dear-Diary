@@ -1,4 +1,3 @@
-import { COLOR_PRESETS, PRESET_COLOR_IDS, PRESET_CATEGORIES } from './presets';
 import type {
   ColorDefinition,
   ColorId,
@@ -7,7 +6,10 @@ import type {
   PresetColorId,
 } from './types';
 
-export const getPreset = (id: PresetColorId): ColorDefinition => COLOR_PRESETS[id];
+import { COLOR_PRESETS, PRESET_COLOR_IDS, PRESET_CATEGORIES } from './presets';
+
+export const getPreset = (id: PresetColorId): ColorDefinition =>
+  COLOR_PRESETS[id];
 
 export const getPresetIds = (): PresetColorId[] => PRESET_COLOR_IDS;
 

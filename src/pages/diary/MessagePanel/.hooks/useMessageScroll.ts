@@ -1,4 +1,4 @@
-import { useCallback, useRef, type RefObject } from 'react';
+import { useCallback, useRef } from 'react';
 
 export const useMessageScroll = () => {
   const refs = useRef(new Map<string, HTMLElement>());
@@ -44,7 +44,7 @@ export const useMessageScroll = () => {
     return true;
   }, []);
   return {
-    feedRef: feedRef as RefObject<HTMLDivElement | null>,
+    feedRef: feedRef,
     registerRef,
     scrollToMessage,
     scrollToBottom,

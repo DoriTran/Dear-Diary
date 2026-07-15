@@ -4,7 +4,9 @@ type LegacyIconEntity = {
   icon?: string;
 };
 
-export const migrateEntityIconId = <T extends LegacyIconEntity>(entity: T): T => ({
+export const migrateEntityIconId = <T extends LegacyIconEntity>(
+  entity: T,
+): T => ({
   ...entity,
   icon: migrateIconId(entity.icon),
 });

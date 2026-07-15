@@ -1,5 +1,5 @@
-﻿import type { IconId } from '@/packages/icon';
-import type { ColorId } from '@/packages/color';
+﻿import type { ColorId } from '@/packages/color';
+import type { IconId } from '@/packages/icon';
 
 export type TagTone = 'purple' | 'pink' | 'yellow' | 'teal' | 'blue';
 

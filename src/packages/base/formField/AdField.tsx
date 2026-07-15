@@ -1,5 +1,6 @@
-import clsx from 'clsx';
 import type { FC, ReactNode } from 'react';
+
+import clsx from 'clsx';
 
 import styles from './formField.module.css';
 

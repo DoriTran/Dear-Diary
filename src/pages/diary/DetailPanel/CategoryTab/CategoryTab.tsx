@@ -1,15 +1,16 @@
-import { faChevronRight } from '@fortawesome/free-solid-svg-icons';
 import type { FC } from 'react';
+
+import { faChevronRight } from '@fortawesome/free-solid-svg-icons';
 
 import type { Message } from '@/store/diary/type';
 
 import { AdChip, AdIcon } from '@/packages/base';
 
-import { filterMessagesByTags } from '../detailPanel.utils';
 import type { DetailPanelTag } from '../detailPanel.utils';
+
 import DetailMessagePreviewRow from '../components/DetailMessagePreviewRow';
 import InfoCallout from '../components/InfoCallout';
-
+import { filterMessagesByTags } from '../detailPanel.utils';
 import styles from './CategoryTab.module.css';
 
 export type CategoryTabProps = {

@@ -1,4 +1,7 @@
-import { useState, type FC, type FormEvent } from 'react';
+import { useEffect, useRef, useState, type FC, type FormEvent } from 'react';
+
+import type { ColorId } from '@/packages/color';
+import type { WorkspaceType } from '@/store/workspace/type';
 
 import {
   AdField,
@@ -9,11 +12,9 @@ import {
   AdTextarea,
 } from '@/packages/base';
 import { DEFAULT_COLOR_ID } from '@/packages/color';
-import type { ColorId } from '@/packages/color';
-import { PalettePicker } from '@/packages/ui';
 import { DEFAULT_ICON_ID, type IconId } from '@/packages/icon';
+import { PalettePicker } from '@/packages/ui';
 import { useWorkspaceStore } from '@/store';
-import type { WorkspaceType } from '@/store/workspace/type';
 
 import { WORKSPACE_TYPE_LABELS } from '../../workspace.utils';
 import styles from './CreateWorkspaceModal.module.css';
@@ -41,6 +42,13 @@ const CreateWorkspaceModal: FC<CreateWorkspaceModalProps> = ({
   const [type, setType] = useState<WorkspaceType>(initialType);
   const [icon, setIcon] = useState<IconId>(DEFAULT_ICON_ID);
   const [colorId, setColorId] = useState<ColorId>(DEFAULT_COLOR_ID);
+  const nameInputRef = useRef<HTMLInputElement>(null);
+
+  useEffect(() => {
+    if (opened) {
+      nameInputRef.current?.focus();
+    }
+  }, [opened]);
 
   const handleClose = () => {
     setName('');
@@ -82,11 +90,11 @@ const CreateWorkspaceModal: FC<CreateWorkspaceModalProps> = ({
       <form className={styles.form} onSubmit={handleSubmit}>
         <AdField label="Name" htmlFor="create-workspace-name">
           <AdInput
+            ref={nameInputRef}
             id="create-workspace-name"
             value={name}
             onChange={(event) => setName(event.target.value)}
             placeholder="My workspace"
-            autoFocus
           />
         </AdField>
 
@@ -128,7 +136,11 @@ const CreateWorkspaceModal: FC<CreateWorkspaceModalProps> = ({
         </div>
 
         <div className={styles.actions}>
-          <button type="button" className={styles.secondary} onClick={handleClose}>
+          <button
+            type="button"
+            className={styles.secondary}
+            onClick={handleClose}
+          >
             Cancel
           </button>
           <button type="submit" className={styles.primary}>

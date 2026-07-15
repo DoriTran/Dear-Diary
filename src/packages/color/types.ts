@@ -4,12 +4,7 @@ export type ColorPalette = {
   strong: string;
 };
 
-export type ColorCategory =
-  | 'warm'
-  | 'nature'
-  | 'ocean'
-  | 'dreamy'
-  | 'neutral';
+export type ColorCategory = 'warm' | 'nature' | 'ocean' | 'dreamy' | 'neutral';
 
 export type PresetColorId =
   | 'rose'

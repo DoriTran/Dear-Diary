@@ -1,10 +1,10 @@
-import type { ColorId } from '@/packages/color';
+import type { ColorId, CustomPalette } from '@/packages/color';
+
 import {
   DEFAULT_COLOR_ID,
   migrateHexToColorId,
   normalizeColorId,
 } from '@/packages/color';
-import type { CustomPalette } from '@/packages/color';
 
 type LegacyColorEntity = {
   color?: string;

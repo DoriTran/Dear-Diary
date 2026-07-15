@@ -6,8 +6,6 @@ import { persist } from 'zustand/middleware';
 import { DEFAULT_COLOR_ID } from '@/packages/color';
 import { DEFAULT_ICON_ID } from '@/packages/icon';
 
-import { migrateWorkspacePersistedState } from '../migrateColorId';
-import { migrateWorkspaceIconState } from '../migrateIconId';
 import type {
   Workspace,
   WorkspaceStore,
@@ -17,6 +15,8 @@ import type {
 } from './type';
 
 import { idbStorage, nowIso } from '../helper';
+import { migrateWorkspacePersistedState } from '../migrateColorId';
+import { migrateWorkspaceIconState } from '../migrateIconId';
 import shallow from '../shallow';
 import { workspaceInitialState, workspaceDummyState } from './constants';
 
@@ -443,7 +443,9 @@ const useWorkspaceStoreBase = create<WorkspaceStore & WorkspaceStoreActions>()(
           },
         };
 
-        return migrateWorkspaceIconState(migrateWorkspacePersistedState(merged));
+        return migrateWorkspaceIconState(
+          migrateWorkspacePersistedState(merged),
+        );
       },
     },
   ),

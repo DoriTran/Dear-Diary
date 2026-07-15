@@ -1,24 +1,17 @@
-import {
-  Combobox,
-  Input,
-  useCombobox,
-} from '@mantine/core';
+import { Combobox, Input, useCombobox } from '@mantine/core';
 import clsx from 'clsx';
 import { ChevronDown } from 'lucide-react';
-import {
-  useMemo,
-  useState,
-  type FC,
-} from 'react';
+import { useId, useMemo, useState, type FC } from 'react';
 
 import { resolvePalette } from '@/packages/color';
-import fieldStyles from '../formField/formField.module.css';
 import { useAppStore, useDiaryStore } from '@/store';
 
+import type { AdSelectSingleProps } from './types';
+
+import fieldStyles from '../formField/formField.module.css';
+import styles from './AdSelect.module.css';
 import { adSelectOptionColorVars } from './adSelectOptionColorVars';
 import AdSelectOptionRow from './AdSelectOptionRow';
-import styles from './AdSelect.module.css';
-import type { AdSelectSingleProps } from './types';
 
 const AdSelectSingle: FC<AdSelectSingleProps> = ({
   label,
@@ -35,6 +28,7 @@ const AdSelectSingle: FC<AdSelectSingleProps> = ({
 }) => {
   void rest;
 
+  const listboxId = useId();
   const mode = useAppStore('mode');
   const customPalettes = useDiaryStore('customPalettes');
   const [searchValue, setSearchValue] = useState('');
@@ -66,7 +60,9 @@ const AdSelectSingle: FC<AdSelectSingleProps> = ({
   const showEmpty =
     searchable && filteredData.length === 0 && trimmedSearch.length > 0;
 
-  const resolveOptionStyle = (colorId?: AdSelectSingleProps['data'][number]['colorId']) => {
+  const resolveOptionStyle = (
+    colorId?: AdSelectSingleProps['data'][number]['colorId'],
+  ) => {
     if (!colorId) {
       return undefined;
     }
@@ -102,6 +98,7 @@ const AdSelectSingle: FC<AdSelectSingleProps> = ({
               styles.singleTrigger,
               classNames?.input,
             )}
+            aria-controls={listboxId}
             aria-expanded={combobox.dropdownOpened}
             aria-haspopup="listbox"
             role="combobox"
@@ -152,7 +149,7 @@ const AdSelectSingle: FC<AdSelectSingleProps> = ({
             className={styles.search}
           />
         ) : null}
-        <Combobox.Options>
+        <Combobox.Options id={listboxId}>
           {filteredData.map((option) => (
             <Combobox.Option
               key={option.value}

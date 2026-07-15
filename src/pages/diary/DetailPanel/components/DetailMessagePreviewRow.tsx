@@ -1,5 +1,6 @@
-import { faThumbtack } from '@fortawesome/free-solid-svg-icons';
 import type { FC } from 'react';
+
+import { faThumbtack } from '@fortawesome/free-solid-svg-icons';
 
 import type { Message } from '@/store/diary/type';
 
@@ -11,7 +12,6 @@ import {
 } from '../../ChatboxSidebar/Chatbox/chatbox.utils';
 import { getMessagePreviewText } from '../../MessagePanel/messagePanel.utils';
 import { getMessageThumbnail } from '../detailPanel.utils';
-
 import styles from './DetailMessagePreviewRow.module.css';
 
 export type DetailMessagePreviewRowProps = {

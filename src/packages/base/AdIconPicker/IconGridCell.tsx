@@ -1,7 +1,14 @@
-import { useRef, type FC, type KeyboardEvent, type MouseEvent, type TouchEvent } from 'react';
+import {
+  useRef,
+  type FC,
+  type KeyboardEvent,
+  type MouseEvent,
+  type TouchEvent,
+} from 'react';
+
+import type { IconId } from '@/packages/icon';
 
 import { LucideIconById } from '@/packages/icon';
-import type { IconId } from '@/packages/icon';
 
 import styles from './IconGridCell.module.css';
 
@@ -109,7 +116,12 @@ const IconGridCell: FC<IconGridCellProps> = ({
       <LucideIconById iconId={iconId} size={16} />
       {showCheck && selected ? (
         <span className={styles.checkBadge} aria-hidden>
-          <LucideIconById iconId="Check" size={8} color="currentColor" strokeWidth={3} />
+          <LucideIconById
+            iconId="Check"
+            size={8}
+            color="currentColor"
+            strokeWidth={3}
+          />
         </span>
       ) : null}
     </button>

@@ -2,8 +2,9 @@ import type { CSSProperties } from 'react';
 
 import type { AppMode } from '@/store/app/type';
 
-import { resolvePalette } from './resolvePalette';
 import type { ColorId, ColorPalette, CustomPalette } from './types';
+
+import { resolvePalette } from './resolvePalette';
 
 export const chatboxCssVars = (
   colorId: ColorId,
@@ -19,16 +20,12 @@ export const chatboxCssVars = (
   } as CSSProperties;
 };
 
-export const tagStyles = (
-  palette: ColorPalette,
-): CSSProperties => ({
+export const tagStyles = (palette: ColorPalette): CSSProperties => ({
   background: palette.soft,
   color: palette.strong,
 });
 
-export const groupLabelStyles = (
-  palette: ColorPalette,
-): CSSProperties => ({
+export const groupLabelStyles = (palette: ColorPalette): CSSProperties => ({
   background: palette.main,
   color: palette.strong,
 });

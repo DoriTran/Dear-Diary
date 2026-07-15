@@ -1,16 +1,20 @@
 import { useMemo, type FC } from 'react';
-
 import { useLocation, useNavigate } from 'react-router-dom';
 
-import { resolveWorkspaceForToolType } from '@/pages/workspace/workspace.utils';
 import { AdDivider, AdIcon } from '@/packages/base';
-import { useAppStore, useDiaryHydrated, useDiaryStore, useWorkspaceStore } from '@/store';
+import { resolveWorkspaceForToolType } from '@/pages/workspace/workspace.utils';
+import {
+  useAppStore,
+  useDiaryHydrated,
+  useDiaryStore,
+  useWorkspaceStore,
+} from '@/store';
 
 import LayoutCard from '../../LayoutCard/LayoutCard';
 import Logo from '../../Logo/Logo';
 import ThemeSelection from '../../ThemeSelection/ThemeSelection';
-import { getLatestUpdatedChatboxes } from './leftPanel.utils';
 import styles from './LeftPanel.module.css';
+import { getLatestUpdatedChatboxes } from './leftPanel.utils';
 import {
   mainNavigationPages,
   navigationIcons,
@@ -22,12 +26,9 @@ import {
 import ProfileInfo from './ProfileInfo/ProfileInfo';
 
 const LeftPanel: FC = () => {
-  const { navPanel, diaryPage, setNavPanelFolded, selectChatbox } = useAppStore([
-    'navPanel',
-    'diaryPage',
-    'setNavPanelFolded',
-    'selectChatbox',
-  ]);
+  const { navPanel, diaryPage, setNavPanelFolded, selectChatbox } = useAppStore(
+    ['navPanel', 'diaryPage', 'setNavPanelFolded', 'selectChatbox'],
+  );
   const chatboxes = useDiaryStore('chatboxes');
   const workspaces = useWorkspaceStore('workspaces');
   const orders = useWorkspaceStore('orders');

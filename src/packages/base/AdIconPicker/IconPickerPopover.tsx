@@ -1,20 +1,21 @@
 import { useMemo, useState, type FC } from 'react';
 
+import type { CuratedCategoryId, IconId } from '@/packages/icon';
+
 import {
   CURATED_CATEGORIES,
   LucideIconById,
   searchIcons,
 } from '@/packages/icon';
-import type { CuratedCategoryId, IconId } from '@/packages/icon';
 
 import FavoritesSection from './FavoritesSection';
 import IconCategorySection from './IconCategorySection';
 import IconGrid from './IconGrid';
 import IconLibraryPanel from './IconLibraryPanel';
+import styles from './IconPickerPopover.module.css';
+import sectionStyles from './iconPickerSections.module.css';
 import IconSearchInput from './IconSearchInput';
 import RecentIconsSection from './RecentIconsSection';
-import sectionStyles from './iconPickerSections.module.css';
-import styles from './IconPickerPopover.module.css';
 
 export type IconPickerPopoverProps = {
   value: IconId;
@@ -94,7 +95,7 @@ const IconPickerPopover: FC<IconPickerPopoverProps> = ({
       </header>
 
       <div className={styles.searchRow}>
-        <IconSearchInput value={query} onChange={setQuery} autoFocus />
+        <IconSearchInput value={query} onChange={setQuery} focusOnMount />
         {!isSearching ? (
           <button
             type="button"
@@ -140,9 +141,7 @@ const IconPickerPopover: FC<IconPickerPopoverProps> = ({
                   categoryId={category.id}
                   selectedId={value}
                   onSelect={handleSelect}
-                  onViewAll={(categoryId) =>
-                    openLibrary({ categoryId })
-                  }
+                  onViewAll={(categoryId) => openLibrary({ categoryId })}
                   onEscape={onClose}
                 />
               ))}

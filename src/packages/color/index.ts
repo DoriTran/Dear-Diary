@@ -58,4 +58,7 @@ export {
   tagStyles,
 } from './colorUsage';
 
-export { default as ColorMainSwatch, type ColorMainSwatchProps } from './ColorMainSwatch';
+export {
+  default as ColorMainSwatch,
+  type ColorMainSwatchProps,
+} from './ColorMainSwatch';

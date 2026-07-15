@@ -34,7 +34,12 @@ const DiaryFormModal: FC<DiaryFormModalProps> = ({ state, onClose }) => {
   const isEdit = state.action === 'edit';
 
   return (
-    <AdModal opened onClose={onClose} title={title} size={state.entity === 'chatbox' ? 'lg' : 'md'}>
+    <AdModal
+      opened
+      onClose={onClose}
+      title={title}
+      size={state.entity === 'chatbox' ? 'lg' : 'md'}
+    >
       {state.entity === 'chatbox' ? (
         <CreateChatboxForm
           chatboxId={isEdit ? state.id : undefined}

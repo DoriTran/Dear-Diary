@@ -24,11 +24,7 @@ function getRgb(color: string): [number, number, number] | null {
   const rgbMatch = color.match(/^rgba?\(\s*(\d+),\s*(\d+),\s*(\d+)/i);
 
   if (rgbMatch) {
-    return [
-      Number(rgbMatch[1]),
-      Number(rgbMatch[2]),
-      Number(rgbMatch[3]),
-    ];
+    return [Number(rgbMatch[1]), Number(rgbMatch[2]), Number(rgbMatch[3])];
   }
 
   return null;

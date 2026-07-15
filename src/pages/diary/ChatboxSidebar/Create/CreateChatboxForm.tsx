@@ -1,5 +1,8 @@
 import { useMemo, useState, type FC, type FormEvent } from 'react';
 
+import type { ColorId } from '@/packages/color';
+import type { IconId } from '@/packages/icon';
+
 import {
   AD_SELECT_NONE_VALUE,
   AdField,
@@ -8,11 +11,9 @@ import {
   AdSelect,
   AdTextarea,
 } from '@/packages/base';
-import { PalettePicker } from '@/packages/ui';
-import type { ColorId } from '@/packages/color';
 import { DEFAULT_COLOR_ID } from '@/packages/color';
-import type { IconId } from '@/packages/icon';
 import { DEFAULT_ICON_ID, normalizeIconId } from '@/packages/icon';
+import { PalettePicker } from '@/packages/ui';
 import { useAppStore, useDiaryStore } from '@/store';
 
 import { resolveCreateIconId } from './create.constants';
@@ -163,7 +164,10 @@ const CreateChatboxForm: FC<CreateChatboxFormProps> = ({
         </AdField>
       </div>
 
-      <AdField label="Description (optional)" htmlFor="create-chatbox-description">
+      <AdField
+        label="Description (optional)"
+        htmlFor="create-chatbox-description"
+      >
         <AdTextarea
           id="create-chatbox-description"
           value={description}
@@ -189,9 +193,7 @@ const CreateChatboxForm: FC<CreateChatboxFormProps> = ({
 
           if (existingTag) {
             setTagIds((prev) =>
-              prev.includes(existingTag.id)
-                ? prev
-                : [...prev, existingTag.id],
+              prev.includes(existingTag.id) ? prev : [...prev, existingTag.id],
             );
             return;
           }

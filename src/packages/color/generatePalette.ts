@@ -1,5 +1,6 @@
-import { hexToHsl, hslToHex, normalizeHex } from './colorUtils';
 import type { ColorPalette } from './types';
+
+import { hexToHsl, hslToHex, normalizeHex } from './colorUtils';
 
 const clamp = (value: number, min: number, max: number) =>
   Math.min(max, Math.max(min, value));

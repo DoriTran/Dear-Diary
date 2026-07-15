@@ -3,8 +3,8 @@ import type { HTMLAttributes, FC, CSSProperties } from 'react';
 import clsx from 'clsx';
 
 import type { ColorId } from '@/packages/color';
-import { useResolvedPalette } from '@/packages/color';
-import { tagStyles } from '@/packages/color';
+
+import { useResolvedPalette, tagStyles } from '@/packages/color';
 
 import styles from './AdChip.module.css';
 

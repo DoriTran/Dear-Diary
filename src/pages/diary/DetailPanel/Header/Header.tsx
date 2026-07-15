@@ -1,9 +1,10 @@
+import type { FC, CSSProperties } from 'react';
+
 import {
   faBell,
   faMagnifyingGlass,
   faPen,
 } from '@fortawesome/free-solid-svg-icons';
-import type { FC, CSSProperties } from 'react';
 
 import { AdIcon } from '@/packages/base';
 
@@ -24,8 +25,16 @@ const Header: FC<HeaderProps> = ({
   onEdit,
   onToggleNotification,
 }) => {
-  const { name, description, icon, paletteSoft, paletteMain, paletteStrong, iconBg, notificationEnabled } =
-    identity;
+  const {
+    name,
+    description,
+    icon,
+    paletteSoft,
+    paletteMain,
+    paletteStrong,
+    iconBg,
+    notificationEnabled,
+  } = identity;
 
   return (
     <header

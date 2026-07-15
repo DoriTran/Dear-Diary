@@ -6,13 +6,12 @@ import { useDiaryStore } from '@/store';
 import type { DetailPanelTab } from '../types';
 
 import CategoryTab from './CategoryTab/CategoryTab';
+import styles from './DetailPanel.module.css';
 import Header from './Header/Header';
 import MediaTab from './MediaTab/MediaTab';
 import OverviewTab from './OverviewTab/OverviewTab';
 import Tabs from './Tabs/Tabs';
 import { useDetailPanelData } from './useDetailPanelData';
-
-import styles from './DetailPanel.module.css';
 
 export type DetailPanelProps = {
   chatboxId: string;

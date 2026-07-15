@@ -1,8 +1,8 @@
 import type { FC } from 'react';
 
-import { LucideIconById } from '@/packages/icon';
 import type { CuratedCategoryId, IconId } from '@/packages/icon';
-import { getCuratedCategory } from '@/packages/icon';
+
+import { LucideIconById, getCuratedCategory } from '@/packages/icon';
 
 import IconGrid from './IconGrid';
 import sectionStyles from './iconPickerSections.module.css';

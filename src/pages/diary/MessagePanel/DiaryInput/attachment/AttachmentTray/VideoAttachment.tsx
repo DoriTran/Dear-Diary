@@ -24,6 +24,8 @@ const VideoAttachment: FC<VideoAttachmentProps> = ({
 
   if (variant === 'player') {
     return (
+      // User attachments have no caption tracks available.
+      // eslint-disable-next-line jsx-a11y/media-has-caption
       <video
         className={`${styles.player} ${className ?? ''}`}
         src={src}

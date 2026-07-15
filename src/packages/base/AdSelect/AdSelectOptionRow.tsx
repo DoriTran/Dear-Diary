@@ -1,14 +1,13 @@
 import type { FC } from 'react';
 
 import type { ColorId } from '@/packages/color';
-import { resolvePalette } from '@/packages/color';
 import type { IconId } from '@/packages/icon';
+
+import { resolvePalette } from '@/packages/color';
 import { LucideIconById } from '@/packages/icon';
 import { useAppStore, useDiaryStore } from '@/store';
 
-import {
-  adSelectRowIconVars,
-} from './adSelectOptionColorVars';
+import { adSelectRowIconVars } from './adSelectOptionColorVars';
 import styles from './AdSelectOptionRow.module.css';
 
 export type AdSelectOptionRowProps = {

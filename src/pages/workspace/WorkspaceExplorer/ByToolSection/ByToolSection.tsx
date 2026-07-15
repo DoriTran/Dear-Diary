@@ -1,12 +1,12 @@
-import { useState, type FC } from 'react';
-
 import { faChevronDown, faPlus } from '@fortawesome/free-solid-svg-icons';
 import clsx from 'clsx';
+import { useState, type FC } from 'react';
+
+import type { Workspace, WorkspaceType } from '@/store/workspace/type';
 
 import { AdIcon } from '@/packages/base';
 import { ColorMainSwatch } from '@/packages/color';
 import { normalizeIconId } from '@/packages/icon';
-import type { Workspace, WorkspaceType } from '@/store/workspace/type';
 
 import styles from './ByToolSection.module.css';
 
@@ -66,10 +66,7 @@ const ByToolSection: FC<ByToolSectionProps> = ({
 
       {!collapsed ? (
         <div
-          className={clsx(
-            styles.cards,
-            viewMode === 'list' && styles.listView,
-          )}
+          className={clsx(styles.cards, viewMode === 'list' && styles.listView)}
         >
           {workspaces.map((workspace) => (
             <button

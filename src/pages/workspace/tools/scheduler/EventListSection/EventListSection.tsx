@@ -3,6 +3,7 @@ import type { FC } from 'react';
 import clsx from 'clsx';
 
 import type { CalendarEventView } from '../scheduler.utils';
+
 import { formatEventTimeRange } from '../scheduler.utils';
 import styles from './EventListSection.module.css';
 

@@ -2,13 +2,13 @@ import type { FC } from 'react';
 
 import { useNavigate } from 'react-router-dom';
 
-import { AdChip } from '@/packages/base';
-import { DEFAULT_COLOR_ID } from '@/packages/color';
-import { useAppStore, useDiaryStore, useWorkspaceStore } from '@/store';
+import type { Message } from '@/store/diary/type';
 import type { WorkspaceRecord } from '@/store/workspace/type';
 
+import { AdChip } from '@/packages/base';
+import { DEFAULT_COLOR_ID } from '@/packages/color';
 import { getMessagePreviewText } from '@/pages/diary/MessagePanel/messagePanel.utils';
-import type { Message } from '@/store/diary/type';
+import { useAppStore, useDiaryStore, useWorkspaceStore } from '@/store';
 
 import { useWorkspacePageData } from '../../.hooks/useWorkspacePageData';
 import {
@@ -164,7 +164,11 @@ const EventDetailsInspector: FC<EventDetailsInspectorProps> = ({ record }) => {
       </section>
 
       <footer className={styles.footer}>
-        <button type="button" className={styles.deleteButton} onClick={handleDelete}>
+        <button
+          type="button"
+          className={styles.deleteButton}
+          onClick={handleDelete}
+        >
           Delete Event
         </button>
       </footer>

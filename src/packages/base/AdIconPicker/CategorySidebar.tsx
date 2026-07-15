@@ -1,11 +1,12 @@
 import { useEffect, useRef, useState, type FC } from 'react';
 
+import type { LibraryCategoryId } from '@/packages/icon';
+
 import {
   getIconCountByLibraryCategory,
   LIBRARY_CATEGORIES,
   LucideIconById,
 } from '@/packages/icon';
-import type { LibraryCategoryId } from '@/packages/icon';
 
 import styles from './CategorySidebar.module.css';
 

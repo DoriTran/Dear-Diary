@@ -1,16 +1,18 @@
 import type { FC } from 'react';
 
-import { resolvePalette } from '@/packages/color';
-import { useAppStore, useDiaryStore } from '@/store';
 import type { Chatbox } from '@/store/diary/type';
 import type { WorkspaceSource } from '@/store/workspace/type';
+
+import { resolvePalette } from '@/packages/color';
+import { useAppStore, useDiaryStore } from '@/store';
+
+import type { CalendarEventView } from '../scheduler.utils';
 
 import {
   countRecordsBySource,
   resolveSourceChipMeta,
   WORKSPACE_LOCAL_SOURCE_COLOR_ID,
 } from '../../../workspace.utils';
-import type { CalendarEventView } from '../scheduler.utils';
 import styles from './SourcesSummary.module.css';
 
 export type SourcesSummaryProps = {

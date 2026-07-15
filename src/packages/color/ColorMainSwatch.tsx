@@ -1,7 +1,8 @@
 import type { CSSProperties, FC, HTMLAttributes, ReactNode } from 'react';
 
-import { useResolvedPalette } from './useResolvedPalette';
 import type { ColorId } from './types';
+
+import { useResolvedPalette } from './useResolvedPalette';
 
 export type ColorMainSwatchProps = HTMLAttributes<HTMLSpanElement> & {
   colorId: ColorId;

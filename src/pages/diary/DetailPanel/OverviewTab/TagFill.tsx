@@ -1,7 +1,8 @@
 import type { FC } from 'react';
 
-import { useResolvedPalette } from '@/packages/color';
 import type { ColorId } from '@/packages/color';
+
+import { useResolvedPalette } from '@/packages/color';
 
 import styles from './OverviewTab.module.css';
 

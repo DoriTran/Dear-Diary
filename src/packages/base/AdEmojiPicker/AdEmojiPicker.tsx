@@ -1,7 +1,8 @@
 import { useMemo, useState, type FC } from 'react';
 
-import { LucideIconById } from '@/packages/icon';
 import type { IconId } from '@/packages/icon';
+
+import { LucideIconById } from '@/packages/icon';
 
 import styles from './AdEmojiPicker.module.css';
 import { AD_COMPOSER_EMOJIS, AD_COMPOSER_ICON_IDS } from './emojiPresets';

@@ -1,10 +1,6 @@
 import type { FC } from 'react';
 
-import {
-  faGrip,
-  faList,
-  faThLarge,
-} from '@fortawesome/free-solid-svg-icons';
+import { faGrip, faList, faThLarge } from '@fortawesome/free-solid-svg-icons';
 
 import { AdActionButton } from '@/packages/base';
 import { useWorkspaceStore } from '@/store';
@@ -37,7 +33,11 @@ const ExplorerHeader: FC = () => {
           active={explorerView === 'list'}
           onClick={() => setExplorerView('list')}
         />
-        <AdActionButton icon={faGrip} label="Reorder" onClick={() => undefined} />
+        <AdActionButton
+          icon={faGrip}
+          label="Reorder"
+          onClick={() => undefined}
+        />
       </div>
     </header>
   );

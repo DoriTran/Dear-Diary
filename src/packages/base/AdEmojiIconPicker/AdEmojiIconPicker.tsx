@@ -1,7 +1,10 @@
 import { useState, type FC, type ReactNode } from 'react';
 
 import AdEmojiPicker from '../AdEmojiPicker/AdEmojiPicker';
-import { AD_COMPOSER_EMOJIS, AD_COMPOSER_ICON_IDS } from '../AdEmojiPicker/emojiPresets';
+import {
+  AD_COMPOSER_EMOJIS,
+  AD_COMPOSER_ICON_IDS,
+} from '../AdEmojiPicker/emojiPresets';
 import AdPopover from '../AdPopover/AdPopover';
 
 export type AdEmojiIconPickerProps = {

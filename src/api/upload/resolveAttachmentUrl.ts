@@ -11,8 +11,9 @@ const placeholderImage = (seed: string) =>
 const placeholderVideo = (seed: string) => {
   const source =
     LOREM_VIDEO_SOURCES[
-      Math.abs(seed.split('').reduce((sum, char) => sum + char.charCodeAt(0), 0)) %
-        LOREM_VIDEO_SOURCES.length
+      Math.abs(
+        seed.split('').reduce((sum, char) => sum + char.charCodeAt(0), 0),
+      ) % LOREM_VIDEO_SOURCES.length
     ];
 
   return `https://lorem.video/${source}_640x360_h264_10s_30fps.mp4`;

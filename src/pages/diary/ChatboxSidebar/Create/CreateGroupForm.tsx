@@ -1,11 +1,12 @@
 import { useSyncExternalStore, useState, type FC, type FormEvent } from 'react';
 
-import { AdField, AdIconPicker, AdInput } from '@/packages/base';
-import { PalettePicker } from '@/packages/ui';
 import type { ColorId } from '@/packages/color';
-import { DEFAULT_COLOR_ID } from '@/packages/color';
 import type { IconId } from '@/packages/icon';
+
+import { AdField, AdIconPicker, AdInput } from '@/packages/base';
+import { DEFAULT_COLOR_ID } from '@/packages/color';
 import { DEFAULT_ICON_ID } from '@/packages/icon';
+import { PalettePicker } from '@/packages/ui';
 import { useAppStore, useDiaryStore } from '@/store';
 
 import { resolveCreateIconId } from './create.constants';

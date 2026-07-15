@@ -1,9 +1,3 @@
-import {
-  ALL_ICON_IDS,
-  ICON_REGISTRY_DATA,
-  ICONS_BY_LIBRARY_CATEGORY,
-} from './iconRegistryData';
-import { CURATED_CATEGORIES } from './presets';
 import type {
   CuratedCategory,
   CuratedCategoryId,
@@ -11,6 +5,13 @@ import type {
   IconId,
   LibraryCategoryId,
 } from './types';
+
+import {
+  ALL_ICON_IDS,
+  ICON_REGISTRY_DATA,
+  ICONS_BY_LIBRARY_CATEGORY,
+} from './iconRegistryData';
+import { CURATED_CATEGORIES } from './presets';
 
 export const getIcon = (id: IconId): IconDefinition | null =>
   ICON_REGISTRY_DATA[id] ?? null;

@@ -1,7 +1,8 @@
 import type { FC } from 'react';
 
-import { LucideIconById } from '@/packages/icon';
 import type { IconId } from '@/packages/icon';
+
+import { LucideIconById } from '@/packages/icon';
 import { useAppStore } from '@/store';
 
 import IconGrid from './IconGrid';

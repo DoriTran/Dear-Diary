@@ -7,17 +7,17 @@ import {
 import clsx from 'clsx';
 import { useMemo, useState, type FC } from 'react';
 
-import { AdIcon } from '@/packages/base';
 import { resolveAttachmentThumbnail } from '@/api';
+import { AdIcon } from '@/packages/base';
 
 import type { MediaFilter } from '../../types';
+
+import InfoCallout from '../components/InfoCallout';
 import {
   filterMediaItems,
   formatVideoDuration,
   type DetailPanelMediaItem,
 } from '../detailPanel.utils';
-import InfoCallout from '../components/InfoCallout';
-
 import styles from './MediaTab.module.css';
 
 const FILTERS: { id: MediaFilter; label: string }[] = [

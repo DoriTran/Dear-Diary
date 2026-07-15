@@ -1,11 +1,15 @@
 import moment from 'moment';
 
+import type { CustomPalette } from '@/packages/color';
+import type { AppMode } from '@/store/app/type';
 import type { Chatbox } from '@/store/diary/type';
 import type {
   SchedulerEventPayload,
   WorkspaceRecord,
   WorkspaceSource,
 } from '@/store/workspace/type';
+
+import { getAppMode, resolvePalette } from '@/packages/color';
 
 import {
   getSchedulerPayload,
@@ -14,9 +18,6 @@ import {
   WORKSPACE_LOCAL_SOURCE_COLOR_ID,
   WORKSPACE_LOCAL_SOURCE_LABEL,
 } from '../../workspace.utils';
-import { getAppMode, resolvePalette } from '@/packages/color';
-import type { CustomPalette } from '@/packages/color';
-import type { AppMode } from '@/store/app/type';
 
 export type SchedulerView = 'day' | 'week' | 'month' | 'timeline' | 'agenda';
 
@@ -125,7 +126,10 @@ export const getMultiDayBarsForWeek = (
       const end = moment(event.payload.endDate).startOf('day');
 
       weekDays.forEach((day, colIndex) => {
-        if (!day.isSameOrAfter(start, 'day') || !day.isSameOrBefore(end, 'day')) {
+        if (
+          !day.isSameOrAfter(start, 'day') ||
+          !day.isSameOrBefore(end, 'day')
+        ) {
           return;
         }
 
@@ -145,7 +149,8 @@ export const getMultiDayBarsForWeek = (
         }
 
         const isSegmentStart =
-          colIndex === 0 || !weekDays[colIndex - 1].isBetween(start, end, 'day', '[]');
+          colIndex === 0 ||
+          !weekDays[colIndex - 1].isBetween(start, end, 'day', '[]');
 
         if (!isSegmentStart) {
           return;
@@ -221,7 +226,10 @@ export const getTodayEvents = (
       const start = moment(event.payload.startDate).startOf('day');
       const end = moment(event.payload.endDate).startOf('day');
 
-      return dayStart.isSameOrAfter(start, 'day') && dayStart.isSameOrBefore(end, 'day');
+      return (
+        dayStart.isSameOrAfter(start, 'day') &&
+        dayStart.isSameOrBefore(end, 'day')
+      );
     })
     .sort(
       (left, right) =>
@@ -242,7 +250,10 @@ export const getUpcomingEvents = (
     .filter((event) => {
       const eventStart = moment(event.payload.startDate);
 
-      return eventStart.isSameOrAfter(start, 'day') && eventStart.isSameOrBefore(end, 'day');
+      return (
+        eventStart.isSameOrAfter(start, 'day') &&
+        eventStart.isSameOrBefore(end, 'day')
+      );
     })
     .sort(
       (left, right) =>

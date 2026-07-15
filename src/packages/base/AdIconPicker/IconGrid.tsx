@@ -8,10 +8,11 @@ import {
 } from 'react';
 
 import type { IconId } from '@/packages/icon';
+
 import { useAppStore } from '@/store';
 
-import IconGridCell from './IconGridCell';
 import styles from './IconGrid.module.css';
+import IconGridCell from './IconGridCell';
 
 const ICON_CELL_SIZE_PX = 36;
 const ICON_GRID_GAP_PX = 4;
@@ -52,9 +53,7 @@ const IconGrid: FC<IconGridProps> = ({
       return;
     }
 
-    const focusedCell = grid.querySelector<HTMLButtonElement>(
-      `[tabindex="0"]`,
-    );
+    const focusedCell = grid.querySelector<HTMLButtonElement>(`[tabindex="0"]`);
     focusedCell?.focus();
   }, [focusedIndex, iconIds]);
 
@@ -68,7 +67,9 @@ const IconGrid: FC<IconGridProps> = ({
       const width = wrap.clientWidth;
       const fittedColumns = Math.max(
         1,
-        Math.floor((width + ICON_GRID_GAP_PX) / (ICON_CELL_SIZE_PX + ICON_GRID_GAP_PX)),
+        Math.floor(
+          (width + ICON_GRID_GAP_PX) / (ICON_CELL_SIZE_PX + ICON_GRID_GAP_PX),
+        ),
       );
       setRowColumns(Math.min(maxColumns, fittedColumns));
     };
