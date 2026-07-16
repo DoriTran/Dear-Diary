@@ -5,7 +5,7 @@ const DUMMY_PREFIX = '/dummy/';
 const LOREM_VIDEO_SOURCES = ['bunny', 'cat', 'corgi', 'test'] as const;
 
 const placeholderImage = (seed: string) =>
-  `https://picsum.photos/seed/${encodeURIComponent(seed)}/640/480`;
+  `https://picsum.photos/seed/${encodeURIComponent(seed)}/1920/1280`;
 
 /** Short H.264 clip from https://lorem.video — CORS-enabled, no signup. */
 const placeholderVideo = (seed: string) => {

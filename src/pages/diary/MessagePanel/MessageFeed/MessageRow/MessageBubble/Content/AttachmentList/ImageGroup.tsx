@@ -1,4 +1,6 @@
-import type { FC } from 'react';
+import type { FC, MouseEvent } from 'react';
+
+import { useState } from 'react';
 
 import clsx from 'clsx';
 
@@ -7,6 +9,7 @@ import type { ImageAttachment } from '@/store/diary/type';
 import { resolveAttachmentUrl } from '@/api';
 
 import styles from './ImageGroup.module.css';
+import ImageLightbox from './ImageLightbox';
 import { buildAttachmentRows } from './imageLayout.utils';
 
 export type ImageGroupProps = {
@@ -17,11 +20,18 @@ const LARGE_CAPACITY = 3;
 const SMALL_CAPACITY = 4;
 
 const ImageGroup: FC<ImageGroupProps> = ({ attachments }) => {
+  const [openIndex, setOpenIndex] = useState<number | null>(null);
+
   const rows = buildAttachmentRows(attachments, LARGE_CAPACITY, SMALL_CAPACITY);
   // The layout solver only ever leaves a single item alone in a row when the
   // whole group has exactly 1 image (3 and 4 are coprime, so every other
   // count either fills its row or leaves at least 2 in the last one).
   const isSolo = attachments.length === 1;
+
+  const handleOpen = (index: number) => (event: MouseEvent) => {
+    event.preventDefault();
+    setOpenIndex(index);
+  };
 
   return (
     <div className={clsx(styles.rows, isSolo && styles.rowsSolo)}>
@@ -32,6 +42,7 @@ const ImageGroup: FC<ImageGroupProps> = ({ attachments }) => {
         >
           {row.map((image) => {
             const imageUrl = resolveAttachmentUrl(image.url, 'image');
+            const index = attachments.indexOf(image);
 
             return (
               <a
@@ -40,6 +51,7 @@ const ImageGroup: FC<ImageGroupProps> = ({ attachments }) => {
                 className={clsx(styles.cell, isSolo && styles.cellSolo)}
                 target="_blank"
                 rel="noreferrer"
+                onClick={handleOpen(index)}
               >
                 <img
                   src={imageUrl}
@@ -51,6 +63,15 @@ const ImageGroup: FC<ImageGroupProps> = ({ attachments }) => {
           })}
         </div>
       ))}
+
+      {openIndex !== null && (
+        <ImageLightbox
+          images={attachments}
+          index={openIndex}
+          onIndexChange={setOpenIndex}
+          onClose={() => setOpenIndex(null)}
+        />
+      )}
     </div>
   );
 };

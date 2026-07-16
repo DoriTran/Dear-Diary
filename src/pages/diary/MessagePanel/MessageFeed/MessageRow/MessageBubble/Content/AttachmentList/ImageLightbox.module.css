@@ -1,0 +1,145 @@
+.overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 1.25rem;
+  padding: 1.75rem 0.5rem 1.25rem;
+  background: var(--overlay);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+}
+
+.stage {
+  position: relative;
+  flex: 1 1 auto;
+  min-height: 0;
+  width: 100%;
+}
+
+.figure {
+  position: absolute;
+  inset: 0 3rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  /* Size the frame to this box so portrait + landscape both fill it */
+  container-type: size;
+}
+
+.frame {
+  position: relative;
+  /* Largest box of this aspect ratio that fits the stage */
+  width: min(100cqw, calc(100cqh * var(--ar, 1.5)));
+  height: min(100cqh, calc(100cqw / var(--ar, 1.5)));
+}
+
+.image {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  border-radius: var(--radius-lg, 1rem);
+  box-shadow: var(--shadow-lg);
+}
+
+.controls {
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+  z-index: 2;
+  display: flex;
+  gap: 0.5rem;
+}
+
+.iconButton {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.25rem;
+  height: 2.25rem;
+  padding: 0;
+  border: 1px solid var(--border-soft);
+  border-radius: 999px;
+  color: var(--text-muted);
+  background: color-mix(in srgb, var(--surface) 78%, transparent);
+  cursor: pointer;
+  transition:
+    background 0.15s ease,
+    color 0.15s ease;
+}
+
+.iconButton:hover {
+  background: color-mix(in srgb, var(--accent-purple) 12%, transparent);
+  color: var(--text);
+}
+
+.arrow {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 2.75rem;
+  height: 2.75rem;
+  z-index: 1;
+}
+
+.arrowPrev {
+  left: 0.25rem;
+}
+
+.arrowNext {
+  right: 0.25rem;
+}
+
+.thumbnails {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  max-width: 100%;
+  padding-bottom: 0.25rem;
+  overflow-x: auto;
+  flex-shrink: 0;
+}
+
+.thumb {
+  flex: 0 0 auto;
+  width: 3.75rem;
+  height: 3.75rem;
+  padding: 0;
+  border: 2px solid transparent;
+  border-radius: var(--radius-md, 0.5rem);
+  background: none;
+  cursor: pointer;
+  overflow: hidden;
+  opacity: 0.6;
+  transition:
+    opacity 0.15s ease,
+    border-color 0.15s ease;
+}
+
+.thumb:hover {
+  opacity: 0.85;
+}
+
+.thumbActive {
+  opacity: 1;
+  border-color: var(--accent-purple);
+}
+
+.thumbImage {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.counter {
+  flex-shrink: 0;
+  color: var(--text-muted);
+  font-size: 0.8125rem;
+  font-weight: 500;
+  letter-spacing: 0.02em;
+}
