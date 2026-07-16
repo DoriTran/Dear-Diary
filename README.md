@@ -37,4 +37,4 @@ yarn install
 npm run dev
 ```
 
-Then open the printed local URL (usually `http://localhost:5173`) in your browser to use the app.
+Then open the printed local URL (usually `http://localhost:8888`) in your browser to use the app.

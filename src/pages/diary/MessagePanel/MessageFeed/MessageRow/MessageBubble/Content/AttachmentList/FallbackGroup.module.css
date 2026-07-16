@@ -1,0 +1,19 @@
+.list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+}
+
+.listCompact {
+  font-size: var(--font-2xs);
+}
+
+.item {
+  overflow: hidden;
+  font-size: var(--font-2xs);
+  color: var(--text);
+  text-decoration: underline;
+  text-decoration-color: var(--border-soft);
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}

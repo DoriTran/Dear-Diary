@@ -43,8 +43,9 @@ export const useMessageScroll = () => {
     feed.scrollTop = 0;
     return true;
   }, []);
+
   return {
-    feedRef: feedRef,
+    feedRef,
     registerRef,
     scrollToMessage,
     scrollToBottom,

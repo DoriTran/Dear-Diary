@@ -9,7 +9,7 @@ import { AdIcon } from '@/packages/base';
 import { useDiaryStore } from '@/store';
 
 import { formatMessageTime } from '../../message.utils';
-import AttachmentList from './Content/AttachmentList';
+import AttachmentList from './Content/AttachmentList/AttachmentList';
 import ContentRenderer from './Content/ContentRenderer';
 import ForwardCard from './Content/ForwardCard';
 import MessageDecoratorShell from './Content/MessageDecoratorShell';
@@ -67,7 +67,10 @@ const MessageBubble: FC<MessageBubbleProps> = ({
   ) : null;
 
   const attachments = hasAttachments ? (
-    <AttachmentList attachments={message.attachments} />
+    <AttachmentList
+      attachments={message.attachments}
+      align={isAssistant ? 'start' : 'end'}
+    />
   ) : null;
 
   let body: ReactNode = null;

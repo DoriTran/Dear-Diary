@@ -8,7 +8,7 @@ import { AdIcon } from '@/packages/base';
 import { useDiaryStore } from '@/store';
 
 import { getMessagePreviewText } from '../../../../messagePanel.utils';
-import AttachmentList from './AttachmentList';
+import AttachmentList from './AttachmentList/AttachmentList';
 import styles from './MessageContent.module.css';
 
 export type ContentRendererProps = {
@@ -21,6 +21,7 @@ const ContentRenderer: FC<ContentRendererProps> = ({
   mode = 'feed',
 }) => {
   const updateMessageContent = useDiaryStore('updateMessageContent');
+  const align = message.sender === 'assistant' ? 'start' : 'end';
 
   if (mode === 'preview') {
     return <p className={styles.text}>{getMessagePreviewText(message)}</p>;
@@ -62,7 +63,11 @@ const ContentRenderer: FC<ContentRendererProps> = ({
               </div>
               {item.attachments.length > 0 ? (
                 <div className={styles.rowAttachments}>
-                  <AttachmentList attachments={item.attachments} compact />
+                  <AttachmentList
+                    attachments={item.attachments}
+                    align={align}
+                    compact
+                  />
                 </div>
               ) : null}
             </li>
