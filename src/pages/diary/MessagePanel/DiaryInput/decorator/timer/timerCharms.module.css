@@ -15,6 +15,20 @@
   line-height: 1;
 }
 
+.displayTextSlot {
+  display: inline-grid;
+  justify-items: center;
+}
+
+.displayTextSizer,
+.displayTextValue {
+  grid-area: 1 / 1;
+}
+
+.displayTextSizer {
+  visibility: hidden;
+}
+
 .composerStatusText {
   font-size: var(--font-sm);
   font-weight: 600;
@@ -38,7 +52,7 @@
 }
 
 .modeSelect {
-  min-width: 7rem;
+  min-width: calc(9.5rem - 15px);
   width: auto;
 }
 

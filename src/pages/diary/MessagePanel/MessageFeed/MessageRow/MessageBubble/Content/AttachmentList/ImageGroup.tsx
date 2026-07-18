@@ -1,16 +1,15 @@
 import type { FC, MouseEvent } from 'react';
 
-import { useState } from 'react';
-
 import clsx from 'clsx';
+import { useState } from 'react';
 
 import type { ImageAttachment } from '@/store/diary/type';
 
 import { resolveAttachmentUrl } from '@/api';
 
 import styles from './ImageGroup.module.css';
-import ImageLightbox from './ImageLightbox';
 import { buildAttachmentRows } from './imageLayout.utils';
+import ImageLightbox from './ImageLightbox';
 
 export type ImageGroupProps = {
   attachments: ImageAttachment[];

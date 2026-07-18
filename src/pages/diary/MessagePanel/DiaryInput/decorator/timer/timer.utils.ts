@@ -28,6 +28,7 @@ export const createDefaultTimerDecorator = (): TimerDecorator => ({
   pause: false,
   running: false,
   durationMs: DEFAULT_TIMER_DURATION_MS,
+  initialDurationMs: DEFAULT_TIMER_DURATION_MS,
   startedAt: null,
   targetDate: defaultTimerTargetDate(),
   deadlineAt: null,
@@ -151,16 +152,34 @@ export const tickTimerDecorator = (
   now: number,
 ): TimerDecorator => {
   const remaining = getTimerRemainingMs(decoration, now);
+  const nextDurationMs = Math.floor(remaining / SECOND_MS) * SECOND_MS;
+  const prevDurationMs =
+    Math.floor(decoration.durationMs / SECOND_MS) * SECOND_MS;
 
   if (decoration.mode === 'countup') {
+    if (nextDurationMs === prevDurationMs) {
+      return decoration;
+    }
+
     return { ...decoration, durationMs: remaining };
+  }
+
+  const nextRunning = remaining > 0 ? decoration.running : false;
+  const nextPause = remaining <= 0 ? true : decoration.pause;
+
+  if (
+    nextDurationMs === prevDurationMs &&
+    nextRunning === decoration.running &&
+    nextPause === decoration.pause
+  ) {
+    return decoration;
   }
 
   return {
     ...decoration,
     durationMs: remaining,
-    running: remaining > 0 ? decoration.running : false,
-    pause: remaining <= 0 ? true : decoration.pause,
+    running: nextRunning,
+    pause: nextPause,
   };
 };
 
@@ -240,7 +259,7 @@ export const resetTimerDecorator = (
     ...decoration,
     running: false,
     pause: false,
-    durationMs: DEFAULT_TIMER_DURATION_MS,
+    durationMs: decoration.initialDurationMs ?? DEFAULT_TIMER_DURATION_MS,
     deadlineAt: null,
   };
 };
@@ -271,9 +290,15 @@ export const setTimerMode = (
     };
   }
 
+  const timerDurationMs =
+    decoration.initialDurationMs ||
+    decoration.durationMs ||
+    DEFAULT_TIMER_DURATION_MS;
+
   return {
     ...base,
-    durationMs: decoration.durationMs || DEFAULT_TIMER_DURATION_MS,
+    durationMs: timerDurationMs,
+    initialDurationMs: timerDurationMs,
   };
 };
 

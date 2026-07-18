@@ -243,6 +243,8 @@ export type TimerDecorator = {
   pause: boolean;
   running: boolean;
   durationMs: number;
+  /** Configured duration captured at compose time; used to reset. */
+  initialDurationMs: number;
   startedAt: string | null;
   targetDate: string;
   /** ISO deadline when timer/datetime mode is running */

@@ -1,15 +1,13 @@
-import type { CSSProperties, FC, MouseEvent, SyntheticEvent } from 'react';
+import type { CSSProperties, FC, SyntheticEvent } from 'react';
 
+import clsx from 'clsx';
 import { useCallback, useEffect, useState } from 'react';
 import { createPortal } from 'react-dom';
 
-import clsx from 'clsx';
-
 import type { ImageAttachment } from '@/store/diary/type';
 
-import { AdIcon } from '@/packages/base';
-
 import { resolveAttachmentUrl } from '@/api';
+import { AdIcon } from '@/packages/base';
 
 import styles from './ImageLightbox.module.css';
 
@@ -123,110 +121,116 @@ const ImageLightbox: FC<ImageLightboxProps> = ({
     return null;
   }
 
-  const stop = (event: MouseEvent) => event.stopPropagation();
-
   const frameStyle = {
     '--ar': aspectRatio ?? 1.5,
   } as CSSProperties;
 
   return createPortal(
-    <div
-      className={styles.overlay}
-      role="dialog"
-      aria-modal="true"
-      onClick={onClose}
-    >
+    <div className={styles.overlay}>
+      <button
+        type="button"
+        className={styles.backdrop}
+        aria-label="Close image viewer"
+        tabIndex={-1}
+        onClick={onClose}
+      />
       <div
-        className={styles.controls}
-        onClick={(event) => event.stopPropagation()}
+        className={styles.content}
+        role="dialog"
+        aria-modal="true"
+        aria-label={current.name ?? 'Image viewer'}
       >
-        <button
-          type="button"
-          className={styles.iconButton}
-          onClick={() => void downloadImage(currentUrl, current.name)}
-          aria-label="Download image"
-        >
-          <AdIcon icon="Download" source="lucide" size="1.125rem" />
-        </button>
-        <button
-          type="button"
-          className={styles.iconButton}
-          onClick={onClose}
-          aria-label="Close"
-        >
-          <AdIcon icon="X" source="lucide" size="1.125rem" />
-        </button>
-      </div>
-
-      <div className={styles.stage}>
-        {hasPrev && (
+        <div className={styles.controls}>
           <button
             type="button"
-            className={clsx(styles.iconButton, styles.arrow, styles.arrowPrev)}
-            onClick={(event) => {
-              event.stopPropagation();
-              goPrev();
-            }}
-            aria-label="Previous image"
+            className={styles.iconButton}
+            onClick={() => void downloadImage(currentUrl, current.name)}
+            aria-label="Download image"
           >
-            <AdIcon icon="ChevronLeft" source="lucide" size="1.5rem" />
+            <AdIcon icon="Download" source="lucide" size="1.125rem" />
           </button>
-        )}
-
-        <figure className={styles.figure}>
-          <div className={styles.frame} style={frameStyle} onClick={stop}>
-            <img
-              src={currentUrl}
-              alt={current.name ?? 'Image attachment'}
-              className={styles.image}
-              onLoad={handleImageLoad}
-            />
-          </div>
-        </figure>
-
-        {hasNext && (
           <button
             type="button"
-            className={clsx(styles.iconButton, styles.arrow, styles.arrowNext)}
-            onClick={(event) => {
-              event.stopPropagation();
-              goNext();
-            }}
-            aria-label="Next image"
+            className={styles.iconButton}
+            onClick={onClose}
+            aria-label="Close"
           >
-            <AdIcon icon="ChevronRight" source="lucide" size="1.5rem" />
+            <AdIcon icon="X" source="lucide" size="1.125rem" />
           </button>
+        </div>
+
+        <div className={styles.stage}>
+          {hasPrev && (
+            <button
+              type="button"
+              className={clsx(
+                styles.iconButton,
+                styles.arrow,
+                styles.arrowPrev,
+              )}
+              onClick={goPrev}
+              aria-label="Previous image"
+            >
+              <AdIcon icon="ChevronLeft" source="lucide" size="1.5rem" />
+            </button>
+          )}
+
+          <figure className={styles.figure}>
+            <div className={styles.frame} style={frameStyle}>
+              <img
+                src={currentUrl}
+                alt={current.name ?? 'Image attachment'}
+                className={styles.image}
+                onLoad={handleImageLoad}
+              />
+            </div>
+          </figure>
+
+          {hasNext && (
+            <button
+              type="button"
+              className={clsx(
+                styles.iconButton,
+                styles.arrow,
+                styles.arrowNext,
+              )}
+              onClick={goNext}
+              aria-label="Next image"
+            >
+              <AdIcon icon="ChevronRight" source="lucide" size="1.5rem" />
+            </button>
+          )}
+        </div>
+
+        {total > 1 && (
+          <>
+            <div className={styles.thumbnails}>
+              {images.map((image, thumbIndex) => (
+                <button
+                  key={image.id}
+                  type="button"
+                  className={clsx(
+                    styles.thumb,
+                    thumbIndex === index && styles.thumbActive,
+                  )}
+                  onClick={() => onIndexChange(thumbIndex)}
+                  aria-label={`View image ${thumbIndex + 1}`}
+                  aria-current={thumbIndex === index}
+                >
+                  <img
+                    src={resolveAttachmentUrl(image.url, 'image')}
+                    alt={image.name ?? `Image ${thumbIndex + 1}`}
+                    className={styles.thumbImage}
+                  />
+                </button>
+              ))}
+            </div>
+            <span className={styles.counter}>
+              {index + 1} / {total}
+            </span>
+          </>
         )}
       </div>
-
-      {total > 1 && (
-        <>
-          <div className={styles.thumbnails} onClick={stop}>
-            {images.map((image, thumbIndex) => (
-              <button
-                key={image.id}
-                type="button"
-                className={clsx(
-                  styles.thumb,
-                  thumbIndex === index && styles.thumbActive,
-                )}
-                onClick={() => onIndexChange(thumbIndex)}
-                aria-label={`View image ${thumbIndex + 1}`}
-                aria-current={thumbIndex === index}
-              >
-                <img
-                  src={resolveAttachmentUrl(image.url, 'image')}
-                  alt={image.name ?? `Image ${thumbIndex + 1}`}
-                  className={styles.thumbImage}
-                />
-              </button>
-            ))}
-          </div>
-          <span className={styles.counter}>
-            {index + 1} / {total}
-          </span>
-        </>
-      )}
     </div>,
     document.body,
   );

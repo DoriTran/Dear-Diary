@@ -346,6 +346,7 @@ export const diaryDummyState: DiaryStore = {
           pause: false,
           running: false,
           durationMs: 0,
+          initialDurationMs: 0,
           startedAt: null,
           targetDate: '2026-02-01T00:00:00.000Z',
           deadlineAt: null,

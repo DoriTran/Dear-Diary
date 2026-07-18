@@ -1,6 +1,6 @@
 import type { FC } from 'react';
 
-import { faStopwatch } from '@fortawesome/free-solid-svg-icons';
+import { faCalendarCheck } from '@fortawesome/free-solid-svg-icons';
 
 import type { TimerDecorator } from '@/store/diary/type';
 
@@ -10,6 +10,7 @@ import type { ComposerContext } from '../charms/charm.types';
 
 import { getTimerDisplayText } from './timer.utils';
 import styles from './timerCharms.module.css';
+import TimerDisplayText from './TimerDisplayText';
 
 type TimerModeDatetimeProps = {
   decoration: TimerDecorator;
@@ -32,7 +33,7 @@ const TimerModeDatetime: FC<TimerModeDatetimeProps> = ({
   if (composing) {
     return (
       <div className={styles.modePanel}>
-        <AdIcon icon={faStopwatch} size={18} />
+        <AdIcon icon={faCalendarCheck} size={18} />
         <AdDateTimePicker
           compact
           className={styles.composerPill}
@@ -54,8 +55,8 @@ const TimerModeDatetime: FC<TimerModeDatetimeProps> = ({
 
   return (
     <div className={styles.modePanel}>
-      <AdIcon icon={faStopwatch} size={28} />
-      <span className={styles.displayText}>{getTimerDisplayText(timer)}</span>
+      <AdIcon icon={faCalendarCheck} size={28} />
+      <TimerDisplayText text={getTimerDisplayText(timer)} />
     </div>
   );
 };

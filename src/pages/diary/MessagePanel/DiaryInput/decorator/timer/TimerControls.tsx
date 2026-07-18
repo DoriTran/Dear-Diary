@@ -19,25 +19,24 @@ type TimerControlsProps = {
 const TimerControls: FC<TimerControlsProps> = ({ ctx }) => {
   const disabled = ctx.composing;
 
+  const timer = ctx.decorators.find((d) => d.type === 'timer');
+  const isRunning = timer?.type === 'timer' && timer.running && !timer.pause;
+
   return (
     <div className={styles.controls}>
       <button
         type="button"
         className={`${styles.controlBtn} ${disabled ? styles.controlBtnDisabled : ''}`}
-        aria-label="Play timer"
+        aria-label={isRunning ? 'Pause timer' : 'Play timer'}
         disabled={disabled}
-        onClick={() => ctx.emit({ decorator: 'timer', action: 'play' })}
+        onClick={() =>
+          ctx.emit({
+            decorator: 'timer',
+            action: isRunning ? 'pause' : 'play',
+          })
+        }
       >
-        <AdIcon icon={faPlay} size={16} />
-      </button>
-      <button
-        type="button"
-        className={`${styles.controlBtn} ${disabled ? styles.controlBtnDisabled : ''}`}
-        aria-label="Pause timer"
-        disabled={disabled}
-        onClick={() => ctx.emit({ decorator: 'timer', action: 'pause' })}
-      >
-        <AdIcon icon={faPause} size={16} />
+        <AdIcon icon={isRunning ? faPause : faPlay} size={16} />
       </button>
       <button
         type="button"

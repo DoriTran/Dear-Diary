@@ -12,7 +12,7 @@ import { setTimerMode } from './timer.utils';
 import styles from './timerCharms.module.css';
 
 const MODE_OPTIONS = [
-  { value: 'timer', label: 'Timer' },
+  { value: 'timer', label: 'Countdown' },
   { value: 'countup', label: 'Countup' },
   { value: 'datetime', label: 'Datetime' },
 ];

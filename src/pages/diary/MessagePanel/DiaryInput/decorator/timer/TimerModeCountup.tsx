@@ -1,6 +1,6 @@
 import type { FC } from 'react';
 
-import { faStopwatch } from '@fortawesome/free-solid-svg-icons';
+import { faClock } from '@fortawesome/free-solid-svg-icons';
 
 import type { TimerDecorator } from '@/store/diary/type';
 
@@ -10,6 +10,7 @@ import type { ComposerContext } from '../charms/charm.types';
 
 import { getTimerDisplayText } from './timer.utils';
 import styles from './timerCharms.module.css';
+import TimerDisplayText from './TimerDisplayText';
 
 type TimerModeCountupProps = {
   decoration: TimerDecorator;
@@ -19,14 +20,12 @@ type TimerModeCountupProps = {
 const TimerModeCountup: FC<TimerModeCountupProps> = ({ decoration, ctx }) => {
   return (
     <div className={styles.modePanel}>
-      <AdIcon icon={faStopwatch} size={ctx.composing ? 18 : 28} />
-      <span
-        className={
-          ctx.composing ? styles.composerStatusText : styles.displayText
-        }
-      >
-        {ctx.composing ? '00:00' : getTimerDisplayText(decoration)}
-      </span>
+      <AdIcon icon={faClock} size={ctx.composing ? 18 : 28} />
+      {ctx.composing ? (
+        <span className={styles.composerStatusText}>00:00</span>
+      ) : (
+        <TimerDisplayText text={getTimerDisplayText(decoration)} />
+      )}
     </div>
   );
 };
