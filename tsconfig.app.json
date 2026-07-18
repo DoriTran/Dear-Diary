@@ -1,9 +1,8 @@
 {
   "compilerOptions": {
     /* Base import */
-    "baseUrl": ".",
     "paths": {
-      "@/*": ["src/*"]
+      "@/*": ["./src/*"]
     },
 
     /* Build */
