@@ -20,7 +20,11 @@ const TimerControls: FC<TimerControlsProps> = ({ ctx }) => {
   const disabled = ctx.composing;
 
   const timer = ctx.decorators.find((d) => d.type === 'timer');
-  const isRunning = timer?.type === 'timer' && timer.running && !timer.pause;
+  if (!timer || timer.type !== 'timer' || timer.mode === 'datetime') {
+    return null;
+  }
+
+  const isRunning = timer.running && !timer.pause;
 
   return (
     <div className={styles.controls}>

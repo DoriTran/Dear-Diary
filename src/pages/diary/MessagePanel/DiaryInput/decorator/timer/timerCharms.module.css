@@ -29,8 +29,23 @@
   visibility: hidden;
 }
 
-.composerStatusText {
+.datetimeStack {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  min-width: 0;
+}
+
+.datetimeCountdown {
   font-size: var(--font-sm);
+  font-weight: 600;
+  color: var(--text-muted);
+  font-variant-numeric: tabular-nums;
+  line-height: 1;
+}
+
+.composerStatusText {
+  font-size: 1rem;
   font-weight: 600;
   color: var(--primary);
   font-variant-numeric: tabular-nums;

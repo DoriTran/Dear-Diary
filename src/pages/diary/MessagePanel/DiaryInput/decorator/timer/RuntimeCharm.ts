@@ -13,8 +13,15 @@ export const createRuntimeCharm = (): Charm => ({
         return false;
       }
 
-      const timer = decoration;
-      return timer.running && !timer.pause && !ctx.composing;
+      if (ctx.composing) {
+        return false;
+      }
+
+      if (decoration.mode === 'datetime') {
+        return true;
+      }
+
+      return decoration.running && !decoration.pause;
     },
     tick: (decoration, now) => {
       if (!isTimerDecorator(decoration)) {

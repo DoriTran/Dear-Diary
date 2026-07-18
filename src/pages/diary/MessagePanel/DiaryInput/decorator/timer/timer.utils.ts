@@ -312,3 +312,9 @@ export const formatDatetimeDisplay = (iso: string): string => {
     minute: '2-digit',
   });
 };
+
+/** Always `Xd HH:MM:SS`, including `0d` under one day. */
+export const formatDatetimeCountdown = (ms: number): string => {
+  const parts = durationMsToParts(Math.max(0, ms));
+  return `${parts.days}d ${parts.time}`;
+};

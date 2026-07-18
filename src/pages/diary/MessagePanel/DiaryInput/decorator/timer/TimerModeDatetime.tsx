@@ -1,6 +1,6 @@
 import type { FC } from 'react';
 
-import { faCalendarCheck } from '@fortawesome/free-solid-svg-icons';
+import { faCalendar, faCalendarCheck } from '@fortawesome/free-solid-svg-icons';
 
 import type { TimerDecorator } from '@/store/diary/type';
 
@@ -8,7 +8,11 @@ import { AdDateTimePicker, AdIcon } from '@/packages/base';
 
 import type { ComposerContext } from '../charms/charm.types';
 
-import { getTimerDisplayText } from './timer.utils';
+import {
+  formatDatetimeCountdown,
+  formatDatetimeDisplay,
+  getTimerRemainingMs,
+} from './timer.utils';
 import styles from './timerCharms.module.css';
 import TimerDisplayText from './TimerDisplayText';
 
@@ -33,7 +37,7 @@ const TimerModeDatetime: FC<TimerModeDatetimeProps> = ({
   if (composing) {
     return (
       <div className={styles.modePanel}>
-        <AdIcon icon={faCalendarCheck} size={18} />
+        <AdIcon icon={faCalendar} size={24} />
         <AdDateTimePicker
           compact
           className={styles.composerPill}
@@ -53,10 +57,21 @@ const TimerModeDatetime: FC<TimerModeDatetimeProps> = ({
     );
   }
 
+  const remainingMs = getTimerRemainingMs(timer);
+  const reached = remainingMs <= 0;
+
   return (
     <div className={styles.modePanel}>
-      <AdIcon icon={faCalendarCheck} size={28} />
-      <TimerDisplayText text={getTimerDisplayText(timer)} />
+      <AdIcon icon={reached ? faCalendarCheck : faCalendar} size={28} />
+      <div className={styles.datetimeStack}>
+        <span className={styles.displayText}>
+          {formatDatetimeDisplay(timer.targetDate)}
+        </span>
+        <TimerDisplayText
+          text={formatDatetimeCountdown(remainingMs)}
+          className={styles.datetimeCountdown}
+        />
+      </div>
     </div>
   );
 };

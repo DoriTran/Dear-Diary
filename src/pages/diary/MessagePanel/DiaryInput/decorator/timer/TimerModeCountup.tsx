@@ -20,9 +20,11 @@ type TimerModeCountupProps = {
 const TimerModeCountup: FC<TimerModeCountupProps> = ({ decoration, ctx }) => {
   return (
     <div className={styles.modePanel}>
-      <AdIcon icon={faClock} size={ctx.composing ? 18 : 28} />
+      <AdIcon icon={faClock} size={ctx.composing ? 24 : 28} />
       {ctx.composing ? (
-        <span className={styles.composerStatusText}>00:00</span>
+        <span className={`${styles.composerPill} ${styles.composerStatusText}`}>
+          00:00
+        </span>
       ) : (
         <TimerDisplayText text={getTimerDisplayText(decoration)} />
       )}

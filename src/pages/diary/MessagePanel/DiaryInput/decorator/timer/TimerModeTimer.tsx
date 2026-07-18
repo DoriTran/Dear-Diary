@@ -33,7 +33,7 @@ const TimerModeTimer: FC<TimerModeTimerProps> = ({
   if (composing) {
     return (
       <div className={styles.modePanel}>
-        <AdIcon icon={faAlarmClock} size={18} />
+        <AdIcon icon={faAlarmClock} size={24} />
         <AdDurationPicker
           className={styles.composerPill}
           compact
