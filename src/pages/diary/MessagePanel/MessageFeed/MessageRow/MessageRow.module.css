@@ -29,8 +29,7 @@
   transition: opacity var(--transition-fast);
 }
 
-.root:hover .hoverActions,
-.root:focus-within .hoverActions {
+.root:hover .hoverActions {
   opacity: 1;
   pointer-events: auto;
 }

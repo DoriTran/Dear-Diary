@@ -1,5 +1,5 @@
 import { faCheck, faRotateLeft } from '@fortawesome/free-solid-svg-icons';
-import { useRef, useState, type FC } from 'react';
+import { useRef, type FC } from 'react';
 
 import { AdIcon } from '@/packages/base';
 
@@ -26,9 +26,6 @@ const TicketStub: FC<TicketStubProps> = ({ decoratorIndex, ctx }) => {
   const columnRef = useRef<HTMLDivElement>(null);
   const { width, height, topOffset, isCompact } =
     useTicketEditorMetrics(columnRef);
-  // After tearing, the cursor is still over the stub — suppress hover until it leaves.
-  // Start true so already-done tickets (reload) can hover on first enter.
-  const [hoverReady, setHoverReady] = useState(true);
 
   const decoration = ctx.decorators[decoratorIndex];
   const isDone = decoration?.type === 'ticket' && decoration.state === 'done';
@@ -60,7 +57,6 @@ const TicketStub: FC<TicketStubProps> = ({ decoratorIndex, ctx }) => {
           className={styles.stub}
           style={{ top: topOffset, height }}
           data-done={isDone || undefined}
-          data-hover-ready={isDone && hoverReady ? true : undefined}
         >
           <div className={styles.tearLayer}>
             <svg
@@ -88,8 +84,6 @@ const TicketStub: FC<TicketStubProps> = ({ decoratorIndex, ctx }) => {
                   return;
                 }
 
-                // Keep rest opacity until the pointer leaves — cursor is still over the stub.
-                setHoverReady(false);
                 event.currentTarget.blur();
                 toggle();
               }}
@@ -101,14 +95,7 @@ const TicketStub: FC<TicketStubProps> = ({ decoratorIndex, ctx }) => {
             </button>
           </div>
 
-          <div
-            className={styles.undoLayer}
-            onPointerLeave={() => {
-              if (isDone) {
-                setHoverReady(true);
-              }
-            }}
-          >
+          <div className={styles.undoLayer}>
             <div className={styles.undoGhost}>
               <svg
                 className={styles.svg}
@@ -129,7 +116,10 @@ const TicketStub: FC<TicketStubProps> = ({ decoratorIndex, ctx }) => {
                 aria-label="Undo"
                 aria-hidden={!isDone}
                 tabIndex={isDone ? undefined : -1}
-                onClick={toggle}
+                onClick={(event) => {
+                  event.currentTarget.blur();
+                  toggle();
+                }}
               >
                 <AdIcon icon={faRotateLeft} size={isCompact ? 12 : 14} />
                 {!isCompact ? (
