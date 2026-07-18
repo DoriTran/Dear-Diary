@@ -145,6 +145,39 @@ export const buildMessagePayload = (
   };
 };
 
+export const buildDraftFromMessage = (message: Message): ComposerDraft => {
+  const base: ComposerDraft = {
+    variant: message.variant,
+    decorators: message.decorators,
+    attachments: message.attachments,
+    text: '',
+    todoItems: [createEmptyTodoItem()],
+    focused: false,
+    replyToMessageId: message.replyToMessageId,
+  };
+
+  if (message.variant === 'todo') {
+    const items = message.content.items.map((item) => ({
+      id: item.id,
+      completed: item.completed,
+      text: item.content.text,
+      attachments: item.attachments,
+    }));
+
+    return {
+      ...base,
+      text: '',
+      todoItems: items.length > 0 ? items : [createEmptyTodoItem()],
+    };
+  }
+
+  return {
+    ...base,
+    text: message.content.text,
+    todoItems: [createEmptyTodoItem()],
+  };
+};
+
 export const fileToAttachmentType = (
   file: File,
   kind: 'file' | 'image' | 'video',

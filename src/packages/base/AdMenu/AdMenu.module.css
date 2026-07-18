@@ -32,14 +32,24 @@
   transition: background var(--transition-fast);
 }
 
-.menuItem:hover {
+.menuItem:hover:not(:disabled) {
   background: var(--surface-soft);
+}
+
+.menuItem[data-centered] {
+  justify-content: center;
+  text-align: center;
+}
+
+.menuItem:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
 }
 
 .menuItem[data-destructive] {
   color: var(--danger, #e53935);
 }
 
-.menuItem[data-destructive]:hover {
+.menuItem[data-destructive]:hover:not(:disabled) {
   background: color-mix(in srgb, var(--danger, #e53935) 8%, var(--surface-soft));
 }

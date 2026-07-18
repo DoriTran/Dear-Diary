@@ -10,6 +10,7 @@ export type AdActionButtonProps = {
   active?: boolean;
   size?: number;
   tooltip?: boolean;
+  disabled?: boolean;
   onClick?: MouseEventHandler<HTMLButtonElement>;
   type?: 'button' | 'submit' | 'reset';
 };
@@ -23,6 +24,7 @@ const AdActionButton = forwardRef<HTMLButtonElement, AdActionButtonProps>(
       active = false,
       size = 14,
       tooltip = true,
+      disabled = false,
       type = 'button',
     },
     ref,
@@ -34,6 +36,7 @@ const AdActionButton = forwardRef<HTMLButtonElement, AdActionButtonProps>(
         className={styles.root}
         data-active={active || undefined}
         aria-label={label}
+        disabled={disabled}
         onClick={onClick}
       >
         <AdIcon icon={icon} size={size} />

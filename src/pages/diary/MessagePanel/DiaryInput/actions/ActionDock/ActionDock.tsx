@@ -1,4 +1,5 @@
 import {
+  faCheck,
   faCheckSquare,
   faImage,
   faPaperPlane,
@@ -7,6 +8,7 @@ import {
   faTicket,
   faTrashCan,
   faVideo,
+  faXmark,
 } from '@fortawesome/free-solid-svg-icons';
 import { useRef, type FC, type ReactNode } from 'react';
 
@@ -20,6 +22,7 @@ export type ActionDockProps = {
   variant: MessageVariant;
   decorators: MessageDecorator[];
   canSend: boolean;
+  editing?: boolean;
   onClear: () => void;
   onAddFiles: (
     files: FileList | File[],
@@ -29,18 +32,23 @@ export type ActionDockProps = {
   onVariantSwitch: (variant: MessageVariant) => void;
   reactionPicker?: ReactNode;
   onSend: () => void;
+  onCancelEdit?: () => void;
+  onConfirmEdit?: () => void;
 };
 
 const ActionDock: FC<ActionDockProps> = ({
   variant,
   decorators,
   canSend,
+  editing = false,
   onClear,
   onAddFiles,
   onToggleDecorator,
   onVariantSwitch,
   reactionPicker,
   onSend,
+  onCancelEdit,
+  onConfirmEdit,
 }) => {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const imageInputRef = useRef<HTMLInputElement>(null);
@@ -141,15 +149,38 @@ const ActionDock: FC<ActionDockProps> = ({
 
       <div className={styles.group}>{reactionPicker}</div>
 
-      <button
-        type="button"
-        className={`${styles.btn} ${styles.sendBtn}`}
-        aria-label="Send message"
-        disabled={!canSend}
-        onClick={onSend}
-      >
-        <AdIcon icon={faPaperPlane} size={14} />
-      </button>
+      {editing ? (
+        <div className={styles.editActions}>
+          <span className={styles.editLabel}>Edit Message</span>
+          <button
+            type="button"
+            className={styles.btn}
+            aria-label="Cancel edit"
+            onClick={onCancelEdit}
+          >
+            <AdIcon icon={faXmark} size={14} />
+          </button>
+          <button
+            type="button"
+            className={`${styles.btn} ${styles.sendBtn}`}
+            aria-label="Confirm edit"
+            disabled={!canSend}
+            onClick={onConfirmEdit}
+          >
+            <AdIcon icon={faCheck} size={14} />
+          </button>
+        </div>
+      ) : (
+        <button
+          type="button"
+          className={`${styles.btn} ${styles.sendBtn}`}
+          aria-label="Send message"
+          disabled={!canSend}
+          onClick={onSend}
+        >
+          <AdIcon icon={faPaperPlane} size={14} />
+        </button>
+      )}
 
       <input
         ref={fileInputRef}

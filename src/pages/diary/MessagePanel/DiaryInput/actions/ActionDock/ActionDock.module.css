@@ -67,6 +67,20 @@
   margin-left: auto;
 }
 
+.editActions {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+  margin-left: auto;
+}
+
+.editLabel {
+  margin-right: 0.25rem;
+  color: var(--text-muted);
+  font-size: var(--font-sm);
+  white-space: nowrap;
+}
+
 .sendBtn:disabled {
   opacity: 0.45;
   cursor: not-allowed;

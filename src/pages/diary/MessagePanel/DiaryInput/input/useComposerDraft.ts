@@ -20,6 +20,7 @@ import {
   type PendingVariantSwitch,
 } from './composer.types';
 import {
+  buildDraftFromMessage,
   buildMessagePayload,
   convertDraftToVariant,
   createTimerDecorator,
@@ -34,14 +35,28 @@ export const useComposerDraft = (
   options?: {
     replyToMessageId?: string | null;
     onReplyClear?: () => void;
+    editMessageId?: string | null;
+    onEditClear?: () => void;
+    onDirtyChange?: (dirty: boolean) => void;
   },
 ) => {
   const createMessage = useDiaryStore('createMessage');
+  const updateMessage = useDiaryStore('updateMessage');
+  const messages = useDiaryStore('messages');
   const [draft, setDraft] = useState<ComposerDraft>(createInitialDraft);
   const [pendingVariantSwitch, setPendingVariantSwitch] =
     useState<PendingVariantSwitch>(null);
   const [sending, setSending] = useState(false);
   const editorRef = useRef<ComposerEditorRef | null>(null);
+  const editMessageId = options?.editMessageId ?? null;
+  const prevEditMessageIdRef = useRef<string | null>(editMessageId);
+  const onDirtyChangeRef = useRef(options?.onDirtyChange);
+  const onEditClearRef = useRef(options?.onEditClear);
+  const onReplyClearRef = useRef(options?.onReplyClear);
+
+  onDirtyChangeRef.current = options?.onDirtyChange;
+  onEditClearRef.current = options?.onEditClear;
+  onReplyClearRef.current = options?.onReplyClear;
 
   useEffect(() => {
     setDraft((current) => ({
@@ -49,6 +64,36 @@ export const useComposerDraft = (
       replyToMessageId: options?.replyToMessageId ?? null,
     }));
   }, [options?.replyToMessageId]);
+
+  useEffect(() => {
+    const previous = prevEditMessageIdRef.current;
+    prevEditMessageIdRef.current = editMessageId;
+
+    if (editMessageId) {
+      const message = messages[editMessageId];
+
+      if (message && editMessageId !== previous) {
+        setDraft(buildDraftFromMessage(message));
+      }
+
+      return;
+    }
+
+    if (previous) {
+      setDraft(createInitialDraft());
+    }
+    // Only re-hydrate when entering/leaving edit mode, not on every messages update.
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- messages read intentionally on editMessageId change
+  }, [editMessageId]);
+
+  useEffect(() => {
+    if (editMessageId) {
+      onDirtyChangeRef.current?.(false);
+      return;
+    }
+
+    onDirtyChangeRef.current?.(hasDraftContent(draft));
+  }, [draft, editMessageId]);
 
   const setFocused = useCallback((focused: boolean) => {
     setDraft((current) => ({ ...current, focused }));
@@ -64,6 +109,11 @@ export const useComposerDraft = (
 
   const clearAll = useCallback(() => {
     setDraft(createInitialDraft());
+  }, []);
+
+  const cancelEdit = useCallback(() => {
+    setDraft(createInitialDraft());
+    onEditClearRef.current?.();
   }, []);
 
   const applyVariantSwitch = useCallback((nextVariant: MessageVariant) => {
@@ -259,6 +309,28 @@ export const useComposerDraft = (
     });
   }, []);
 
+  const reorderTodoRow = useCallback((current: number, previous: number) => {
+    if (current === previous) {
+      return;
+    }
+
+    setDraft((draftState) => {
+      const items = draftState.todoItems;
+      if (
+        current < 0 ||
+        previous < 0 ||
+        current >= items.length ||
+        previous >= items.length
+      ) {
+        return draftState;
+      }
+
+      const next = items.slice();
+      [next[current], next[previous]] = [next[previous], next[current]];
+      return { ...draftState, todoItems: next };
+    });
+  }, []);
+
   const addTodoRowFiles = useCallback(
     async (itemId: string, files: FileList | File[]) => {
       const fileList = Array.from(files);
@@ -354,6 +426,23 @@ export const useComposerDraft = (
     setSending(true);
 
     try {
+      if (editMessageId) {
+        const current = messages[editMessageId];
+
+        updateMessage(editMessageId, {
+          variant: payload.variant,
+          content: payload.content,
+          attachments: payload.attachments ?? [],
+          decorators: payload.decorators ?? [],
+          replyToMessageId:
+            payload.replyToMessageId ?? current?.replyToMessageId ?? null,
+        });
+
+        setDraft(createInitialDraft());
+        onEditClearRef.current?.();
+        return;
+      }
+
       const prompt =
         payload.variant === 'ai' && payload.content?.text
           ? payload.content.text
@@ -385,11 +474,19 @@ export const useComposerDraft = (
       }
 
       setDraft(createInitialDraft());
-      options?.onReplyClear?.();
+      onReplyClearRef.current?.();
     } finally {
       setSending(false);
     }
-  }, [chatboxId, createMessage, draft, options, sending]);
+  }, [
+    chatboxId,
+    createMessage,
+    draft,
+    editMessageId,
+    messages,
+    sending,
+    updateMessage,
+  ]);
 
   const insertReactionIcon = useCallback((icon: string) => {
     editorRef.current?.insertAtCursor(icon);
@@ -406,10 +503,12 @@ export const useComposerDraft = (
     draft,
     editorRef,
     sending,
+    isEditing: editMessageId !== null,
     pendingVariantSwitch,
     setFocused,
     setText,
     clearAll,
+    cancelEdit,
     requestVariantSwitch,
     applyVariantSwitch,
     cancelVariantSwitch: () => setPendingVariantSwitch(null),
@@ -421,6 +520,7 @@ export const useComposerDraft = (
     addTodoRow,
     updateTodoItem,
     removeTodoRow,
+    reorderTodoRow,
     addTodoRowFiles,
     removeTodoRowAttachment,
     send,

@@ -8,6 +8,11 @@ export type MessageActionsAPI = {
   startReply: (messageId: string) => void;
   cancelReply: () => void;
   replyToMessageId: string | null;
+  startEdit: (messageId: string) => void;
+  cancelEdit: () => void;
+  editTargetId: string | null;
+  composerDirty: boolean;
+  setComposerDirty: (dirty: boolean) => void;
   toggleReaction: (messageId: string, emoji: string) => void;
   togglePin: (messageId: string) => void;
   toggleArchive: (messageId: string) => void;
@@ -43,6 +48,8 @@ export const useMessageActions = ({
   const forwardMessage = useDiaryStore('forwardMessage');
 
   const [replyToMessageId, setReplyToMessageId] = useState<string | null>(null);
+  const [editTargetId, setEditTargetId] = useState<string | null>(null);
+  const [composerDirty, setComposerDirty] = useState(false);
   const [deleteTargetId, setDeleteTargetId] = useState<string | null>(null);
   const [forwardSourceId, setForwardSourceId] = useState<string | null>(null);
 
@@ -64,12 +71,39 @@ export const useMessageActions = ({
     [chatboxId, messages, onNavigateToChatbox, scroll],
   );
 
+  const startReply = useCallback((messageId: string) => {
+    setReplyToMessageId(messageId);
+  }, []);
+
+  const cancelReply = useCallback(() => {
+    setReplyToMessageId(null);
+  }, []);
+
+  const startEdit = useCallback(
+    (messageId: string) => {
+      const message = messages[messageId];
+      setReplyToMessageId(message?.replyToMessageId ?? null);
+      setEditTargetId(messageId);
+    },
+    [messages],
+  );
+
+  const cancelEdit = useCallback(() => {
+    setEditTargetId(null);
+    setReplyToMessageId(null);
+  }, []);
+
   return {
     replyToMessageId,
+    editTargetId,
+    composerDirty,
+    setComposerDirty,
     deleteTargetId,
     forwardSourceId,
-    startReply: setReplyToMessageId,
-    cancelReply: () => setReplyToMessageId(null),
+    startReply,
+    cancelReply,
+    startEdit,
+    cancelEdit,
     toggleReaction: toggleMessageReaction,
     togglePin: toggleMessagePin,
     toggleArchive: toggleMessageArchive,

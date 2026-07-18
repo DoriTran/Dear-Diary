@@ -106,6 +106,9 @@ const MessagePanel: FC<MessagePanelProps> = ({
         chatboxId={chatboxId}
         replyToMessageId={actions.replyToMessageId}
         onCancelReply={actions.cancelReply}
+        editMessageId={actions.editTargetId}
+        onCancelEdit={actions.cancelEdit}
+        onDirtyChange={actions.setComposerDirty}
         onNavigateToMessage={actions.navigateToMessage}
       />
       <AdConfirmDialog

@@ -6,12 +6,16 @@ export type AdMenuItemProps = {
   children: ReactNode;
   onClick?: (event: MouseEvent<HTMLButtonElement>) => void;
   destructive?: boolean;
+  centered?: boolean;
+  disabled?: boolean;
 };
 
 const AdMenuItem: FC<AdMenuItemProps> = ({
   children,
   onClick,
   destructive = false,
+  centered = false,
+  disabled = false,
 }) => {
   return (
     <li role="none">
@@ -20,6 +24,8 @@ const AdMenuItem: FC<AdMenuItemProps> = ({
         role="menuitem"
         className={styles.menuItem}
         data-destructive={destructive || undefined}
+        data-centered={centered || undefined}
+        disabled={disabled}
         onClick={onClick}
       >
         {children}

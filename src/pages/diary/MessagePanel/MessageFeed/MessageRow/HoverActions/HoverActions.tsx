@@ -56,12 +56,17 @@ const HoverActions: FC<HoverActionsProps> = ({
     setShowFullReactionPicker(false);
   };
 
+  const replyDisabled =
+    actions.replyToMessageId === message.id ||
+    actions.editTargetId === message.id;
+
   return (
     <div className={mergeClass(styles.root, className)} data-side={side}>
       <MoreMenu message={message} actions={actions} />
       <AdActionButton
         icon={faReply}
         label="Reply"
+        disabled={replyDisabled}
         onClick={() => actions.startReply(message.id)}
       />
       <AdPopover

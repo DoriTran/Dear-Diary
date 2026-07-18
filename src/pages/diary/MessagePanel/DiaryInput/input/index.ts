@@ -1,4 +1,5 @@
 export { useComposerDraft } from './useComposerDraft';
+export { useAutoGrowTextarea } from './useAutoGrowTextarea';
 export {
   createInitialDraft,
   createEmptyTodoItem,
@@ -8,6 +9,7 @@ export {
   type PendingVariantSwitch,
 } from './composer.types';
 export {
+  buildDraftFromMessage,
   buildMessagePayload,
   convertDraftToVariant,
   createTicketDecorator,

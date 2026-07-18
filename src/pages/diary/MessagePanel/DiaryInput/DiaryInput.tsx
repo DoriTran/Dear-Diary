@@ -18,6 +18,9 @@ export type DiaryInputProps = {
   chatboxId: string;
   replyToMessageId?: string | null;
   onCancelReply?: () => void;
+  editMessageId?: string | null;
+  onCancelEdit?: () => void;
+  onDirtyChange?: (dirty: boolean) => void;
   onNavigateToMessage?: (messageId: string) => void;
 };
 
@@ -25,18 +28,24 @@ const DiaryInput: FC<DiaryInputProps> = ({
   chatboxId,
   replyToMessageId = null,
   onCancelReply,
+  editMessageId = null,
+  onCancelEdit,
+  onDirtyChange,
   onNavigateToMessage,
 }) => {
   const preferences = useSettingsStore('preferences');
   const enterKeyBehavior = preferences.composer.enterKeyBehavior;
+  const todoEnterKeyBehavior = preferences.decorations.todo.enterKeyBehavior;
 
   const {
     draft,
     editorRef,
+    isEditing,
     pendingVariantSwitch,
     setFocused,
     setText,
     clearAll,
+    cancelEdit,
     requestVariantSwitch,
     applyVariantSwitch,
     cancelVariantSwitch,
@@ -48,6 +57,7 @@ const DiaryInput: FC<DiaryInputProps> = ({
     addTodoRow,
     updateTodoItem,
     removeTodoRow,
+    reorderTodoRow,
     addTodoRowFiles,
     removeTodoRowAttachment,
     send,
@@ -56,6 +66,9 @@ const DiaryInput: FC<DiaryInputProps> = ({
   } = useComposerDraft(chatboxId, {
     replyToMessageId,
     onReplyClear: onCancelReply,
+    editMessageId,
+    onEditClear: onCancelEdit,
+    onDirtyChange,
   });
 
   const handleFocus = () => setFocused(true);
@@ -91,6 +104,9 @@ const DiaryInput: FC<DiaryInputProps> = ({
           onAddRow={addTodoRow}
           onAddFiles={handleTodoAddFiles}
           onRemoveAttachment={removeTodoRowAttachment}
+          onReorderItem={reorderTodoRow}
+          onSubmit={handleSubmit}
+          enterKeyBehavior={todoEnterKeyBehavior}
           onFocus={handleFocus}
           onBlur={handleBlur}
         />
@@ -163,6 +179,7 @@ const DiaryInput: FC<DiaryInputProps> = ({
           variant={draft.variant}
           decorators={draft.decorators}
           canSend={canSend}
+          editing={isEditing}
           onClear={clearAll}
           onAddFiles={handleAddFiles}
           onToggleDecorator={toggleDecorator}
@@ -173,6 +190,8 @@ const DiaryInput: FC<DiaryInputProps> = ({
             ) : null
           }
           onSend={() => void send()}
+          onCancelEdit={cancelEdit}
+          onConfirmEdit={() => void send()}
         />
       </div>
 

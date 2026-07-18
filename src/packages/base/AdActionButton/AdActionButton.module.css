@@ -20,6 +20,15 @@
   background: color-mix(in srgb, var(--surface) 70%, var(--text) 30%);
 }
 
+.root:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+.root:disabled:hover {
+  background: color-mix(in srgb, var(--surface) 85%, var(--text) 15%);
+}
+
 .root[data-active] {
   color: var(--primary);
   background: color-mix(in srgb, var(--primary) 18%, var(--surface));
