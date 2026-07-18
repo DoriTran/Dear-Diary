@@ -21,6 +21,11 @@ export {
   type AdPopoverProps,
 } from './AdPopover/AdPopover';
 export { default as AdSwitch, type AdSwitchProps } from './AdSwitch/AdSwitch';
+export {
+  AdSegmentedControl,
+  type AdSegmentedControlOption,
+  type AdSegmentedControlProps,
+} from './AdSegmentedControl';
 export { default as AdModal, type AdModalProps } from './AdModal';
 export {
   AdNotification,

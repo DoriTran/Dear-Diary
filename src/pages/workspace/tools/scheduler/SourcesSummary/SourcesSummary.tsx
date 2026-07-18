@@ -4,7 +4,7 @@ import type { Chatbox } from '@/store/diary/type';
 import type { WorkspaceSource } from '@/store/workspace/type';
 
 import { resolvePalette } from '@/packages/color';
-import { useAppStore, useDiaryStore } from '@/store';
+import { useDiaryStore, useSettingsStore } from '@/store';
 
 import type { CalendarEventView } from '../scheduler.utils';
 
@@ -26,7 +26,7 @@ const SourcesSummary: FC<SourcesSummaryProps> = ({
   sources,
   chatboxes,
 }) => {
-  const mode = useAppStore('mode');
+  const mode = useSettingsStore('mode');
   const customPalettes = useDiaryStore('customPalettes');
   const localColor = resolvePalette(
     WORKSPACE_LOCAL_SOURCE_COLOR_ID,

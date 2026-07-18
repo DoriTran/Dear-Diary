@@ -1,0 +1,13 @@
+.badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 1px 7px;
+  border-radius: var(--radius-xs);
+  background: color-mix(in srgb, var(--accent-yellow, #e7a73d) 18%, transparent);
+  color: var(--text-muted);
+  font-size: var(--font-3xs);
+  font-weight: var(--font-semibold);
+  letter-spacing: 0.02em;
+  white-space: nowrap;
+  cursor: help;
+}

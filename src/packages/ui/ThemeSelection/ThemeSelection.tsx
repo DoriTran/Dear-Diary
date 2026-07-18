@@ -10,8 +10,8 @@ import { useState, type CSSProperties, type FC } from 'react';
 import type { AppTheme } from '@/store/app/type';
 
 import { AdIcon, AdPopover, AdSwitch } from '@/packages/base';
-import { useAppStore } from '@/store';
-import { THEME_OPTIONS } from '@/store/app/constants';
+import { useSettingsStore } from '@/store';
+import { THEME_OPTIONS } from '@/store/settings/constants';
 
 import styles from './ThemeSelection.module.css';
 
@@ -24,7 +24,7 @@ type ThemeSelectionProps = {
 const ThemeSelection: FC<ThemeSelectionProps> = ({ collapsed = false }) => {
   const [menuOpen, setMenuOpen] = useState(false);
 
-  const { theme, mode, setTheme, setMode } = useAppStore([
+  const { theme, mode, setTheme, setMode } = useSettingsStore([
     'theme',
     'mode',
     'setTheme',

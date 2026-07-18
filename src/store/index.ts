@@ -1,6 +1,7 @@
 export { useDiaryStore, useDiaryHydrated } from './diary/store';
 export { useWorkspaceStore, useWorkspaceHydrated } from './workspace/store';
-export { useAppStore, applyAppTheme } from './app/store';
+export { useAppStore } from './app/store';
+export { useSettingsStore, applyAppTheme } from './settings/store';
 export type {
   AppMode,
   AppStore,
@@ -10,3 +11,9 @@ export type {
   DiaryPageUIState,
   NavPanelState,
 } from './app/type';
+export type {
+  SettingsStore,
+  SettingsStoreActions,
+  SettingsStoreState,
+  SettingsPreferences,
+} from './settings/type';

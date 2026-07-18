@@ -1,7 +1,7 @@
 import moment from 'moment';
 import { useMemo, useState, type FC } from 'react';
 
-import { useAppStore, useDiaryStore } from '@/store';
+import { useDiaryStore, useSettingsStore } from '@/store';
 
 import type { WorkspaceToolRendererProps } from '../types';
 
@@ -25,7 +25,7 @@ const SchedulerTool: FC<WorkspaceToolRendererProps> = ({
   selectedRecordId,
   onSelectRecord,
 }) => {
-  const mode = useAppStore('mode');
+  const mode = useSettingsStore('mode');
   const chatboxes = useDiaryStore('chatboxes');
   const customPalettes = useDiaryStore('customPalettes');
   const [activeView, setActiveView] = useState<SchedulerView>('month');

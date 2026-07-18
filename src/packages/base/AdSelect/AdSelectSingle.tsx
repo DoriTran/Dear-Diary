@@ -4,7 +4,7 @@ import { ChevronDown } from 'lucide-react';
 import { useId, useMemo, useState, type FC } from 'react';
 
 import { resolvePalette } from '@/packages/color';
-import { useAppStore, useDiaryStore } from '@/store';
+import { useDiaryStore, useSettingsStore } from '@/store';
 
 import type { AdSelectSingleProps } from './types';
 
@@ -29,7 +29,7 @@ const AdSelectSingle: FC<AdSelectSingleProps> = ({
   void rest;
 
   const listboxId = useId();
-  const mode = useAppStore('mode');
+  const mode = useSettingsStore('mode');
   const customPalettes = useDiaryStore('customPalettes');
   const [searchValue, setSearchValue] = useState('');
 

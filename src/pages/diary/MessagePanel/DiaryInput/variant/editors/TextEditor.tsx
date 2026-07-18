@@ -4,7 +4,10 @@ import {
   useImperativeHandle,
   useLayoutEffect,
   useRef,
+  type KeyboardEvent,
 } from 'react';
+
+import type { EnterKeyBehavior } from '@/store/settings/type';
 
 import { AdIcon } from '@/packages/base';
 
@@ -18,6 +21,9 @@ export type TextEditorProps = {
   onChange: (value: string) => void;
   onFocus?: () => void;
   onBlur?: () => void;
+  /** Called when Enter (or Shift+Enter) should send, per enterKeyBehavior. */
+  onSubmit?: () => void;
+  enterKeyBehavior?: EnterKeyBehavior;
   showAiIcon?: boolean;
   rows?: number;
   /** Auto-grow height up to this many lines. */
@@ -32,6 +38,8 @@ const TextEditor = forwardRef<ComposerEditorRef, TextEditorProps>(
       onChange,
       onFocus,
       onBlur,
+      onSubmit,
+      enterKeyBehavior = 'enter-sends',
       showAiIcon = false,
       rows = 2,
       maxRows,
@@ -102,6 +110,20 @@ const TextEditor = forwardRef<ComposerEditorRef, TextEditorProps>(
       onFocus?.();
     };
 
+    const handleKeyDown = (event: KeyboardEvent<HTMLTextAreaElement>) => {
+      if (!onSubmit || event.key !== 'Enter' || event.nativeEvent.isComposing) {
+        return;
+      }
+
+      const shouldSend =
+        enterKeyBehavior === 'enter-sends' ? !event.shiftKey : event.shiftKey;
+
+      if (shouldSend) {
+        event.preventDefault();
+        onSubmit();
+      }
+    };
+
     return (
       <div className={showAiIcon ? styles.aiWrap : styles.root}>
         <textarea
@@ -114,6 +136,7 @@ const TextEditor = forwardRef<ComposerEditorRef, TextEditorProps>(
           onChange={(event) => onChange(event.target.value)}
           onFocus={handleFocus}
           onBlur={onBlur}
+          onKeyDown={handleKeyDown}
         />
         {showAiIcon ? (
           <span className={styles.aiIcon} aria-hidden>

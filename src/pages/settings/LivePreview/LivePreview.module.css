@@ -1,0 +1,107 @@
+.root {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  min-height: 0;
+  gap: 12px;
+}
+
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 14px 16px;
+  border: 1px solid var(--border-soft);
+  border-radius: var(--radius-lg);
+  background: var(--surface);
+}
+
+.headerEyebrow {
+  display: block;
+  font-size: var(--font-3xs);
+  font-weight: var(--font-semibold);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--text-soft);
+}
+
+.headerTitle {
+  margin: 2px 0 0;
+  font-size: var(--font-md);
+  font-weight: var(--font-bold);
+  color: var(--text);
+}
+
+.headerBadge {
+  padding: 3px 10px;
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--primary) 14%, var(--surface));
+  color: var(--primary-dark);
+  font-size: var(--font-2xs);
+  font-weight: var(--font-semibold);
+  text-transform: capitalize;
+}
+
+.feed {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  padding: 18px 16px;
+  overflow-y: auto;
+  border: 1px solid var(--border-soft);
+  border-radius: var(--radius-lg);
+  background: var(--background-soft, var(--surface-soft));
+  background-image: radial-gradient(
+    color-mix(in srgb, var(--primary) 6%, transparent) 1px,
+    transparent 0
+  );
+  background-size: 18px 18px;
+}
+
+.composer {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 10px;
+  border: 1px solid var(--border-soft);
+  border-radius: 999px;
+  background: var(--surface);
+}
+
+.composerIcon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  color: var(--text-muted);
+}
+
+.composerInput {
+  flex: 1;
+  min-width: 0;
+  font-size: var(--font-xs);
+  color: var(--text-soft);
+}
+
+.composerSend {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  background: var(--primary);
+  color: var(--button-text, #fff);
+}
+
+.hint {
+  margin: 0;
+  text-align: center;
+  font-size: var(--font-2xs);
+  color: var(--text-soft);
+}

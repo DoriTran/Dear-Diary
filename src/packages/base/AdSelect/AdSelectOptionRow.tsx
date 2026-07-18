@@ -5,7 +5,7 @@ import type { IconId } from '@/packages/icon';
 
 import { resolvePalette } from '@/packages/color';
 import { LucideIconById } from '@/packages/icon';
-import { useAppStore, useDiaryStore } from '@/store';
+import { useDiaryStore, useSettingsStore } from '@/store';
 
 import { adSelectRowIconVars } from './adSelectOptionColorVars';
 import styles from './AdSelectOptionRow.module.css';
@@ -21,7 +21,7 @@ const AdSelectOptionRow: FC<AdSelectOptionRowProps> = ({
   iconId,
   colorId,
 }) => {
-  const mode = useAppStore('mode');
+  const mode = useSettingsStore('mode');
   const customPalettes = useDiaryStore('customPalettes');
   const iconStyle =
     colorId != null

@@ -1,5 +1,7 @@
 import type { FC } from 'react';
 
+import { useSettingsStore } from '@/store';
+
 import ActionDock from './actions/ActionDock/ActionDock';
 import ReactionIconPicker from './actions/ReactionIconPicker';
 import AttachmentTray from './attachment/AttachmentTray/AttachmentTray';
@@ -25,6 +27,9 @@ const DiaryInput: FC<DiaryInputProps> = ({
   onCancelReply,
   onNavigateToMessage,
 }) => {
+  const preferences = useSettingsStore('preferences');
+  const enterKeyBehavior = preferences.composer.enterKeyBehavior;
+
   const {
     draft,
     editorRef,
@@ -56,6 +61,13 @@ const DiaryInput: FC<DiaryInputProps> = ({
   const handleFocus = () => setFocused(true);
   const handleBlur = () => {
     window.setTimeout(() => setFocused(false), 100);
+  };
+
+  const handleSubmit = () => {
+    if (!canSend) {
+      return;
+    }
+    void send();
   };
 
   const handleAddFiles = (
@@ -93,6 +105,8 @@ const DiaryInput: FC<DiaryInputProps> = ({
           onChange={setText}
           onFocus={handleFocus}
           onBlur={handleBlur}
+          onSubmit={handleSubmit}
+          enterKeyBehavior={enterKeyBehavior}
         />
       );
     }
@@ -105,6 +119,8 @@ const DiaryInput: FC<DiaryInputProps> = ({
         onChange={setText}
         onFocus={handleFocus}
         onBlur={handleBlur}
+        onSubmit={handleSubmit}
+        enterKeyBehavior={enterKeyBehavior}
       />
     );
   };

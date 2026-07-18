@@ -2,7 +2,7 @@ import { useMemo } from 'react';
 
 import { resolvePalette } from '@/packages/color';
 import { normalizeIconId, type IconId } from '@/packages/icon';
-import { useAppStore, useDiaryStore } from '@/store';
+import { useDiaryStore, useSettingsStore } from '@/store';
 
 import { formatHeaderUpdatedAt } from '../../ChatboxSidebar/Chatbox/chatbox.utils';
 
@@ -25,7 +25,7 @@ export type MessageHeaderData = {
 export const useMessageHeaderData = (
   chatboxId: string,
 ): MessageHeaderData | null => {
-  const mode = useAppStore('mode');
+  const mode = useSettingsStore('mode');
   const { chatboxes, groups, customPalettes } = useDiaryStore([
     'chatboxes',
     'groups',

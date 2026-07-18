@@ -2,7 +2,7 @@ import { useMemo } from 'react';
 
 import { resolvePalette } from '@/packages/color';
 import { normalizeIconId } from '@/packages/icon';
-import { useAppStore, useDiaryStore } from '@/store';
+import { useDiaryStore, useSettingsStore } from '@/store';
 
 import type { ChatboxData, GroupData } from '../types';
 import type { SidebarRow } from './sidebar.types';
@@ -24,7 +24,7 @@ export type SidebarRowView =
 export const useSidebarRowViews = (
   rows: readonly SidebarRow[],
 ): SidebarRowView[] => {
-  const mode = useAppStore('mode');
+  const mode = useSettingsStore('mode');
   const { groups, chatboxes, tags, messages, customPalettes } = useDiaryStore([
     'groups',
     'chatboxes',

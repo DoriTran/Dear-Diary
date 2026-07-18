@@ -23,8 +23,6 @@ export type ColorPickerPrefs = {
 };
 
 export type AppStoreState = {
-  theme: AppTheme;
-  mode: AppMode;
   navPanel: NavPanelState;
   diaryPage: DiaryPageUIState;
   iconPickerPrefs: IconPickerPrefs;
@@ -32,8 +30,6 @@ export type AppStoreState = {
 };
 
 export type AppStoreActions = {
-  setTheme: (theme: AppTheme) => void;
-  setMode: (mode: AppMode) => void;
   setNavPanelFolded: (folded: boolean) => void;
   selectChatbox: (chatboxId: string | null) => void;
   toggleGroup: (groupId: string) => void;

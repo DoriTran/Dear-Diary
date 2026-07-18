@@ -4,7 +4,7 @@ import { createJSONStorage, persist } from 'zustand/middleware';
 import { isValidColorId, RECENT_COLOR_LIMIT } from '@/packages/color';
 import { isValidIconId, RECENT_ICON_LIMIT } from '@/packages/icon';
 
-import type { AppMode, AppStore, AppTheme, ColorPickerPrefs } from './type';
+import type { AppStore, ColorPickerPrefs } from './type';
 
 import { getDiaryCustomPalettes } from '../diary/store';
 import shallow from '../shallow';
@@ -12,37 +12,16 @@ import {
   DEFAULT_COLOR_PICKER_PREFS,
   DEFAULT_DIARY_PAGE,
   DEFAULT_ICON_PICKER_PREFS,
-  DEFAULT_MODE,
   DEFAULT_NAV_PANEL,
-  DEFAULT_THEME,
 } from './constants';
-
-export function applyAppTheme(theme: AppTheme, mode: AppMode) {
-  document.documentElement.setAttribute('data-theme', theme);
-  document.documentElement.setAttribute('data-mode', mode);
-}
 
 const useAppStoreBase = create<AppStore>()(
   persist(
     (set) => ({
-      theme: DEFAULT_THEME,
-      mode: DEFAULT_MODE,
       navPanel: DEFAULT_NAV_PANEL,
       diaryPage: DEFAULT_DIARY_PAGE,
       iconPickerPrefs: DEFAULT_ICON_PICKER_PREFS,
       colorPickerPrefs: DEFAULT_COLOR_PICKER_PREFS,
-
-      setTheme: (theme) =>
-        set((state) => {
-          applyAppTheme(theme, state.mode);
-          return { theme };
-        }),
-
-      setMode: (mode) =>
-        set((state) => {
-          applyAppTheme(state.theme, mode);
-          return { mode };
-        }),
 
       setNavPanelFolded: (folded) =>
         set((state) => ({
@@ -208,8 +187,6 @@ const useAppStoreBase = create<AppStore>()(
       name: 'dear-diary-app',
       storage: createJSONStorage(() => localStorage),
       partialize: (state) => ({
-        theme: state.theme,
-        mode: state.mode,
         navPanel: state.navPanel,
         iconPickerPrefs: state.iconPickerPrefs,
         colorPickerPrefs: state.colorPickerPrefs,
@@ -220,8 +197,6 @@ const useAppStoreBase = create<AppStore>()(
       }),
       merge: (persistedState, currentState) => {
         const persisted = persistedState as {
-          theme?: AppTheme;
-          mode?: AppMode;
           navPanel?: typeof DEFAULT_NAV_PANEL;
           iconPickerPrefs?: typeof DEFAULT_ICON_PICKER_PREFS;
           colorPickerPrefs?: ColorPickerPrefs;
@@ -263,6 +238,3 @@ const useAppStoreBase = create<AppStore>()(
 );
 
 export const useAppStore = shallow(useAppStoreBase);
-
-const { theme, mode } = useAppStoreBase.getState();
-applyAppTheme(theme, mode);

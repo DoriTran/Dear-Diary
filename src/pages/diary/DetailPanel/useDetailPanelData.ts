@@ -1,6 +1,6 @@
 import { useMemo } from 'react';
 
-import { useAppStore, useDiaryStore } from '@/store';
+import { useDiaryStore, useSettingsStore } from '@/store';
 
 import {
   collectDetailPanelMedia,
@@ -30,7 +30,7 @@ export type DetailPanelData = {
 const TOP_TAG_LIMIT = 5;
 
 export const useDetailPanelData = (chatboxId: string): DetailPanelData => {
-  const mode = useAppStore('mode');
+  const mode = useSettingsStore('mode');
   const { chatboxes, messages, tags, orders, customPalettes } = useDiaryStore([
     'chatboxes',
     'messages',

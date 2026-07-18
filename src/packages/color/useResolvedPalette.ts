@@ -1,13 +1,13 @@
 import { useMemo } from 'react';
 
-import { useAppStore, useDiaryStore } from '@/store';
+import { useDiaryStore, useSettingsStore } from '@/store';
 
 import type { ColorId, ResolvedPalette } from './types';
 
 import { resolveColor } from './resolvePalette';
 
 export const useResolvedPalette = (colorId: ColorId): ResolvedPalette => {
-  const mode = useAppStore('mode');
+  const mode = useSettingsStore('mode');
   const customPalettes = useDiaryStore('customPalettes');
 
   return useMemo(

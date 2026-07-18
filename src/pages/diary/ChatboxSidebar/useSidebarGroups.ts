@@ -1,13 +1,13 @@
 import { resolvePalette } from '@/packages/color';
 import { normalizeIconId } from '@/packages/icon';
-import { useAppStore, useDiaryStore } from '@/store';
+import { useDiaryStore, useSettingsStore } from '@/store';
 
 import type { ChatboxData, GroupData } from '../types';
 
 import { mapChatboxData } from './Chatbox/chatbox.utils';
 
 export const useSidebarGroups = (): GroupData[] => {
-  const mode = useAppStore('mode');
+  const mode = useSettingsStore('mode');
   const { groups, chatboxes, tags, messages, orders, customPalettes } =
     useDiaryStore([
       'groups',

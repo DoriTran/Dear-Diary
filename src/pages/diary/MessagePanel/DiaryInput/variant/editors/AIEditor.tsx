@@ -1,5 +1,7 @@
 import type { FC, RefObject } from 'react';
 
+import type { EnterKeyBehavior } from '@/store/settings/type';
+
 import type { ComposerEditorRef } from '../../input/composer.types';
 
 import TextEditor from './TextEditor';
@@ -9,6 +11,8 @@ export type AIEditorProps = {
   onChange: (value: string) => void;
   onFocus?: () => void;
   onBlur?: () => void;
+  onSubmit?: () => void;
+  enterKeyBehavior?: EnterKeyBehavior;
   editorRef?: RefObject<ComposerEditorRef | null>;
 };
 
@@ -17,6 +21,8 @@ const AIEditor: FC<AIEditorProps> = ({
   onChange,
   onFocus,
   onBlur,
+  onSubmit,
+  enterKeyBehavior,
   editorRef,
 }) => {
   return (
@@ -29,6 +35,8 @@ const AIEditor: FC<AIEditorProps> = ({
       onChange={onChange}
       onFocus={onFocus}
       onBlur={onBlur}
+      onSubmit={onSubmit}
+      enterKeyBehavior={enterKeyBehavior}
     />
   );
 };

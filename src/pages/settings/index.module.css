@@ -1,0 +1,154 @@
+.page {
+  display: flex;
+  flex: 1;
+  align-items: stretch;
+  gap: 12px;
+  /* Match LeftPanel: panel height is 100vh - 24px, with 12px vertical margin */
+  height: calc(100vh - 24px);
+  min-height: 0;
+  margin: 12px 12px 12px 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+.navColumn,
+.mainColumn,
+.previewColumn {
+  align-self: stretch;
+  height: 100%;
+  min-height: 0;
+  overflow: hidden;
+  box-sizing: border-box;
+}
+
+.navColumn {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  width: 250px;
+  flex-shrink: 0;
+  padding: 18px 14px;
+  overflow-y: auto;
+}
+
+.navHeader {
+  padding: 4px 6px 0;
+}
+
+.navTitle {
+  margin: 0;
+  font-size: var(--font-xl);
+  font-weight: var(--font-bold);
+  color: var(--text);
+}
+
+.navSubtitle {
+  margin: 4px 0 0;
+  font-size: var(--font-xs);
+  color: var(--text-muted);
+  line-height: 1.4;
+}
+
+.mainColumn {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-width: 0;
+  padding: 16px 16px 0;
+}
+
+.toolbar {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-shrink: 0;
+  padding-bottom: 14px;
+  border-bottom: 1px solid var(--border-soft);
+}
+
+.search {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex: 1;
+  min-width: 0;
+  padding: 8px 12px;
+  border: 1px solid var(--field-border);
+  border-radius: var(--radius-md);
+  background: var(--field-bg);
+  color: var(--text-muted);
+}
+
+.search:focus-within {
+  border-color: color-mix(in srgb, var(--primary) 45%, var(--field-border));
+  box-shadow: var(--field-ring);
+}
+
+.searchInput {
+  flex: 1;
+  min-width: 0;
+  border: none;
+  background: transparent;
+  color: var(--text);
+  font: inherit;
+  font-size: var(--font-sm);
+  outline: none;
+}
+
+.searchInput::placeholder {
+  color: var(--text-soft);
+}
+
+.kbd {
+  padding: 2px 7px;
+  border: 1px solid var(--border-soft);
+  border-radius: 6px;
+  background: var(--surface);
+  color: var(--text-soft);
+  font-size: var(--font-3xs);
+  font-family: inherit;
+}
+
+.resetButton {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  flex-shrink: 0;
+  padding: 8px 14px;
+  border: 1px solid color-mix(in srgb, var(--danger) 35%, var(--border));
+  border-radius: var(--radius-md);
+  background: var(--surface);
+  color: var(--danger);
+  font: inherit;
+  font-size: var(--font-xs);
+  font-weight: var(--font-semibold);
+  cursor: pointer;
+  transition:
+    background var(--transition-fast),
+    border-color var(--transition-fast);
+}
+
+.resetButton:hover {
+  background: color-mix(in srgb, var(--danger) 10%, var(--surface));
+  border-color: var(--danger);
+}
+
+.previewColumn {
+  display: flex;
+  flex-direction: column;
+  width: 380px;
+  flex-shrink: 0;
+  padding: 16px;
+}
+
+@media (max-width: 1200px) {
+  .previewColumn {
+    display: none;
+  }
+}
+
+@media (max-width: 900px) {
+  .navColumn {
+    width: 210px;
+  }
+}

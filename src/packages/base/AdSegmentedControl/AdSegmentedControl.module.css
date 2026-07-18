@@ -1,0 +1,78 @@
+.root {
+  display: inline-flex;
+  align-items: stretch;
+  gap: 4px;
+  padding: 4px;
+  border: 1px solid var(--border-soft);
+  border-radius: var(--radius-md);
+  background: var(--surface-soft);
+}
+
+.root[data-full-width] {
+  display: flex;
+  width: 100%;
+}
+
+.option {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 2px;
+  min-width: 0;
+  padding: 0.4rem 0.85rem;
+  border: 1px solid transparent;
+  border-radius: calc(var(--radius-md) - 3px);
+  background: transparent;
+  color: var(--text-muted);
+  font: inherit;
+  font-size: var(--font-xs);
+  font-weight: var(--font-semibold);
+  text-align: center;
+  cursor: pointer;
+  transition:
+    background var(--transition-fast),
+    color var(--transition-fast),
+    box-shadow var(--transition-fast);
+}
+
+.root[data-size='sm'] .option {
+  padding: 0.28rem 0.6rem;
+  font-size: var(--font-2xs);
+}
+
+.option:hover:not([data-active]):not(:disabled) {
+  color: var(--text);
+  background: color-mix(in srgb, var(--primary) 8%, transparent);
+}
+
+.option[data-active] {
+  background: var(--surface);
+  border-color: var(--border-soft);
+  color: var(--text);
+  box-shadow: var(--shadow-sm);
+}
+
+.option:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.option:focus-visible {
+  outline: none;
+  box-shadow: var(--field-ring);
+}
+
+.optionLabel {
+  display: block;
+  line-height: 1.2;
+}
+
+.optionDescription {
+  display: block;
+  font-size: var(--font-3xs);
+  font-weight: var(--font-normal);
+  color: var(--text-soft);
+  line-height: 1.2;
+}
