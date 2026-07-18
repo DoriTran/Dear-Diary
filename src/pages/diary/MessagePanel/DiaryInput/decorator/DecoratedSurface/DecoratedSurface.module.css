@@ -1,6 +1,8 @@
 .shell {
   display: flex;
   align-items: stretch;
+  align-self: stretch;
+  width: 100%;
   min-width: 0;
   max-width: 100%;
   overflow: visible;
@@ -14,6 +16,7 @@
 
 .surfaceCard {
   flex: 1;
+  align-self: stretch;
   min-width: 0;
   overflow: hidden;
   border: 1px solid var(--border-soft);
@@ -39,6 +42,7 @@
 /* Feed: same role as surfaceCard, themed via --message-surface-bg (charms may override container). */
 .surfaceFeed {
   flex: 1;
+  align-self: stretch;
   min-width: 0;
   overflow: hidden;
   border: 1px solid color-mix(in srgb, var(--primary) 22%, var(--border-soft));
@@ -51,6 +55,13 @@
   border-top-right-radius: var(--radius-xs);
 }
 
+/* Match TextEditor inputGrow so single-line feed tickets stay under the compact threshold. */
 .surfaceFeed [data-composer-variant-editor]:has(*) {
-  padding: 0.65rem 0.85rem;
+  padding: 0.5rem 0.85rem;
+}
+
+.surfaceFeed [data-composer-variant-editor],
+.surfaceFeed [data-composer-variant-editor] p {
+  font-size: var(--font-sm);
+  line-height: 1.25rem;
 }

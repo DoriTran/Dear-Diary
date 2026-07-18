@@ -11,61 +11,103 @@
   pointer-events: none;
 }
 
+.tearLayer,
+.undoLayer {
+  position: absolute;
+  inset: 0;
+}
+
+/* Tear leaves immediately on complete; returns after the undo layer fades on revert. */
+.tearLayer {
+  opacity: 1;
+  transform: translateX(0);
+  transition:
+    opacity 350ms ease,
+    transform 350ms ease;
+  transition-delay: 250ms;
+}
+
+.stub[data-done] .tearLayer {
+  opacity: 0;
+  transform: translateX(-60%);
+  transition-delay: 0ms;
+}
+
+.stub[data-done] .tearLayer .hitBtn {
+  pointer-events: none;
+}
+
+/*
+ * Undo layer fades in/out (delayed on enter). Rest opacity lives on .undoGhost
+ * so hover can snap to full opacity with no transition delay.
+ */
+.undoLayer {
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 300ms ease;
+  transition-delay: 0ms;
+}
+
+.stub[data-done] .undoLayer {
+  opacity: 1;
+  pointer-events: auto;
+  transition-delay: 350ms;
+}
+
+.undoGhost {
+  position: absolute;
+  inset: 0;
+  opacity: 0.4;
+}
+
+/* Only after the pointer has left once post-tear — avoids sticky hover under the click. */
+.stub[data-hover-ready] .undoLayer:hover .undoGhost {
+  opacity: 1;
+}
+
 .svg {
   position: absolute;
   inset: 0;
   display: block;
   width: 100%;
   height: 100%;
+  pointer-events: none;
 }
 
-.tearWrap {
-  position: relative;
+/* Full-stub hit target for both tear and undo. */
+.hitBtn {
+  position: absolute;
+  inset: 0;
   z-index: 1;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 100%;
-  height: 100%;
-  box-sizing: border-box;
-  pointer-events: auto;
-}
-
-.tearWrapCompact {
-  padding: 0.15rem;
-}
-
-.tearWrapStandard {
-  padding: 0.5rem;
-}
-
-.tearBtn {
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
   gap: 0.35rem;
   width: 100%;
-  padding: 0.35rem;
+  height: 100%;
+  margin: 0;
   border: none;
   background: transparent;
   color: color-mix(in srgb, var(--primary-dark) 85%, var(--text));
   cursor: pointer;
   text-align: center;
+  box-sizing: border-box;
+  pointer-events: auto;
+}
+
+.hitBtnStandard {
+  padding: 0.5rem;
   transform: translateX(6px);
 }
 
-.tearBtnCompact {
+.hitBtnCompact {
   padding: 0.15rem;
 }
 
-.tearBtnDisabled {
+.hitBtnDisabled {
   cursor: not-allowed;
   opacity: 0.55;
-}
-
-.tearBtnDone {
-  color: var(--success);
 }
 
 .tearLabel {
@@ -74,4 +116,20 @@
   line-height: 1.2;
   text-transform: uppercase;
   letter-spacing: 0.04em;
+}
+
+.undoGhost .hitBtn {
+  color: color-mix(in srgb, var(--primary-dark) 70%, var(--text));
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .tearLayer,
+  .undoLayer {
+    transition-duration: 0ms;
+    transition-delay: 0ms;
+  }
+
+  .stub[data-done] .tearLayer {
+    transform: translateX(0);
+  }
 }
