@@ -57,6 +57,9 @@ export interface UseSortableOptions {
   /** Motion duration in ms. Default is 400ms. */
   motionDuration?: number;
 
+  /** Always use spring bounce transition, even when not sorting. */
+  alwaysBouncy?: boolean;
+
   /** Sortable list layout direction. Default `vertical`. */
   direction?: SortableDirection;
 
@@ -122,6 +125,7 @@ export default function useSortable({
   onGroupChange,
   onSortableChange,
   motionDuration = 400,
+  alwaysBouncy = false,
   direction = 'vertical',
   strategy = 'vertex',
   extraScrollOffset,
@@ -1025,11 +1029,14 @@ export default function useSortable({
           {
             ...(children.props as Record<string, unknown>),
             layout: true,
-            transition: {
-              type: 'spring',
-              duration: motionDuration / 1000,
-              bounce: 0.25,
-            },
+            transition:
+              alwaysBouncy || sorting !== undefined
+                ? {
+                    type: 'spring',
+                    duration: motionDuration / 1000,
+                    bounce: 0.25,
+                  }
+                : { duration: 0 },
             ...(motions ?? {}),
           },
           (children.props as { children?: ReactNode }).children,

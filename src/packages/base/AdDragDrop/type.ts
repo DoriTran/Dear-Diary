@@ -156,6 +156,7 @@ interface AdDragDropPropsBase extends Partial<AutoScrollOptions> {
   /* Sortable options (sortable / itemOf narrowed on `AdDragDropProps`) */
   hostPreview?: boolean;
   motionDuration?: number;
+  alwaysBouncy?: boolean;
   direction?: SortableDirection;
   strategy?: SortableStrategy;
   group?: string;

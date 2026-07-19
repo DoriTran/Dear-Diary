@@ -210,11 +210,9 @@ const DragDropSortableDev: FC = () => {
           extraScrollOffset={scrollerOffset}
           dropData={{ id: 'Container' }}
           onSortableChange={({ current, previous }) => {
-            console.log('Container', 'onSortableChange', current, previous);
             swap({ type: 'container' }, current, previous);
           }}
           onGroupChange={({ type, index, data }) => {
-            console.log('Container', 'onGroupChange', type, index, data);
             if (type === 'enter') {
               add({ type: 'container' }, index, data);
             }
