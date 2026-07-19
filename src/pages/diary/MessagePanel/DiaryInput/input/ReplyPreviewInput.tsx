@@ -1,6 +1,13 @@
+import { faReply, faXmark } from '@fortawesome/free-solid-svg-icons';
 import type { FC } from 'react';
 
-import ReplyPreview from '../../MessageFeed/MessageRow/MessageBubble/Content/ReplyPreview';
+import { AdIcon } from '@/packages/base';
+import { useDiaryStore } from '@/store';
+
+import {
+  getMessagePreviewText,
+  truncateReplyPreviewText,
+} from '../../messagePanel.utils';
 import styles from './ReplyPreviewInput.module.css';
 
 export type ReplyPreviewInputProps = {
@@ -14,22 +21,43 @@ const ReplyPreviewInput: FC<ReplyPreviewInputProps> = ({
   onCancel,
   onJump,
 }) => {
+  const messages = useDiaryStore('messages');
+  const target = messages[replyToMessageId];
+  const unavailable = !target;
+  const previewText = unavailable
+    ? 'Message unavailable'
+    : truncateReplyPreviewText(getMessagePreviewText(target));
+
   return (
     <div className={styles.root}>
-      <div className={styles.preview}>
-        <ReplyPreview
-          replyToMessageId={replyToMessageId}
-          variant="composer"
-          onJump={onJump}
-        />
-      </div>
       <button
         type="button"
-        className={styles.dismiss}
+        className={styles.preview}
+        disabled={unavailable}
+        onClick={() => onJump(replyToMessageId)}
+      >
+        <span className={styles.icon} aria-hidden>
+          <AdIcon icon={faReply} size={12} />
+        </span>
+        <span className={styles.label}>
+          {unavailable ? (
+            previewText
+          ) : (
+            <>
+              Replying to <span className={styles.quote}>"{previewText}"</span>
+            </>
+          )}
+        </span>
+      </button>
+
+      <button
+        type="button"
+        className={styles.cancel}
         aria-label="Cancel reply"
         onClick={onCancel}
       >
-        ×
+        <AdIcon icon={faXmark} size={10} />
+        Cancel
       </button>
     </div>
   );

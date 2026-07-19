@@ -147,14 +147,6 @@ const DiaryInput: FC<DiaryInputProps> = ({
 
   return (
     <footer className={styles.root}>
-      {replyToMessageId ? (
-        <ReplyPreviewInput
-          replyToMessageId={replyToMessageId}
-          onCancel={() => onCancelReply?.()}
-          onJump={(messageId) => onNavigateToMessage?.(messageId)}
-        />
-      ) : null}
-
       <div className={styles.dock}>
         <div className={styles.editorStack}>
           <AttachmentTray
@@ -163,6 +155,14 @@ const DiaryInput: FC<DiaryInputProps> = ({
             onRemove={removeAttachment}
             onAddFiles={handleAddFiles}
           />
+
+          {replyToMessageId ? (
+            <ReplyPreviewInput
+              replyToMessageId={replyToMessageId}
+              onCancel={() => onCancelReply?.()}
+              onJump={(messageId) => onNavigateToMessage?.(messageId)}
+            />
+          ) : null}
 
           <DecoratedSurface
             draft={draft}

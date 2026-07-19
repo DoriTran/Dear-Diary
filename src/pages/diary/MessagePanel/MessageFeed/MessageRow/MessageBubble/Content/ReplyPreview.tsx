@@ -10,15 +10,10 @@ import styles from './ReplyPreview.module.css';
 
 export type ReplyPreviewProps = {
   replyToMessageId: string;
-  variant?: 'bubble' | 'composer';
   onJump?: (messageId: string) => void;
 };
 
-const ReplyPreview: FC<ReplyPreviewProps> = ({
-  replyToMessageId,
-  variant = 'bubble',
-  onJump,
-}) => {
+const ReplyPreview: FC<ReplyPreviewProps> = ({ replyToMessageId, onJump }) => {
   const messages = useDiaryStore('messages');
   const target = messages[replyToMessageId];
   const unavailable = !target;
@@ -27,7 +22,6 @@ const ReplyPreview: FC<ReplyPreviewProps> = ({
     <button
       type="button"
       className={styles.root}
-      data-variant={variant}
       disabled={unavailable || !onJump}
       onClick={() => onJump?.(replyToMessageId)}
     >
@@ -35,10 +29,7 @@ const ReplyPreview: FC<ReplyPreviewProps> = ({
         <p className={styles.unavailable}>Message unavailable</p>
       ) : (
         <>
-          <p className={styles.sender}>
-            {variant === 'composer' ? 'Replying to ' : ''}
-            {getMessageSenderLabel(target)}
-          </p>
+          <p className={styles.sender}>{getMessageSenderLabel(target)}</p>
           <p className={styles.preview}>{getMessagePreviewText(target)}</p>
         </>
       )}

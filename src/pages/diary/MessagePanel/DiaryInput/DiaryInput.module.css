@@ -19,6 +19,9 @@
 
 .editorStack {
   position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
   min-width: 0;
   overflow: visible;
 }
