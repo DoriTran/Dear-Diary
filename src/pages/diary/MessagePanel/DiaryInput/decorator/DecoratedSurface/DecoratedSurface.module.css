@@ -49,6 +49,9 @@
   border-radius: var(--radius-lg);
   background: var(--message-surface-bg, var(--chat-user-bg));
   box-shadow: var(--shadow-sm);
+  transition:
+    box-shadow 0.2s ease,
+    transform 0.2s ease;
 }
 
 .surfaceFeedAttached {

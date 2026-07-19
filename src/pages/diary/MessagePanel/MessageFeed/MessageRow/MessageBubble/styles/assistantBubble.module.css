@@ -74,6 +74,9 @@
   border: 1px solid color-mix(in srgb, var(--primary) 22%, var(--border-soft));
   background: var(--message-surface-bg, var(--chat-text-bg));
   box-shadow: var(--shadow-sm);
+  transition:
+    box-shadow 0.2s ease,
+    transform 0.2s ease;
 }
 
 .bubbleAttached {

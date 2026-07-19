@@ -89,6 +89,7 @@ const MessageBubble: FC<MessageBubbleProps> = ({
     body = (
       <div
         className={clsx(styles.bubble, hasAttachments && styles.bubbleAttached)}
+        data-message-surface
       >
         <ContentRenderer message={message} />
       </div>

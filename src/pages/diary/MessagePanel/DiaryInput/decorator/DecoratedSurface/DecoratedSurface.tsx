@@ -73,7 +73,11 @@ const DecoratedSurface: FC<DecoratedSurfaceProps> = ({
   );
 
   const content = (
-    <div className={surfaceClass} data-decorated-surface-card>
+    <div
+      className={surfaceClass}
+      data-decorated-surface-card
+      data-message-surface={!composing || undefined}
+    >
       <ComposerSurface pipeline={pipeline} ctx={ctx} borderless={borderless}>
         {children}
       </ComposerSurface>

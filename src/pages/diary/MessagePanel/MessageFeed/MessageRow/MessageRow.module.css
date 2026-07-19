@@ -13,10 +13,16 @@
   justify-content: flex-start;
 }
 
-.root[data-highlighted] {
-  outline: 2px solid color-mix(in srgb, var(--primary) 55%, transparent);
-  outline-offset: 2px;
-  border-radius: var(--radius-lg);
+/* Lift glow on the bubble surface only — not the full-width row.
+   Transition lives on the surfaces themselves so exit animates too. */
+.root[data-highlighted] :global([data-message-surface]) {
+  position: relative;
+  z-index: 10;
+  transform-origin: center center;
+  transform: scale(1.05);
+  box-shadow:
+    0 0 18px 4px color-mix(in srgb, var(--primary) 40%, transparent),
+    0 4px 14px color-mix(in srgb, var(--primary) 22%, transparent);
 }
 
 .hoverActions {
