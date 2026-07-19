@@ -32,6 +32,7 @@ export const SETTINGS_CATEGORIES: SettingsCategory[] = [
     subSections: [
       { id: 'editor', label: 'Editor' },
       { id: 'attachments', label: 'Attachments' },
+      { id: 'variants', label: 'Variants' },
       { id: 'decorations', label: 'Decorations' },
     ],
   },
@@ -183,6 +184,20 @@ export const SETTINGS_SEARCH_INDEX: SettingsSearchEntry[] = [
   },
   {
     category: 'composer',
+    subSection: 'variants',
+    title: 'Todo Variant',
+    description: 'Configure todo composer behavior.',
+    keywords: ['todo', 'task', 'enter', 'send'],
+  },
+  {
+    category: 'composer',
+    subSection: 'variants',
+    title: 'Todo Enter Key Behavior',
+    description: 'What Enter does in the todo composer.',
+    keywords: ['todo', 'enter', 'send', 'shift', 'newline'],
+  },
+  {
+    category: 'composer',
     subSection: 'decorations',
     title: 'Ticket Decorator',
     description: 'Configure how ticket completion works.',
@@ -194,13 +209,6 @@ export const SETTINGS_SEARCH_INDEX: SettingsSearchEntry[] = [
     title: 'Timer Decorator',
     description: 'Configure default timer behavior.',
     keywords: ['timer', 'countdown', 'countup'],
-  },
-  {
-    category: 'composer',
-    subSection: 'decorations',
-    title: 'Todo Decorator',
-    description: 'Configure todo list behavior.',
-    keywords: ['todo', 'task'],
   },
   {
     category: 'composer',

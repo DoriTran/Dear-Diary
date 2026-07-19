@@ -1,0 +1,82 @@
+.root {
+  --checkbox-color: var(--primary);
+  --checkbox-radius: var(--radius-sm);
+}
+
+.root[data-variant='filled'],
+.root:not([data-variant]) {
+  --checkbox-icon-color: var(--surface);
+}
+
+.root[data-variant='outline'] {
+  --checkbox-icon-color: var(--checkbox-color);
+}
+
+.body {
+  align-items: flex-start;
+}
+
+.inner {
+  flex-shrink: 0;
+}
+
+.input {
+  border: 1px solid var(--border-soft) !important;
+  border-radius: var(--checkbox-radius);
+  background-color: var(--surface) !important;
+  cursor: pointer;
+  transition:
+    border-color var(--transition-fast),
+    background-color var(--transition-fast),
+    box-shadow var(--transition-fast);
+}
+
+.root .input:hover:not(:disabled):not(:checked):not([data-indeterminate]) {
+  border-color: color-mix(in srgb, var(--primary) 35%, var(--border-soft)) !important;
+}
+
+.input:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--primary) 22%, transparent);
+}
+
+/* Beat Mantine's .input:checked { background: var(--checkbox-color) } when
+   --checkbox-color is still the Mantine primary blue. */
+.root .input:checked,
+.root .input[data-indeterminate] {
+  border-color: var(--primary) !important;
+  background-color: var(--primary) !important;
+}
+
+.input:disabled {
+  cursor: not-allowed;
+  opacity: 0.55;
+}
+
+.icon {
+  color: var(--surface);
+}
+
+.root[data-variant='outline'] .icon {
+  color: var(--primary);
+}
+
+.labelWrapper {
+  min-width: 0;
+}
+
+.label {
+  font-size: var(--font-sm);
+  color: var(--text);
+  cursor: pointer;
+}
+
+.description {
+  font-size: var(--font-xs);
+  color: var(--text-muted);
+}
+
+.error {
+  font-size: var(--font-xs);
+  color: var(--danger, #c45c5c);
+}

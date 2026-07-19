@@ -13,34 +13,38 @@ export function applyAppTheme(theme: AppTheme, mode: AppMode) {
 }
 
 /** Deep-merge helper used for partial preference updates (immutable). */
-function mergePreferences(
-  base: SettingsPreferences,
-  patch: DeepPartial<SettingsPreferences>,
-): SettingsPreferences {
+function mergePreferences<T extends Record<string, unknown>>(
+  base: T,
+  patch: DeepPartial<T>,
+): T {
   const result = { ...base } as Record<string, unknown>;
 
-  for (const key of Object.keys(patch) as Array<keyof SettingsPreferences>) {
+  for (const key of Object.keys(patch) as Array<keyof T & string>) {
     const patchValue = patch[key];
 
     if (patchValue == null) {
       continue;
     }
 
+    const baseValue = base[key];
+
     if (
       typeof patchValue === 'object' &&
       !Array.isArray(patchValue) &&
-      typeof base[key] === 'object'
+      typeof baseValue === 'object' &&
+      baseValue != null &&
+      !Array.isArray(baseValue)
     ) {
-      result[key] = {
-        ...(base[key] as Record<string, unknown>),
-        ...(patchValue as Record<string, unknown>),
-      };
+      result[key] = mergePreferences(
+        baseValue as Record<string, unknown>,
+        patchValue as DeepPartial<Record<string, unknown>>,
+      );
     } else {
       result[key] = patchValue;
     }
   }
 
-  return result as SettingsPreferences;
+  return result as T;
 }
 
 const useSettingsStoreBase = create<SettingsStore>()(

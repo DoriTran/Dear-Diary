@@ -31,7 +31,7 @@ const AIEditor: FC<AIEditorProps> = ({
       value={value}
       placeholder="Ask AI something..."
       showAiIcon
-      maxRows={5}
+      maxRows={8}
       onChange={onChange}
       onFocus={onFocus}
       onBlur={onBlur}

@@ -27,7 +27,7 @@
   padding: 0.5rem 0.85rem;
   line-height: 1.25rem;
   field-sizing: content;
-  max-height: calc(1.25rem * 5 + 1rem);
+  max-height: calc(1.25rem * 8 + 1rem);
 }
 
 .input::placeholder {

@@ -2,7 +2,6 @@ import { faWandMagicSparkles } from '@fortawesome/free-solid-svg-icons';
 import {
   forwardRef,
   useImperativeHandle,
-  useLayoutEffect,
   useRef,
   type KeyboardEvent,
 } from 'react';
@@ -12,6 +11,7 @@ import type { EnterKeyBehavior } from '@/store/settings/type';
 import { AdIcon } from '@/packages/base';
 
 import type { ComposerEditorRef } from '../../input/composer.types';
+import { useAutoGrowTextarea } from '../../input/useAutoGrowTextarea';
 
 import styles from './TextEditor.module.css';
 
@@ -74,37 +74,7 @@ const TextEditor = forwardRef<ComposerEditorRef, TextEditorProps>(
       },
     }));
 
-    useLayoutEffect(() => {
-      const textarea = textareaRef.current;
-
-      if (!textarea) {
-        return;
-      }
-
-      const style = getComputedStyle(textarea);
-      const lineHeight = parseFloat(style.lineHeight) || 20;
-      const paddingY =
-        parseFloat(style.paddingTop) + parseFloat(style.paddingBottom);
-      const minHeight = lineHeight + paddingY;
-
-      textarea.style.height = '0';
-      const scrollHeight = textarea.scrollHeight;
-
-      if (maxRows != null) {
-        const maxHeight = lineHeight * maxRows + paddingY;
-        const nextHeight = Math.min(
-          Math.max(scrollHeight, minHeight),
-          maxHeight,
-        );
-
-        textarea.style.height = `${nextHeight}px`;
-        textarea.style.overflowY = scrollHeight > maxHeight ? 'auto' : 'hidden';
-        return;
-      }
-
-      textarea.style.height = `${Math.max(scrollHeight, minHeight)}px`;
-      textarea.style.overflowY = 'hidden';
-    }, [maxRows, value]);
+    useAutoGrowTextarea(textareaRef, value, maxRows);
 
     const handleFocus = () => {
       onFocus?.();

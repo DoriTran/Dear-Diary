@@ -1,10 +1,8 @@
 import type { FC } from 'react';
 
-import { faCheckSquare } from '@fortawesome/free-solid-svg-icons';
-
 import type { Message } from '@/store/diary/type';
 
-import { AdIcon } from '@/packages/base';
+import { AdCheckbox } from '@/packages/base';
 import { useDiaryStore } from '@/store';
 
 import { getMessagePreviewText } from '../../../../messagePanel.utils';
@@ -29,51 +27,44 @@ const ContentRenderer: FC<ContentRendererProps> = ({
 
   if (message.variant === 'todo') {
     return (
-      <div>
-        <div className={styles.header}>
-          <AdIcon icon={faCheckSquare} size={10} />
-          <span>TODO</span>
-        </div>
-        <ul className={styles.todoList}>
-          {message.content.items.map((item) => (
-            <li key={item.id} className={styles.todoItem}>
-              <div className={styles.todoRow}>
-                <input
-                  type="checkbox"
-                  className={styles.checkbox}
-                  checked={item.completed}
-                  aria-label={`Mark ${item.content.text} complete`}
-                  onChange={() =>
-                    updateMessageContent(message.id, {
-                      content: {
-                        items: message.content.items.map((entry) =>
-                          entry.id === item.id
-                            ? { ...entry, completed: !entry.completed }
-                            : entry,
-                        ),
-                      },
-                    })
-                  }
+      <ul className={styles.todoList}>
+        {message.content.items.map((item) => (
+          <li key={item.id} className={styles.todoItem}>
+            <div className={styles.todoRow}>
+              <AdCheckbox
+                className={styles.checkbox}
+                checked={item.completed}
+                aria-label={`Mark ${item.content.text} complete`}
+                onChange={() =>
+                  updateMessageContent(message.id, {
+                    content: {
+                      items: message.content.items.map((entry) =>
+                        entry.id === item.id
+                          ? { ...entry, completed: !entry.completed }
+                          : entry,
+                      ),
+                    },
+                  })
+                }
+              />
+              <span
+                className={`${styles.todoText} ${item.completed ? styles.todoTextDone : ''}`}
+              >
+                {item.content.text}
+              </span>
+            </div>
+            {item.attachments.length > 0 ? (
+              <div className={styles.rowAttachments}>
+                <AttachmentList
+                  attachments={item.attachments}
+                  align={align}
+                  compact
                 />
-                <span
-                  className={`${styles.todoText} ${item.completed ? styles.todoTextDone : ''}`}
-                >
-                  {item.content.text}
-                </span>
               </div>
-              {item.attachments.length > 0 ? (
-                <div className={styles.rowAttachments}>
-                  <AttachmentList
-                    attachments={item.attachments}
-                    align={align}
-                    compact
-                  />
-                </div>
-              ) : null}
-            </li>
-          ))}
-        </ul>
-      </div>
+            ) : null}
+          </li>
+        ))}
+      </ul>
     );
   }
 

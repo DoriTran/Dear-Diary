@@ -70,6 +70,7 @@ export type TimerPreferences = {
 export type TodoNewItemPosition = 'top' | 'bottom';
 
 export type TodoPreferences = {
+  enterKeyBehavior: EnterKeyBehavior;
   newItemPosition: TodoNewItemPosition;
   enterCreatesNext: boolean;
   completeAnimation: boolean;

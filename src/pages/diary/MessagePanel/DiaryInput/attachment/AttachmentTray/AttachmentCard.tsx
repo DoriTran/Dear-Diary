@@ -15,6 +15,10 @@ export type AttachmentCardProps = {
   attachment: Attachment;
   compact?: boolean;
   variant?: 'default' | 'tray';
+  /** When true, omit name/size labels (tray file cards become icon-only). */
+  hideName?: boolean;
+  /** Smaller tray thumbnails for tight contexts (e.g. todo rows). */
+  dense?: boolean;
   onRemove?: () => void;
 };
 
@@ -22,6 +26,8 @@ const AttachmentCard: FC<AttachmentCardProps> = ({
   attachment,
   compact = false,
   variant = 'default',
+  hideName = false,
+  dense = false,
   onRemove,
 }) => {
   const name = attachment.name ?? attachment.url.split('/').pop() ?? 'file';
@@ -31,7 +37,9 @@ const AttachmentCard: FC<AttachmentCardProps> = ({
 
   if (variant === 'tray' && isMedia) {
     return (
-      <div className={styles.trayMediaCard}>
+      <div
+        className={`${styles.trayMediaCard} ${dense ? styles.trayCardDense : ''}`}
+      >
         <div className={styles.trayMediaThumb}>
           {attachment.type === 'image' ? (
             <img
@@ -59,12 +67,18 @@ const AttachmentCard: FC<AttachmentCardProps> = ({
 
   if (variant === 'tray' && attachment.type === 'file') {
     return (
-      <div className={styles.trayFileCard}>
+      <div
+        className={`${styles.trayFileCard} ${dense ? styles.trayCardDense : ''}`}
+      >
         <div className={styles.trayFileIcon}>
-          <AdIcon icon={faFile} size={14} />
+          <AdIcon icon={faFile} size={dense ? 12 : 14} />
         </div>
-        <span className={styles.trayFileName}>{name}</span>
-        {size ? <span className={styles.trayFileSize}>{size}</span> : null}
+        {!hideName ? (
+          <>
+            <span className={styles.trayFileName}>{name}</span>
+            {size ? <span className={styles.trayFileSize}>{size}</span> : null}
+          </>
+        ) : null}
         {onRemove ? (
           <button
             type="button"

@@ -131,7 +131,7 @@ const DiaryInput: FC<DiaryInputProps> = ({
       <TextEditor
         ref={editorRef}
         value={draft.text}
-        maxRows={5}
+        maxRows={8}
         onChange={setText}
         onFocus={handleFocus}
         onBlur={handleBlur}

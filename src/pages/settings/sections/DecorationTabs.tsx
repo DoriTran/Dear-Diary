@@ -1,7 +1,6 @@
 import {
   faBell,
   faClock,
-  faListCheck,
   faTicket,
   type IconDefinition,
 } from '@fortawesome/free-solid-svg-icons';
@@ -12,7 +11,6 @@ import type {
   TicketCompletionAnimation,
   TicketUndoVisibility,
   TimerDefaultMode,
-  TodoNewItemPosition,
 } from '@/store/settings/type';
 
 import { AdIcon, AdSegmentedControl, AdSwitch } from '@/packages/base';
@@ -21,12 +19,11 @@ import { DEFAULT_PREFERENCES } from '@/store/settings/constants';
 import { SettingRow } from '../components';
 import styles from './DecorationTabs.module.css';
 
-type DecoratorTab = 'ticket' | 'timer' | 'todo' | 'reminder';
+type DecoratorTab = 'ticket' | 'timer' | 'reminder';
 
 const TABS: { id: DecoratorTab; label: string; icon: IconDefinition }[] = [
   { id: 'ticket', label: 'Ticket', icon: faTicket },
   { id: 'timer', label: 'Timer', icon: faClock },
-  { id: 'todo', label: 'Todo', icon: faListCheck },
   { id: 'reminder', label: 'Reminder', icon: faBell },
 ];
 
@@ -54,13 +51,6 @@ const DecorationTabs: FC = () => {
   const [timerSound, setTimerSound] = useState(D.timer.playSound);
   const [timerAutoStart, setTimerAutoStart] = useState(D.timer.autoStart);
   const [timerMs, setTimerMs] = useState(D.timer.showMilliseconds);
-
-  // Todo (suggested)
-  const [todoPosition, setTodoPosition] = useState<TodoNewItemPosition>(
-    D.todo.newItemPosition,
-  );
-  const [todoEnterNext, setTodoEnterNext] = useState(D.todo.enterCreatesNext);
-  const [todoAnim, setTodoAnim] = useState(D.todo.completeAnimation);
 
   return (
     <div className={styles.root}>
@@ -191,49 +181,6 @@ const DecorationTabs: FC = () => {
                 <AdSwitch
                   onSwitch={() => setTimerMs((v) => !v)}
                   value={timerMs}
-                />
-              }
-            />
-          </>
-        )}
-
-        {tab === 'todo' && (
-          <>
-            <SettingRow
-              title="New item position"
-              description="Where newly created tasks are added."
-              suggested
-              control={
-                <AdSegmentedControl
-                  aria-label="New item position"
-                  onChange={setTodoPosition}
-                  options={[
-                    { value: 'top', label: 'Top' },
-                    { value: 'bottom', label: 'Bottom' },
-                  ]}
-                  value={todoPosition}
-                />
-              }
-            />
-            <SettingRow
-              title="Enter creates next task"
-              description="Pressing Enter adds another task row."
-              suggested
-              control={
-                <AdSwitch
-                  onSwitch={() => setTodoEnterNext((v) => !v)}
-                  value={todoEnterNext}
-                />
-              }
-            />
-            <SettingRow
-              title="Complete animation"
-              description="Animate tasks when they are completed."
-              suggested
-              control={
-                <AdSwitch
-                  onSwitch={() => setTodoAnim((v) => !v)}
-                  value={todoAnim}
                 />
               }
             />

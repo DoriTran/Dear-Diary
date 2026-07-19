@@ -1,64 +1,171 @@
 .root {
   display: flex;
   flex-direction: column;
+  gap: 0.45rem;
+  width: 100%;
+  min-width: 0;
+  max-height: 60vh;
+  padding: 0.55rem 0.7rem 0.4rem;
+  overflow-x: hidden;
+  overflow-y: auto;
+  box-sizing: border-box;
+}
+
+.list {
+  display: flex;
+  flex-direction: column;
   gap: 0.5rem;
+  width: 100%;
+  min-width: 0;
 }
 
 .row {
   display: flex;
-  flex-direction: column;
-  gap: 0.35rem;
-}
-
-.rowMain {
-  display: flex;
-  align-items: center;
+  /* Keep handle/checkbox pinned to the first line when the field grows */
+  align-items: flex-start;
   gap: 0.4rem;
+  width: 100%;
+  min-width: 0;
 }
 
-.uploadBtn,
+/*
+  First-line alignment for side controls:
+  field padding-top (0.4) + input padding-top (0.2)
+  + (line-height 1.35 - control 1.25) / 2 = 0.65rem
+*/
+.dragHandle,
+.checkbox,
+.removeBtn {
+  --todo-side-offset: 0.65rem;
+}
+
+.dragHandle {
+  display: inline-flex;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: center;
+  /* Match AdCheckbox size="sm" (20px) so the grip is the same footprint */
+  width: 1.25rem;
+  height: 1.25rem;
+  margin-top: var(--todo-side-offset);
+  padding: 0;
+  border: none;
+  border-radius: var(--radius-sm);
+  color: var(--text-soft);
+  background: transparent;
+  cursor: grab;
+  touch-action: none;
+  user-select: none;
+}
+
+.dragHandle:active {
+  cursor: grabbing;
+}
+
+.checkbox {
+  flex-shrink: 0;
+  margin-top: var(--todo-side-offset);
+}
+
+.field {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: 0.3rem;
+  min-width: 0;
+  padding: 0.4rem 0.65rem 0.45rem;
+  border: 1px solid var(--border-soft);
+  border-radius: var(--radius-lg);
+  background: var(--surface);
+  transition: border-color var(--transition-fast);
+}
+
+.field:focus-within {
+  border-color: color-mix(in srgb, var(--primary) 45%, var(--border-soft));
+}
+
+.input {
+  display: block;
+  width: 100%;
+  min-width: 0;
+  margin: 0;
+  padding: 0.2rem 0;
+  border: none;
+  border-radius: 0;
+  font-family: inherit;
+  font-size: var(--font-sm);
+  line-height: 1.35rem;
+  color: var(--text);
+  background: transparent;
+  resize: none;
+  outline: none;
+  box-sizing: border-box;
+  overflow: hidden;
+}
+
+.inputDone {
+  color: var(--text-soft);
+  text-decoration: line-through;
+}
+
+.input::placeholder {
+  color: var(--text-soft);
+}
+
 .removeBtn {
   display: inline-flex;
   flex-shrink: 0;
   align-items: center;
   justify-content: center;
-  width: 1.75rem;
-  height: 1.75rem;
-  border: 1px solid var(--border-soft);
+  width: 1.25rem;
+  height: 1.25rem;
+  margin-top: var(--todo-side-offset);
+  padding: 0;
+  border: none;
   border-radius: 999px;
-  background: color-mix(in srgb, var(--success) 12%, var(--surface));
-  color: var(--success);
+  color: var(--text-muted);
+  background: transparent;
   cursor: pointer;
 }
 
-.removeBtn {
-  background: var(--surface-soft);
-  color: var(--text-muted);
-}
-
-.input {
-  flex: 1;
-  min-width: 0;
-  padding: 0.45rem 0.55rem;
-  border: 1px solid var(--border-soft);
-  border-radius: var(--radius-md);
-  font-family: inherit;
-  font-size: var(--font-sm);
+.removeBtn:hover {
   color: var(--text);
-  background: var(--surface);
-  outline: none;
+  background: var(--surface-soft);
 }
 
 .rowAttachments {
   display: flex;
   flex-wrap: wrap;
   gap: 0.35rem;
-  padding-left: 2.15rem;
+  align-items: center;
+}
+
+.addAttachmentBtn {
+  display: inline-flex;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: center;
+  width: 2.25rem;
+  height: 2.25rem;
+  border: 1px dashed var(--border-soft);
+  border-radius: var(--radius-md);
+  color: color-mix(in srgb, var(--primary) 70%, var(--text-muted));
+  background: transparent;
+  cursor: pointer;
+}
+
+.addAttachmentBtn:hover {
+  color: var(--primary);
+  border-color: var(--primary);
 }
 
 .addRowBtn {
-  align-self: flex-start;
-  padding: 0.25rem 0.35rem;
+  display: inline-flex;
+  align-items: center;
+  align-self: center;
+  gap: 0.35rem;
+  margin-top: 0.1rem;
+  padding: 0.3rem 0.5rem;
   border: none;
   border-radius: var(--radius-md);
   font-size: var(--font-sm);
@@ -70,6 +177,17 @@
 .addRowBtn:hover {
   color: var(--text);
   background: var(--surface-soft);
+}
+
+.addRowIcon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 1.15rem;
+  height: 1.15rem;
+  border: 1px dashed var(--border-soft);
+  border-radius: 999px;
+  color: inherit;
 }
 
 .hiddenInput {

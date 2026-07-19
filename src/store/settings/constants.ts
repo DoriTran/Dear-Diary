@@ -51,6 +51,7 @@ export const DEFAULT_PREFERENCES: SettingsPreferences = {
       timeFormat: '24h',
     },
     todo: {
+      enterKeyBehavior: 'shift-enter-sends',
       newItemPosition: 'bottom',
       enterCreatesNext: true,
       completeAnimation: true,

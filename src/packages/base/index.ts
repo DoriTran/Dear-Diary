@@ -22,6 +22,10 @@ export {
 } from './AdPopover/AdPopover';
 export { default as AdSwitch, type AdSwitchProps } from './AdSwitch/AdSwitch';
 export {
+  default as AdCheckbox,
+  type AdCheckboxProps,
+} from './AdCheckbox';
+export {
   AdSegmentedControl,
   type AdSegmentedControlOption,
   type AdSegmentedControlProps,

@@ -27,7 +27,8 @@
 }
 
 .checkbox {
-  margin-top: 0.15rem;
+  flex-shrink: 0;
+  margin-top: 0.1rem;
 }
 
 .todoText {
@@ -44,17 +45,4 @@
 
 .rowAttachments {
   padding-left: 1.5rem;
-}
-
-.header {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.25rem;
-  margin-bottom: 0.45rem;
-  padding: 0.15rem 0.45rem;
-  border-radius: 999px;
-  font-size: var(--font-2xs);
-  font-weight: var(--font-semibold);
-  color: color-mix(in srgb, var(--success) 85%, var(--text));
-  background: color-mix(in srgb, var(--success) 15%, var(--surface));
 }

@@ -1,4 +1,5 @@
 import {
+  faListCheck,
   faPaperclip,
   faPen,
   faTicket,
@@ -13,6 +14,7 @@ import { DEFAULT_PREFERENCES } from '@/store/settings/constants';
 
 import { SettingCard, SettingRow } from '../components';
 import DecorationTabs from './DecorationTabs';
+import VariantTabs from './VariantTabs';
 
 const D = DEFAULT_PREFERENCES;
 
@@ -154,6 +156,15 @@ const ComposerSection: FC = () => {
             />
           }
         />
+      </SettingCard>
+
+      <SettingCard
+        id="variants"
+        icon={faListCheck}
+        title="Variants"
+        description="Configure per-variant composer behavior."
+      >
+        <VariantTabs />
       </SettingCard>
 
       <SettingCard
