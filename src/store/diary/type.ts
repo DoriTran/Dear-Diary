@@ -36,7 +36,6 @@ export type DiaryStoreActions = {
 
   createMessage: (data: Partial<Message>) => string;
   updateMessage: (messageId: string, data: MessageUpdateData) => void;
-  updateMessageContent: (messageId: string, data: MessageUpdateData) => void;
   patchMessage: (messageId: string, data: MessagePatchData) => void;
   deleteMessage: (messageId: string) => void;
   moveMessage: (messageId: string, targetChatboxId: string) => void;
@@ -333,6 +332,8 @@ export type MessagePatchData = Partial<
     | 'reactions'
     | 'replyToMessageId'
     | 'sourceMessageId'
+    | 'decorators'
+    | 'content'
   >
 >;
 

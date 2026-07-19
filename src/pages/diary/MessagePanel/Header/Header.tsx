@@ -81,11 +81,11 @@ const Header: FC<HeaderProps> = ({
               style={{ background: iconBg }}
               aria-hidden
             >
-              <AdIcon icon={icon} source="lucide" size={26} />
+              <AdIcon icon={icon} source="lucide" size={36} />
             </span>
             {pinned ? (
               <span className={styles.overlayPin} aria-label="Pinned">
-                <AdIcon icon={faThumbtack} size={8} />
+                <AdIcon icon={faThumbtack} size={12} />
               </span>
             ) : null}
           </div>

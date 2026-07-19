@@ -94,5 +94,6 @@
 
 .read {
   display: inline-flex;
+  margin-top: -1px;
   color: var(--primary);
 }

@@ -18,7 +18,7 @@ const ContentRenderer: FC<ContentRendererProps> = ({
   message,
   mode = 'feed',
 }) => {
-  const updateMessageContent = useDiaryStore('updateMessageContent');
+  const patchMessage = useDiaryStore('patchMessage');
   const align = message.sender === 'assistant' ? 'start' : 'end';
 
   if (mode === 'preview') {
@@ -43,7 +43,7 @@ const ContentRenderer: FC<ContentRendererProps> = ({
                       : 'Mark todo complete'
                   }
                   onChange={() =>
-                    updateMessageContent(message.id, {
+                    patchMessage(message.id, {
                       content: {
                         items: message.content.items.map((entry) =>
                           entry.id === item.id

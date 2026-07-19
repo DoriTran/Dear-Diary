@@ -484,33 +484,6 @@ const useDiaryStoreBase = create<DiaryStore & DiaryStoreActions>()(
 
           return nextState;
         }),
-      updateMessageContent: (messageId, data: MessageUpdateData) =>
-        set((state) => {
-          const current = state.messages[messageId];
-
-          if (!current) {
-            return state;
-          }
-
-          let nextState: DiaryStore = {
-            ...state,
-            messages: {
-              ...state.messages,
-              [messageId]: {
-                ...current,
-                ...data,
-                id: messageId,
-                chatboxId: current.chatboxId,
-                edited: true,
-                updatedAt: nowIso(),
-              } as Message,
-            },
-          };
-
-          nextState = recalculateChatboxTags(nextState, current.chatboxId);
-
-          return nextState;
-        }),
       patchMessage: (messageId, data) =>
         set((state) => {
           const current = state.messages[messageId];
