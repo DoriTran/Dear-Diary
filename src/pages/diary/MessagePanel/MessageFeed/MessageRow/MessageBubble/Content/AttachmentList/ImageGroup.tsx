@@ -33,7 +33,7 @@ const ImageGroup: FC<ImageGroupProps> = ({ attachments }) => {
   };
 
   return (
-    <div className={clsx(styles.rows, isSolo && styles.rowsSolo)}>
+    <div className={styles.rows}>
       {rows.map((row) => (
         <div
           key={row.map((image) => image.id).join(':')}
@@ -47,7 +47,13 @@ const ImageGroup: FC<ImageGroupProps> = ({ attachments }) => {
               <a
                 key={image.id}
                 href={imageUrl}
-                className={clsx(styles.cell, isSolo && styles.cellSolo)}
+                className={clsx(
+                  styles.cell,
+                  isSolo && styles.cellSolo,
+                  !isSolo &&
+                    row.length >= SMALL_CAPACITY &&
+                    styles.cellSmall,
+                )}
                 target="_blank"
                 rel="noreferrer"
                 onClick={handleOpen(index)}

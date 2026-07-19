@@ -28,42 +28,58 @@ const ContentRenderer: FC<ContentRendererProps> = ({
   if (message.variant === 'todo') {
     return (
       <ul className={styles.todoList}>
-        {message.content.items.map((item) => (
-          <li key={item.id} className={styles.todoItem}>
-            <div className={styles.todoRow}>
-              <AdCheckbox
-                className={styles.checkbox}
-                checked={item.completed}
-                aria-label={`Mark ${item.content.text} complete`}
-                onChange={() =>
-                  updateMessageContent(message.id, {
-                    content: {
-                      items: message.content.items.map((entry) =>
-                        entry.id === item.id
-                          ? { ...entry, completed: !entry.completed }
-                          : entry,
-                      ),
-                    },
-                  })
-                }
-              />
-              <span
-                className={`${styles.todoText} ${item.completed ? styles.todoTextDone : ''}`}
-              >
-                {item.content.text}
-              </span>
-            </div>
-            {item.attachments.length > 0 ? (
-              <div className={styles.rowAttachments}>
-                <AttachmentList
-                  attachments={item.attachments}
-                  align={align}
-                  compact
+        {message.content.items.map((item) => {
+          const hasText = item.content.text.trim().length > 0;
+          const hasAttachments = item.attachments.length > 0;
+
+          return (
+            <li key={item.id} className={styles.todoItem}>
+              <div className={styles.checkbox}>
+                <AdCheckbox
+                  checked={item.completed}
+                  aria-label={
+                    hasText
+                      ? `Mark ${item.content.text} complete`
+                      : 'Mark todo complete'
+                  }
+                  onChange={() =>
+                    updateMessageContent(message.id, {
+                      content: {
+                        items: message.content.items.map((entry) =>
+                          entry.id === item.id
+                            ? { ...entry, completed: !entry.completed }
+                            : entry,
+                        ),
+                      },
+                    })
+                  }
                 />
               </div>
-            ) : null}
-          </li>
-        ))}
+              <div className={styles.todoBody}>
+                {hasText ? (
+                  <span
+                    className={`${styles.todoText} ${item.completed ? styles.todoTextDone : ''}`}
+                  >
+                    {item.content.text}
+                  </span>
+                ) : null}
+                {hasAttachments ? (
+                  <div
+                    className={
+                      item.completed ? styles.attachmentsDone : undefined
+                    }
+                  >
+                    <AttachmentList
+                      attachments={item.attachments}
+                      align={align}
+                      compact
+                    />
+                  </div>
+                ) : null}
+              </div>
+            </li>
+          );
+        })}
       </ul>
     );
   }

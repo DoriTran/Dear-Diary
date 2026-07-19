@@ -219,7 +219,9 @@ const SortableTodoRow: FC<SortableTodoRowProps> = ({
           />
 
           {showAttachments ? (
-            <div className={styles.rowAttachments}>
+            <div
+              className={`${styles.rowAttachments}${item.completed ? ` ${styles.attachmentsDone}` : ''}`}
+            >
               {item.attachments.map((attachment) => (
                 <AttachmentCard
                   key={attachment.id}

@@ -16,12 +16,7 @@
 
 .todoItem {
   display: flex;
-  flex-direction: column;
-  gap: 0.35rem;
-}
-
-.todoRow {
-  display: flex;
+  flex-direction: row;
   align-items: flex-start;
   gap: 0.45rem;
 }
@@ -31,8 +26,15 @@
   margin-top: 0.1rem;
 }
 
-.todoText {
+.todoBody {
+  display: flex;
   flex: 1;
+  flex-direction: column;
+  gap: 0.35rem;
+  min-width: 0;
+}
+
+.todoText {
   font-size: var(--font-sm);
   line-height: 1.5;
   white-space: pre-wrap;
@@ -43,6 +45,7 @@
   text-decoration: line-through;
 }
 
-.rowAttachments {
-  padding-left: 1.5rem;
+.attachmentsDone {
+  opacity: 0.3;
+  filter: blur(0.4px);
 }

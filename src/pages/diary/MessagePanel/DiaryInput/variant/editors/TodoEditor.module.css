@@ -138,6 +138,14 @@
   flex-wrap: wrap;
   gap: 0.35rem;
   align-items: center;
+  max-width: 100%;
+  min-width: 0;
+}
+
+/* Dim media cards when completed; keep the add button clear. */
+.attachmentsDone > *:not(.addAttachmentBtn):not(.hiddenInput) {
+  opacity: 0.3;
+  filter: blur(0.4px);
 }
 
 .addAttachmentBtn {
