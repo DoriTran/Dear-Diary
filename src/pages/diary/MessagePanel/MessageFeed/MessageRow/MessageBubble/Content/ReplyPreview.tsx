@@ -1,10 +1,13 @@
 import type { FC } from 'react';
 
+import { faReply } from '@fortawesome/free-solid-svg-icons';
+
+import { AdIcon } from '@/packages/base';
 import { useDiaryStore } from '@/store';
 
 import {
   getMessagePreviewText,
-  getMessageSenderLabel,
+  truncateReplyPreviewText,
 } from '../../../../messagePanel.utils';
 import styles from './ReplyPreview.module.css';
 
@@ -17,6 +20,9 @@ const ReplyPreview: FC<ReplyPreviewProps> = ({ replyToMessageId, onJump }) => {
   const messages = useDiaryStore('messages');
   const target = messages[replyToMessageId];
   const unavailable = !target;
+  const previewText = unavailable
+    ? 'Message unavailable'
+    : truncateReplyPreviewText(getMessagePreviewText(target));
 
   return (
     <button
@@ -25,14 +31,18 @@ const ReplyPreview: FC<ReplyPreviewProps> = ({ replyToMessageId, onJump }) => {
       disabled={unavailable || !onJump}
       onClick={() => onJump?.(replyToMessageId)}
     >
-      {unavailable ? (
-        <p className={styles.unavailable}>Message unavailable</p>
-      ) : (
-        <>
-          <p className={styles.sender}>{getMessageSenderLabel(target)}</p>
-          <p className={styles.preview}>{getMessagePreviewText(target)}</p>
-        </>
-      )}
+      <span className={styles.icon} aria-hidden>
+        <AdIcon icon={faReply} size={12} />
+      </span>
+      <span className={styles.label}>
+        {unavailable ? (
+          previewText
+        ) : (
+          <>
+            Replying to <span className={styles.quote}>"{previewText}"</span>
+          </>
+        )}
+      </span>
     </button>
   );
 };

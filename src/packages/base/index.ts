@@ -70,14 +70,23 @@ export {
 } from './AdActionButton';
 export {
   default as AdEmojiPicker,
+  AdEmojiGlyph,
+  AdEmojiPickerPanel,
+  AdEmojiText,
   AD_COMPOSER_EMOJIS,
+  AD_CUSTOM_EMOJIS,
   AD_DEFAULT_EMOJIS,
+  CUSTOM_EMOJI_SHORTCODE_RE,
+  DEFAULT_PICKER_HEIGHT,
+  DEFAULT_PICKER_WIDTH,
+  getCustomEmojiByShortcode,
+  toCustomEmojiShortcode,
+  type AdCustomEmoji,
+  type AdEmojiGlyphProps,
+  type AdEmojiPickerPanelProps,
   type AdEmojiPickerProps,
+  type AdEmojiTextProps,
 } from './AdEmojiPicker';
-export {
-  default as AdEmojiIconPicker,
-  type AdEmojiIconPickerProps,
-} from './AdEmojiIconPicker';
 export {
   default as AdQuickReactionBar,
   type AdQuickReactionBarProps,

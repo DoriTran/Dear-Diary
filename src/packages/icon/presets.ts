@@ -138,6 +138,9 @@ export const LIBRARY_CATEGORIES: LibraryCategory[] = [
   { id: 'others', label: 'Others', iconId: 'CircleEllipsis' },
 ];
 
-export const RECENT_ICON_LIMIT = 8;
+/** MRU “Frequently Used” list cap for the icon picker. */
+export const RECENT_ICON_LIMIT = 24;
+
+export const FREQUENT_ICON_LIMIT = RECENT_ICON_LIMIT;
 
 export const LIBRARY_PAGE_SIZE = 64;

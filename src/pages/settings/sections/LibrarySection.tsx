@@ -55,8 +55,8 @@ const LibrarySection: FC = () => {
         description="Manage the icons you reach for most."
       >
         <SettingRow
-          title="Recent icons"
-          description={`${recentIconCount} recently used icon${
+          title="Frequently used icons"
+          description={`${recentIconCount} frequently used icon${
             recentIconCount === 1 ? '' : 's'
           }.`}
           control={
@@ -64,14 +64,15 @@ const LibrarySection: FC = () => {
               disabled={recentIconCount === 0}
               onClick={() =>
                 setPending({
-                  title: 'Clear recent icons',
-                  message: 'This will remove your recently used icons list.',
+                  title: 'Clear frequently used icons',
+                  message:
+                    'This will remove your frequently used icons list.',
                   confirmLabel: 'Clear',
                   onConfirm: clearRecentIcons,
                 })
               }
             >
-              Clear recent
+              Clear frequent
             </ActionButton>
           }
         />

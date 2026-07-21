@@ -1,11 +1,12 @@
 .root {
   display: flex;
-  flex-direction: column;
-  gap: 0.15rem;
-  padding: 0.35rem 0.5rem;
-  border-left: 3px solid color-mix(in srgb, var(--primary) 70%, transparent);
-  border-radius: var(--radius-sm);
-  background: color-mix(in srgb, var(--surface) 80%, var(--primary) 6%);
+  align-items: center;
+  gap: 0.45rem;
+  max-width: 100%;
+  min-width: 0;
+  padding: 0.15rem 0.1rem;
+  border: none;
+  background: transparent;
   cursor: pointer;
   text-align: left;
 }
@@ -15,25 +16,25 @@
   opacity: 0.7;
 }
 
-.sender {
-  margin: 0;
-  font-size: var(--font-2xs);
-  font-weight: var(--font-semibold);
+.icon {
+  display: inline-flex;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: center;
   color: var(--primary);
 }
 
-.preview {
-  margin: 0;
-  font-size: var(--font-xs);
-  color: var(--text-muted);
+.label {
   overflow: hidden;
+  min-width: 0;
+  font-size: var(--font-xs);
+  font-weight: var(--font-medium);
+  line-height: 1.35;
+  color: var(--text-muted);
   text-overflow: ellipsis;
   white-space: nowrap;
 }
 
-.unavailable {
-  margin: 0;
-  font-size: var(--font-xs);
-  color: var(--text-soft);
-  font-style: italic;
+.quote {
+  font-weight: var(--font-medium);
 }

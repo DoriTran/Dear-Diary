@@ -31,7 +31,7 @@ const RecentIconsSection: FC<RecentIconsSectionProps> = ({
       <div className={sectionStyles.sectionHeader}>
         <h3 className={sectionStyles.sectionTitle}>
           <LucideIconById iconId="Clock" size={12} />
-          Recent
+          Frequently Used
         </h3>
         <button
           type="button"

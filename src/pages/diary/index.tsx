@@ -96,9 +96,6 @@ const Diary: FC = () => {
           chatboxId={selectedChatboxId ?? ''}
           detailPanelCollapsed={detailPanelCollapsed}
           onToggleDetailPanel={() => setDetailPanelCollapsed((value) => !value)}
-          onEditChatbox={(id) =>
-            setFormModal({ action: 'edit', entity: 'chatbox', id })
-          }
           pendingScrollMessageId={pendingScrollMessageId}
           onPendingScrollHandled={handlePendingScrollHandled}
           onNavigateToChatbox={(targetChatboxId, messageId) => {

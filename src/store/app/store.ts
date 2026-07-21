@@ -1,6 +1,10 @@
 import { create } from 'zustand';
 import { createJSONStorage, persist } from 'zustand/middleware';
 
+import {
+  FREQUENT_EMOJI_LIMIT,
+  isValidEmojiPrefId,
+} from '@/packages/base/AdEmojiPicker/data';
 import { isValidColorId, RECENT_COLOR_LIMIT } from '@/packages/color';
 import { isValidIconId, RECENT_ICON_LIMIT } from '@/packages/icon';
 
@@ -11,6 +15,7 @@ import shallow from '../shallow';
 import {
   DEFAULT_COLOR_PICKER_PREFS,
   DEFAULT_DIARY_PAGE,
+  DEFAULT_EMOJI_PICKER_PREFS,
   DEFAULT_ICON_PICKER_PREFS,
   DEFAULT_NAV_PANEL,
 } from './constants';
@@ -21,6 +26,7 @@ const useAppStoreBase = create<AppStore>()(
       navPanel: DEFAULT_NAV_PANEL,
       diaryPage: DEFAULT_DIARY_PAGE,
       iconPickerPrefs: DEFAULT_ICON_PICKER_PREFS,
+      emojiPickerPrefs: DEFAULT_EMOJI_PICKER_PREFS,
       colorPickerPrefs: DEFAULT_COLOR_PICKER_PREFS,
 
       setNavPanelFolded: (folded) =>
@@ -136,6 +142,59 @@ const useAppStoreBase = create<AppStore>()(
           },
         })),
 
+      addFrequentEmoji: (emojiId) =>
+        set((state) => {
+          if (!isValidEmojiPrefId(emojiId)) {
+            return state;
+          }
+
+          const frequent = [
+            emojiId,
+            ...state.emojiPickerPrefs.frequent.filter((id) => id !== emojiId),
+          ].slice(0, FREQUENT_EMOJI_LIMIT);
+
+          return {
+            emojiPickerPrefs: {
+              ...state.emojiPickerPrefs,
+              frequent,
+            },
+          };
+        }),
+
+      clearFrequentEmojis: () =>
+        set((state) => ({
+          emojiPickerPrefs: {
+            ...state.emojiPickerPrefs,
+            frequent: [],
+          },
+        })),
+
+      toggleFavoriteEmoji: (emojiId) =>
+        set((state) => {
+          if (!isValidEmojiPrefId(emojiId)) {
+            return state;
+          }
+
+          const favorites = state.emojiPickerPrefs.favorites.includes(emojiId)
+            ? state.emojiPickerPrefs.favorites.filter((id) => id !== emojiId)
+            : [...state.emojiPickerPrefs.favorites, emojiId];
+
+          return {
+            emojiPickerPrefs: {
+              ...state.emojiPickerPrefs,
+              favorites,
+            },
+          };
+        }),
+
+      setFavoriteEmojis: (emojiIds) =>
+        set((state) => ({
+          emojiPickerPrefs: {
+            ...state.emojiPickerPrefs,
+            favorites: emojiIds.filter(isValidEmojiPrefId),
+          },
+        })),
+
       addRecentColor: (colorId) =>
         set((state) => {
           const customPalettes = getDiaryCustomPalettes();
@@ -189,6 +248,7 @@ const useAppStoreBase = create<AppStore>()(
       partialize: (state) => ({
         navPanel: state.navPanel,
         iconPickerPrefs: state.iconPickerPrefs,
+        emojiPickerPrefs: state.emojiPickerPrefs,
         colorPickerPrefs: state.colorPickerPrefs,
         diaryPage: {
           selectedChatboxId: state.diaryPage.selectedChatboxId,
@@ -199,6 +259,7 @@ const useAppStoreBase = create<AppStore>()(
         const persisted = persistedState as {
           navPanel?: typeof DEFAULT_NAV_PANEL;
           iconPickerPrefs?: typeof DEFAULT_ICON_PICKER_PREFS;
+          emojiPickerPrefs?: typeof DEFAULT_EMOJI_PICKER_PREFS;
           colorPickerPrefs?: ColorPickerPrefs;
           diaryPage?: {
             selectedChatboxId?: string | null;
@@ -218,6 +279,12 @@ const useAppStoreBase = create<AppStore>()(
             ...persisted.iconPickerPrefs,
             recent: persisted.iconPickerPrefs?.recent ?? [],
             favorites: persisted.iconPickerPrefs?.favorites ?? [],
+          },
+          emojiPickerPrefs: {
+            ...currentState.emojiPickerPrefs,
+            ...persisted.emojiPickerPrefs,
+            frequent: persisted.emojiPickerPrefs?.frequent ?? [],
+            favorites: persisted.emojiPickerPrefs?.favorites ?? [],
           },
           colorPickerPrefs: {
             ...currentState.colorPickerPrefs,

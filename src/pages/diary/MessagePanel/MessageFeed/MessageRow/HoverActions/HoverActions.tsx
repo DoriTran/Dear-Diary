@@ -5,7 +5,7 @@ import type { Message } from '@/store/diary/type';
 
 import {
   AdActionButton,
-  AdEmojiPicker,
+  AdEmojiPickerPanel,
   AdPopover,
   AdQuickReactionBar,
   AdSelect,
@@ -37,8 +37,10 @@ const HoverActions: FC<HoverActionsProps> = ({
   const tags = useDiaryStore('tags');
   const createTag = useDiaryStore('createTag');
   const [reactionOpen, setReactionOpen] = useState(false);
-  const [showFullReactionPicker, setShowFullReactionPicker] = useState(false);
+  const [fullPickerOpen, setFullPickerOpen] = useState(false);
   const [tagOpen, setTagOpen] = useState(false);
+  const [menuOpen, setMenuOpen] = useState(false);
+  const popupOpen = reactionOpen || tagOpen || menuOpen;
 
   const tagOptions = useMemo(
     () =>
@@ -53,7 +55,7 @@ const HoverActions: FC<HoverActionsProps> = ({
   const handleReactionSelect = (emoji: string) => {
     actions.toggleReaction(message.id, emoji);
     setReactionOpen(false);
-    setShowFullReactionPicker(false);
+    setFullPickerOpen(false);
   };
 
   const replyDisabled =
@@ -61,8 +63,17 @@ const HoverActions: FC<HoverActionsProps> = ({
     actions.editTargetId === message.id;
 
   return (
-    <div className={mergeClass(styles.root, className)} data-side={side}>
-      <MoreMenu message={message} actions={actions} />
+    <div
+      className={mergeClass(styles.root, className)}
+      data-side={side}
+      data-open={popupOpen || undefined}
+    >
+      <MoreMenu
+        message={message}
+        actions={actions}
+        opened={menuOpen}
+        onOpenChange={setMenuOpen}
+      />
       <AdActionButton
         icon={faReply}
         label="Reply"
@@ -125,11 +136,12 @@ const HoverActions: FC<HoverActionsProps> = ({
           setReactionOpen(opened);
 
           if (!opened) {
-            setShowFullReactionPicker(false);
+            setFullPickerOpen(false);
           }
         }}
         position="top"
-        width={showFullReactionPicker ? 240 : undefined}
+        width={fullPickerOpen ? 'auto' : undefined}
+        classNames={{ dropdown: styles.reactionDropdown }}
         anchor={
           <AdActionButton
             icon={faSmile}
@@ -142,19 +154,18 @@ const HoverActions: FC<HoverActionsProps> = ({
       >
         <div
           className={
-            showFullReactionPicker
-              ? styles.fullReactionPopover
-              : styles.reactionPopover
+            fullPickerOpen ? styles.fullReactionPopover : styles.reactionPopover
           }
         >
-          {showFullReactionPicker ? (
-            <AdEmojiPicker onSelect={handleReactionSelect} showIcons={false} />
-          ) : (
-            <AdQuickReactionBar
-              onSelect={handleReactionSelect}
-              onExpand={() => setShowFullReactionPicker(true)}
-            />
-          )}
+          <AdQuickReactionBar
+            onSelect={handleReactionSelect}
+            onExpand={() => setFullPickerOpen(true)}
+          />
+          {fullPickerOpen ? (
+            <div className={styles.fullPickerSlot}>
+              <AdEmojiPickerPanel onSelect={handleReactionSelect} />
+            </div>
+          ) : null}
         </div>
       </AdPopover>
     </div>

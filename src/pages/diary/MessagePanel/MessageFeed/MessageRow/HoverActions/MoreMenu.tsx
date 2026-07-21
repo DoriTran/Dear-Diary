@@ -4,7 +4,7 @@ import {
   faEllipsisVertical,
   faThumbtack,
 } from '@fortawesome/free-solid-svg-icons';
-import { useState, type FC } from 'react';
+import type { FC } from 'react';
 
 import type { Message } from '@/store/diary/type';
 
@@ -17,10 +17,16 @@ import styles from './MoreMenu.module.css';
 export type MoreMenuProps = {
   message: Message;
   actions: MessageActionsAPI;
+  opened: boolean;
+  onOpenChange: (opened: boolean) => void;
 };
 
-const MoreMenu: FC<MoreMenuProps> = ({ message, actions }) => {
-  const [menuOpen, setMenuOpen] = useState(false);
+const MoreMenu: FC<MoreMenuProps> = ({
+  message,
+  actions,
+  opened,
+  onOpenChange,
+}) => {
   const isUserMessage = (message.sender ?? 'user') === 'user';
   const isEditingThis = actions.editTargetId === message.id;
   const editDisabled =
@@ -29,8 +35,8 @@ const MoreMenu: FC<MoreMenuProps> = ({ message, actions }) => {
 
   return (
     <AdMenu
-      opened={menuOpen}
-      onChange={setMenuOpen}
+      opened={opened}
+      onChange={onOpenChange}
       position="top"
       width={180}
       anchor={
@@ -38,7 +44,7 @@ const MoreMenu: FC<MoreMenuProps> = ({ message, actions }) => {
           icon={faEllipsisVertical}
           label="Message options"
           tooltip={false}
-          onClick={() => setMenuOpen((value) => !value)}
+          onClick={() => onOpenChange(!opened)}
         />
       }
     >
@@ -48,7 +54,7 @@ const MoreMenu: FC<MoreMenuProps> = ({ message, actions }) => {
           className={styles.quickAction}
           aria-label="Forward"
           onClick={() => {
-            setMenuOpen(false);
+            onOpenChange(false);
             actions.requestForward(message.id);
           }}
         >
@@ -63,7 +69,7 @@ const MoreMenu: FC<MoreMenuProps> = ({ message, actions }) => {
           aria-label={message.pinned ? 'Unpin' : 'Pin'}
           data-active={message.pinned || undefined}
           onClick={() => {
-            setMenuOpen(false);
+            onOpenChange(false);
             actions.togglePin(message.id);
           }}
         >
@@ -79,7 +85,7 @@ const MoreMenu: FC<MoreMenuProps> = ({ message, actions }) => {
           data-active={message.archived || undefined}
           disabled={archiveDisabled}
           onClick={() => {
-            setMenuOpen(false);
+            onOpenChange(false);
             actions.toggleArchive(message.id);
           }}
         >
@@ -97,7 +103,7 @@ const MoreMenu: FC<MoreMenuProps> = ({ message, actions }) => {
             centered
             disabled={editDisabled}
             onClick={() => {
-              setMenuOpen(false);
+              onOpenChange(false);
               actions.startEdit(message.id);
             }}
           >
@@ -111,7 +117,7 @@ const MoreMenu: FC<MoreMenuProps> = ({ message, actions }) => {
         centered
         destructive
         onClick={() => {
-          setMenuOpen(false);
+          onOpenChange(false);
           actions.requestDelete(message.id);
         }}
       >

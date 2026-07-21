@@ -22,7 +22,10 @@ const TimerModeCountup: FC<TimerModeCountupProps> = ({ decoration, ctx }) => {
     <div className={styles.modePanel}>
       <AdIcon icon={faClock} size={ctx.composing ? 24 : 28} />
       {ctx.composing ? (
-        <span className={`${styles.composerPill} ${styles.composerStatusText}`}>
+        <span
+          className={`${styles.composerPill} ${styles.composerStatusText} ${styles.composerPillDisabled}`}
+          aria-disabled="true"
+        >
           00:00
         </span>
       ) : (

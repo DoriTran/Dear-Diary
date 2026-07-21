@@ -1,4 +1,10 @@
-import type { FC, CSSProperties, RefObject } from 'react';
+import {
+  Fragment,
+  type FC,
+  type CSSProperties,
+  type ReactNode,
+  type RefObject,
+} from 'react';
 
 import {
   faClock,
@@ -6,7 +12,6 @@ import {
   faComment,
   faFolder,
   faMagnifyingGlass,
-  faPen,
   faRectangleList,
   faThumbtack,
   faXmark,
@@ -23,7 +28,6 @@ export type HeaderProps = {
   data: MessageHeaderData;
   detailPanelCollapsed: boolean;
   onToggleDetailPanel: () => void;
-  onEdit: () => void;
   searchQuery: string;
   searchActive: boolean;
   searchInputRef: RefObject<HTMLInputElement | null>;
@@ -35,7 +39,6 @@ const Header: FC<HeaderProps> = ({
   data,
   detailPanelCollapsed,
   onToggleDetailPanel,
-  onEdit,
   searchQuery,
   searchActive,
   searchInputRef,
@@ -61,6 +64,42 @@ const Header: FC<HeaderProps> = ({
     totalMessage === 1
       ? '1 message'
       : `${formatTotalMessages(totalMessage)} messages`;
+
+  const metaItems = [
+    groupName
+      ? {
+          key: 'group',
+          node: (
+            <span className={styles.metaItem}>
+              <AdIcon icon={faFolder} size={10} />
+              {groupName}
+            </span>
+          ),
+        }
+      : null,
+    totalMessage > 0
+      ? {
+          key: 'messages',
+          node: (
+            <span className={styles.metaItem}>
+              <AdIcon icon={faComment} size={10} />
+              {messageLabel}
+            </span>
+          ),
+        }
+      : null,
+    updatedLabel
+      ? {
+          key: 'activity',
+          node: (
+            <span className={styles.metaItem}>
+              <AdIcon icon={faClock} size={10} />
+              <time dateTime={updatedAt ?? undefined}>{updatedLabel}</time>
+            </span>
+          ),
+        }
+      : null,
+  ].filter((item): item is { key: string; node: ReactNode } => Boolean(item));
 
   return (
     <header
@@ -91,52 +130,26 @@ const Header: FC<HeaderProps> = ({
           </div>
 
           <div className={styles.textBlock}>
-            <div className={styles.titleRow}>
-              <h1 className={styles.name}>{name}</h1>
-              <button
-                type="button"
-                className={styles.editBtn}
-                aria-label={`Edit ${name}`}
-                onClick={onEdit}
-              >
-                <AdIcon icon={faPen} size={12} />
-              </button>
-            </div>
+            <h1 className={styles.name}>{name}</h1>
 
             {description ? (
               <p className={styles.description}>{description}</p>
             ) : null}
 
-            <div className={styles.metadataRow}>
-              {groupName ? (
-                <>
-                  <span className={styles.metaItem}>
-                    <AdIcon icon={faFolder} size={10} />
-                    {groupName}
-                  </span>
-                  <span className={styles.metaDot} aria-hidden>
-                    •
-                  </span>
-                </>
-              ) : null}
-              <span className={styles.metaItem}>
-                <AdIcon icon={faComment} size={10} />
-                {messageLabel}
-              </span>
-              {updatedLabel ? (
-                <>
-                  <span className={styles.metaDot} aria-hidden>
-                    •
-                  </span>
-                  <span className={styles.metaItem}>
-                    <AdIcon icon={faClock} size={10} />
-                    <time dateTime={updatedAt ?? undefined}>
-                      {updatedLabel}
-                    </time>
-                  </span>
-                </>
-              ) : null}
-            </div>
+            {metaItems.length > 0 ? (
+              <div className={styles.metadataRow}>
+                {metaItems.map((item, index) => (
+                  <Fragment key={item.key}>
+                    {index > 0 ? (
+                      <span className={styles.metaDot} aria-hidden>
+                        •
+                      </span>
+                    ) : null}
+                    {item.node}
+                  </Fragment>
+                ))}
+              </div>
+            ) : null}
           </div>
         </div>
 

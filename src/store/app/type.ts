@@ -16,6 +16,11 @@ export type IconPickerPrefs = {
   favorites: string[];
 };
 
+export type EmojiPickerPrefs = {
+  frequent: string[];
+  favorites: string[];
+};
+
 import type { ColorId } from '@/packages/color';
 
 export type ColorPickerPrefs = {
@@ -26,6 +31,7 @@ export type AppStoreState = {
   navPanel: NavPanelState;
   diaryPage: DiaryPageUIState;
   iconPickerPrefs: IconPickerPrefs;
+  emojiPickerPrefs: EmojiPickerPrefs;
   colorPickerPrefs: ColorPickerPrefs;
 };
 
@@ -39,6 +45,10 @@ export type AppStoreActions = {
   clearRecentIcons: () => void;
   toggleFavoriteIcon: (iconId: string) => void;
   setFavoriteIcons: (iconIds: string[]) => void;
+  addFrequentEmoji: (emojiId: string) => void;
+  clearFrequentEmojis: () => void;
+  toggleFavoriteEmoji: (emojiId: string) => void;
+  setFavoriteEmojis: (emojiIds: string[]) => void;
   addRecentColor: (colorId: ColorId) => void;
   removeRecentColor: (colorId: ColorId) => void;
   clearRecentColors: () => void;

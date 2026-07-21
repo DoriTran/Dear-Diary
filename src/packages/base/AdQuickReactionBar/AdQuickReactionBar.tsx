@@ -11,7 +11,7 @@ export type AdQuickReactionBarProps = {
 };
 
 const AdQuickReactionBar: FC<AdQuickReactionBarProps> = ({
-  emojis = AD_DEFAULT_EMOJIS.slice(0, 5),
+  emojis = AD_DEFAULT_EMOJIS,
   onSelect,
   onExpand,
   expandLabel = 'More reactions',

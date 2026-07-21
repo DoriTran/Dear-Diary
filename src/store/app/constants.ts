@@ -1,6 +1,7 @@
 import type {
   ColorPickerPrefs,
   DiaryPageUIState,
+  EmojiPickerPrefs,
   IconPickerPrefs,
   NavPanelState,
 } from './type';
@@ -18,6 +19,11 @@ export const DEFAULT_DIARY_PAGE: DiaryPageUIState = {
 
 export const DEFAULT_ICON_PICKER_PREFS: IconPickerPrefs = {
   recent: [],
+  favorites: [],
+};
+
+export const DEFAULT_EMOJI_PICKER_PREFS: EmojiPickerPrefs = {
+  frequent: [],
   favorites: [],
 };
 

@@ -1,92 +1,61 @@
-import { useMemo, useState, type FC } from 'react';
+import { useState, type FC, type ReactNode } from 'react';
 
-import type { IconId } from '@/packages/icon';
-
-import { LucideIconById } from '@/packages/icon';
-
+import AdPopover from '../AdPopover/AdPopover';
 import styles from './AdEmojiPicker.module.css';
-import { AD_COMPOSER_EMOJIS, AD_COMPOSER_ICON_IDS } from './emojiPresets';
+import AdEmojiPickerPanel, {
+  DEFAULT_PICKER_HEIGHT,
+  DEFAULT_PICKER_WIDTH,
+} from './AdEmojiPickerPanel';
 
 export type AdEmojiPickerProps = {
-  emojis?: readonly string[];
-  iconIds?: readonly IconId[];
-  showIcons?: boolean;
-  searchPlaceholder?: string;
-  emojiLabel?: string;
-  iconLabel?: string;
+  anchor: ReactNode;
   onSelect: (value: string) => void;
+  opened?: boolean;
+  onChange?: (opened: boolean) => void;
+  position?: 'top' | 'bottom' | 'left' | 'right';
+  width?: number;
+  height?: number;
 };
 
 const AdEmojiPicker: FC<AdEmojiPickerProps> = ({
-  emojis = AD_COMPOSER_EMOJIS,
-  iconIds = AD_COMPOSER_ICON_IDS,
-  showIcons = false,
-  searchPlaceholder = 'Search emojis',
-  emojiLabel = 'Emoji',
-  iconLabel = 'Icons',
+  anchor,
   onSelect,
+  opened: controlledOpened,
+  onChange: controlledOnChange,
+  position = 'top',
+  width = DEFAULT_PICKER_WIDTH,
+  height = DEFAULT_PICKER_HEIGHT,
 }) => {
-  const [query, setQuery] = useState('');
+  const [internalOpened, setInternalOpened] = useState(false);
+  const opened = controlledOpened ?? internalOpened;
+  const onChange = controlledOnChange ?? setInternalOpened;
 
-  const filteredIcons = useMemo(() => {
-    const normalized = query.trim().toLowerCase();
-
-    if (!normalized || !showIcons) {
-      return iconIds;
-    }
-
-    return iconIds.filter((id) => id.toLowerCase().includes(normalized));
-  }, [iconIds, query, showIcons]);
-
-  const filteredEmojis = useMemo(() => {
-    if (!query.trim()) {
-      return emojis;
-    }
-
-    return emojis;
-  }, [emojis, query]);
+  const handleSelect = (value: string) => {
+    onSelect(value);
+    onChange(false);
+  };
 
   return (
-    <>
-      <input
-        className={styles.search}
-        value={query}
-        placeholder={searchPlaceholder}
-        aria-label={searchPlaceholder}
-        onChange={(event) => setQuery(event.target.value)}
+    <AdPopover
+      opened={opened}
+      onChange={onChange}
+      position={position}
+      width="auto"
+      shadow="md"
+      classNames={{ dropdown: styles.dropdown }}
+      styles={{
+        dropdown: {
+          maxWidth: 'calc(100vw - 1.5rem)',
+        },
+      }}
+      anchor={anchor}
+    >
+      <AdEmojiPickerPanel
+        onSelect={handleSelect}
+        width={width}
+        height={height}
       />
-      <p className={styles.sectionLabel}>{emojiLabel}</p>
-      <div className={styles.grid}>
-        {filteredEmojis.map((emoji) => (
-          <button
-            key={emoji}
-            type="button"
-            className={styles.emojiBtn}
-            onClick={() => onSelect(emoji)}
-          >
-            {emoji}
-          </button>
-        ))}
-      </div>
-      {showIcons ? (
-        <>
-          <p className={styles.sectionLabel}>{iconLabel}</p>
-          <div className={styles.iconGrid}>
-            {filteredIcons.map((iconId) => (
-              <button
-                key={iconId}
-                type="button"
-                className={styles.iconBtn}
-                aria-label={iconId}
-                onClick={() => onSelect(`[${iconId}]`)}
-              >
-                <LucideIconById iconId={iconId} size={12} />
-              </button>
-            ))}
-          </div>
-        </>
-      ) : null}
-    </>
+    </AdPopover>
   );
 };
 

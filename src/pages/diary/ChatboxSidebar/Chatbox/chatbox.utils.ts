@@ -53,20 +53,24 @@ const isYesterday = (date: Date, now: Date) => {
   return isSameDay(date, yesterday);
 };
 
-export const formatHeaderUpdatedAt = (iso: string | null): string => {
+export const formatHeaderActivityAt = (
+  iso: string | null,
+  kind: 'updated' | 'created' = 'updated',
+): string => {
   if (!iso) {
     return '';
   }
 
+  const prefix = kind === 'created' ? 'Created' : 'Updated';
   const date = new Date(iso);
   const now = new Date();
 
   if (isSameDay(date, now)) {
-    return 'Updated today';
+    return `${prefix} today`;
   }
 
   if (isYesterday(date, now)) {
-    return 'Updated yesterday';
+    return `${prefix} yesterday`;
   }
 
   const diffDays = Math.floor(
@@ -74,14 +78,17 @@ export const formatHeaderUpdatedAt = (iso: string | null): string => {
   );
 
   if (diffDays < 7) {
-    return `Updated ${date.toLocaleDateString('en-US', { weekday: 'short' })}`;
+    return `${prefix} ${date.toLocaleDateString('en-US', { weekday: 'short' })}`;
   }
 
-  return `Updated ${date.toLocaleDateString('en-US', {
+  return `${prefix} ${date.toLocaleDateString('en-US', {
     month: 'short',
     day: 'numeric',
   })}`;
 };
+
+export const formatHeaderUpdatedAt = (iso: string | null): string =>
+  formatHeaderActivityAt(iso, 'updated');
 
 export const formatChatboxTime = (iso: string | null): string => {
   if (!iso) {

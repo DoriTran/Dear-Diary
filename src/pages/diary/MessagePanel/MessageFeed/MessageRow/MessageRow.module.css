@@ -35,7 +35,8 @@
   transition: opacity var(--transition-fast);
 }
 
-.root:hover .hoverActions {
+.root:hover .hoverActions,
+.hoverActions[data-open] {
   opacity: 1;
   pointer-events: auto;
 }

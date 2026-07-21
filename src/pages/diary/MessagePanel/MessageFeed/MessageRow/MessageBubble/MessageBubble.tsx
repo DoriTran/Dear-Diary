@@ -22,7 +22,7 @@ import userStyles from './styles/userBubble.module.css';
 export type MessageBubbleProps = {
   message: Message;
   onNavigateToMessage: (messageId: string) => void;
-  /** Aligned to message core only (attachments + body), not tags/meta. */
+  /** Centered on the message bubble only (not reply / reactions / tags). */
   hoverActions?: ReactNode;
 };
 
@@ -43,7 +43,9 @@ const MessageBubble: FC<MessageBubbleProps> = ({
     !message.sourceMessageId && message.attachments.length > 0;
   const hasDecorators =
     !message.sourceMessageId && message.decorators.length > 0;
+  const hasReactions = message.reactions.length > 0;
   const surfaceBg = isAssistant ? 'var(--chat-text-bg)' : 'var(--chat-user-bg)';
+  const reactionAlign = isAssistant ? 'start' : 'end';
 
   const pinnedBadge = message.pinned ? (
     <span className={styles.pinned}>
@@ -96,6 +98,33 @@ const MessageBubble: FC<MessageBubbleProps> = ({
     );
   }
 
+  const reactionBar = hasReactions ? (
+    <ReactionBar
+      messageId={message.id}
+      reactions={message.reactions}
+      align={reactionAlign}
+      onToggle={toggleMessageReaction}
+    />
+  ) : null;
+
+  /** Actions sit beside the bubble only so reply / reaction hang don't shift them. */
+  const bubbleRow =
+    body || hoverActions ? (
+      <div className={styles.bubbleRow}>
+        {!isAssistant ? hoverActions : null}
+        {body ? <div className={styles.bubbleSlot}>{body}</div> : null}
+        {isAssistant ? hoverActions : null}
+      </div>
+    ) : null;
+
+  const bodyStack =
+    bubbleRow || hasReactions ? (
+      <div className={hasReactions ? styles.bodyStack : undefined}>
+        {bubbleRow}
+        {reactionBar}
+      </div>
+    ) : null;
+
   const core = (
     <div
       className={styles.core}
@@ -109,18 +138,13 @@ const MessageBubble: FC<MessageBubbleProps> = ({
       {reply}
       {forward}
       {attachments}
-      {body}
+      {bodyStack}
     </div>
   );
 
   const footer = (
     <div className={styles.footer}>
       <MessageTagRow tagIds={message.tagIds} />
-      <ReactionBar
-        messageId={message.id}
-        reactions={message.reactions}
-        onToggle={toggleMessageReaction}
-      />
       {isAssistant ? (
         <time className={assistantStyles.time}>{time}</time>
       ) : (
@@ -145,10 +169,7 @@ const MessageBubble: FC<MessageBubbleProps> = ({
         </span>
         <div className={assistantStyles.content}>
           <span className={assistantStyles.name}>AI Assistant</span>
-          <div className={assistantStyles.mainRow}>
-            {core}
-            {hoverActions}
-          </div>
+          {core}
           {footer}
         </div>
       </article>
@@ -158,10 +179,7 @@ const MessageBubble: FC<MessageBubbleProps> = ({
   return (
     <article className={userStyles.root}>
       <div className={userStyles.content}>
-        <div className={userStyles.mainRow}>
-          {hoverActions}
-          {core}
-        </div>
+        {core}
         {footer}
       </div>
     </article>

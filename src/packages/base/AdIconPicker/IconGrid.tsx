@@ -53,6 +53,12 @@ const IconGrid: FC<IconGridProps> = ({
       return;
     }
 
+    // Keep focus on the search input (or elsewhere) when results update;
+    // only move focus between cells while navigating inside the grid.
+    if (!grid.contains(document.activeElement)) {
+      return;
+    }
+
     const focusedCell = grid.querySelector<HTMLButtonElement>(`[tabindex="0"]`);
     focusedCell?.focus();
   }, [focusedIndex, iconIds]);

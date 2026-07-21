@@ -22,6 +22,19 @@
   max-width: 100%;
 }
 
+.bubbleRow {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  min-width: 0;
+  max-width: 100%;
+}
+
+.bubbleSlot {
+  min-width: 0;
+  max-width: 100%;
+}
+
 .core {
   display: flex;
   flex-direction: column;
@@ -29,6 +42,16 @@
   gap: 0.35rem;
   width: 100%;
   min-width: 0;
+}
+
+.bodyStack {
+  --reaction-chip-size: 1.75rem;
+
+  position: relative;
+  /* Shrink-wrap to bubble width so reactions align to the bubble edge */
+  max-width: 100%;
+  /* Room for the 65% of the chip that hangs below the bubble */
+  padding-bottom: calc(var(--reaction-chip-size) * 0.65);
 }
 
 .footer {

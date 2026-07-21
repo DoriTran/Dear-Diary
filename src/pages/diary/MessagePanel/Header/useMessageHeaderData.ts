@@ -4,7 +4,7 @@ import { resolvePalette } from '@/packages/color';
 import { normalizeIconId, type IconId } from '@/packages/icon';
 import { useDiaryStore, useSettingsStore } from '@/store';
 
-import { formatHeaderUpdatedAt } from '../../ChatboxSidebar/Chatbox/chatbox.utils';
+import { formatHeaderActivityAt } from '../../ChatboxSidebar/Chatbox/chatbox.utils';
 
 export type MessageHeaderData = {
   id: string;
@@ -41,6 +41,10 @@ export const useMessageHeaderData = (
 
     const palette = resolvePalette(chatbox.colorId, mode, customPalettes);
     const group = chatbox.groupId ? groups[chatbox.groupId] : null;
+    const hasMessages = chatbox.totalMessage > 0;
+    const activityAt = hasMessages
+      ? (chatbox.updatedAt ?? chatbox.lastMessageAt)
+      : chatbox.createdAt;
 
     return {
       id: chatbox.id,
@@ -54,8 +58,11 @@ export const useMessageHeaderData = (
       pinned: chatbox.pinned,
       groupName: group?.name ?? null,
       totalMessage: chatbox.totalMessage,
-      updatedLabel: formatHeaderUpdatedAt(chatbox.updatedAt),
-      updatedAt: chatbox.updatedAt,
+      updatedLabel: formatHeaderActivityAt(
+        activityAt,
+        hasMessages ? 'updated' : 'created',
+      ),
+      updatedAt: activityAt,
     };
   }, [chatboxId, chatboxes, customPalettes, groups, mode]);
 };

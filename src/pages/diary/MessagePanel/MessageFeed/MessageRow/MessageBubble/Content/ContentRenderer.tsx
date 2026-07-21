@@ -2,7 +2,7 @@ import type { FC } from 'react';
 
 import type { Message } from '@/store/diary/type';
 
-import { AdCheckbox } from '@/packages/base';
+import { AdCheckbox, AdEmojiText } from '@/packages/base';
 import { useDiaryStore } from '@/store';
 
 import { getMessagePreviewText } from '../../../../messagePanel.utils';
@@ -57,11 +57,10 @@ const ContentRenderer: FC<ContentRendererProps> = ({
               </div>
               <div className={styles.todoBody}>
                 {hasText ? (
-                  <span
+                  <AdEmojiText
+                    text={item.content.text}
                     className={`${styles.todoText} ${item.completed ? styles.todoTextDone : ''}`}
-                  >
-                    {item.content.text}
-                  </span>
+                  />
                 ) : null}
                 {hasAttachments ? (
                   <div
@@ -88,7 +87,11 @@ const ContentRenderer: FC<ContentRendererProps> = ({
     return null;
   }
 
-  return <p className={styles.text}>{message.content.text}</p>;
+  return (
+    <p className={styles.text}>
+      <AdEmojiText text={message.content.text} />
+    </p>
+  );
 };
 
 export default ContentRenderer;

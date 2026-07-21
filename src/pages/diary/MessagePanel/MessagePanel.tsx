@@ -17,7 +17,6 @@ export type MessagePanelProps = {
   chatboxId: string;
   detailPanelCollapsed: boolean;
   onToggleDetailPanel: () => void;
-  onEditChatbox: (chatboxId: string) => void;
   pendingScrollMessageId?: string | null;
   onPendingScrollHandled?: () => void;
   onNavigateToChatbox?: (chatboxId: string, messageId: string) => void;
@@ -33,7 +32,6 @@ const MessagePanel: FC<MessagePanelProps> = ({
   chatboxId,
   detailPanelCollapsed,
   onToggleDetailPanel,
-  onEditChatbox,
   pendingScrollMessageId,
   onPendingScrollHandled,
   onNavigateToChatbox,
@@ -88,7 +86,6 @@ const MessagePanel: FC<MessagePanelProps> = ({
         data={headerData}
         detailPanelCollapsed={detailPanelCollapsed}
         onToggleDetailPanel={onToggleDetailPanel}
-        onEdit={() => onEditChatbox(chatboxId)}
         searchQuery={messageSearchQuery}
         searchActive={timelineSearchActive}
         searchInputRef={searchInputRef}

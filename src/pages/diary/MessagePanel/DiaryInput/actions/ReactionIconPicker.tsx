@@ -1,7 +1,7 @@
 import { faHeart } from '@fortawesome/free-solid-svg-icons';
 import { useState, type FC } from 'react';
 
-import { AdEmojiIconPicker, AdIcon } from '@/packages/base';
+import { AdEmojiPicker, AdIcon } from '@/packages/base';
 
 import styles from './ReactionIconPicker.module.css';
 
@@ -13,7 +13,7 @@ const ReactionIconPicker: FC<ReactionIconPickerProps> = ({ onSelect }) => {
   const [opened, setOpened] = useState(false);
 
   return (
-    <AdEmojiIconPicker
+    <AdEmojiPicker
       opened={opened}
       onChange={setOpened}
       onSelect={onSelect}
@@ -21,7 +21,7 @@ const ReactionIconPicker: FC<ReactionIconPickerProps> = ({ onSelect }) => {
         <button
           type="button"
           className={styles.triggerBtn}
-          aria-label="Insert reaction icon"
+          aria-label="Insert emoji"
           onClick={() => setOpened((current) => !current)}
         >
           <AdIcon icon={faHeart} size={14} />

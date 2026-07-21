@@ -1,26 +1,82 @@
 .root {
+  --reaction-chip-size: 1.75rem;
+
+  position: absolute;
+  bottom: 0;
+  z-index: 1;
   display: flex;
   flex-wrap: wrap;
   gap: 0.25rem;
+  max-width: 100%;
+}
+
+.root[data-align='end'] {
+  right: 0.35rem;
+}
+
+.root[data-align='start'] {
+  left: 0.35rem;
 }
 
 .chip {
+  position: relative;
   display: inline-flex;
   align-items: center;
-  gap: 0.15rem;
-  padding: 0.1rem 0.45rem;
+  justify-content: center;
+  width: var(--reaction-chip-size);
+  height: var(--reaction-chip-size);
+  padding: 0;
   border: 1px solid var(--border-soft);
   border-radius: 999px;
-  font-size: var(--font-2xs);
   background: var(--surface);
+  box-shadow: var(--shadow-sm);
   cursor: pointer;
+  overflow: visible;
+  line-height: 0;
 }
 
 .chip[data-active] {
   border-color: color-mix(in srgb, var(--primary) 40%, var(--border-soft));
-  background: color-mix(in srgb, var(--primary) 10%, var(--surface));
+  background: color-mix(in srgb, var(--primary) 8%, var(--surface));
 }
 
 .chip:hover {
   background: var(--surface-soft);
+}
+
+.glyph {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 1.25rem;
+  height: 1.25rem;
+  font-family:
+    'Segoe UI Emoji', 'Apple Color Emoji', 'Noto Color Emoji', emoji,
+    sans-serif;
+  font-size: 1.15rem;
+  line-height: 1.25rem;
+  /* Mali/app fonts clip emoji descenders; emoji fonts avoid that */
+  transform: translateY(0.02em);
+}
+
+.customImg {
+  width: 1.15rem;
+  height: 1.15rem;
+  object-fit: contain;
+}
+
+.count {
+  position: absolute;
+  top: -0.2rem;
+  right: -0.25rem;
+  min-width: 0.9rem;
+  height: 0.9rem;
+  padding: 0 0.2rem;
+  border-radius: 999px;
+  font-size: 0.55rem;
+  font-weight: var(--font-semibold);
+  line-height: 0.9rem;
+  text-align: center;
+  color: var(--text-contrast);
+  background: var(--primary);
 }
