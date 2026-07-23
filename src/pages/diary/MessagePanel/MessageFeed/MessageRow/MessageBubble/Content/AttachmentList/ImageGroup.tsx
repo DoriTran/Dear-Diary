@@ -50,9 +50,7 @@ const ImageGroup: FC<ImageGroupProps> = ({ attachments }) => {
                 className={clsx(
                   styles.cell,
                   isSolo && styles.cellSolo,
-                  !isSolo &&
-                    row.length >= SMALL_CAPACITY &&
-                    styles.cellSmall,
+                  !isSolo && row.length >= SMALL_CAPACITY && styles.cellSmall,
                 )}
                 target="_blank"
                 rel="noreferrer"

@@ -1,12 +1,4 @@
 import {
-  Fragment,
-  type FC,
-  type CSSProperties,
-  type ReactNode,
-  type RefObject,
-} from 'react';
-
-import {
   faClock,
   faColumns,
   faComment,
@@ -16,6 +8,13 @@ import {
   faThumbtack,
   faXmark,
 } from '@fortawesome/free-solid-svg-icons';
+import {
+  Fragment,
+  type FC,
+  type CSSProperties,
+  type ReactNode,
+  type RefObject,
+} from 'react';
 
 import { AdIcon } from '@/packages/base';
 

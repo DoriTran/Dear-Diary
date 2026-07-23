@@ -1,10 +1,11 @@
+import type { FC } from 'react';
+
 import {
   faArrowUpRightFromSquare,
   faBoxArchive,
   faEllipsisVertical,
   faThumbtack,
 } from '@fortawesome/free-solid-svg-icons';
-import type { FC } from 'react';
 
 import type { Message } from '@/store/diary/type';
 
@@ -29,8 +30,7 @@ const MoreMenu: FC<MoreMenuProps> = ({
 }) => {
   const isUserMessage = (message.sender ?? 'user') === 'user';
   const isEditingThis = actions.editTargetId === message.id;
-  const editDisabled =
-    actions.editTargetId !== null || actions.composerDirty;
+  const editDisabled = actions.editTargetId !== null || actions.composerDirty;
   const archiveDisabled = isEditingThis;
 
   return (

@@ -41,7 +41,9 @@ const ReplyPreview: FC<ReplyPreviewProps> = ({ replyToMessageId, onJump }) => {
           <>
             Replying to{' '}
             <span className={styles.quote}>
-              "<AdEmojiText text={previewText} />"
+              &ldquo;
+              <AdEmojiText text={previewText} />
+              &rdquo;
             </span>
           </>
         )}

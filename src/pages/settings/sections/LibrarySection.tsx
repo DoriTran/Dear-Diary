@@ -65,8 +65,7 @@ const LibrarySection: FC = () => {
               onClick={() =>
                 setPending({
                   title: 'Clear frequently used icons',
-                  message:
-                    'This will remove your frequently used icons list.',
+                  message: 'This will remove your frequently used icons list.',
                   confirmLabel: 'Clear',
                   onConfirm: clearRecentIcons,
                 })

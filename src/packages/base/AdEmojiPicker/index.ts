@@ -16,10 +16,7 @@ export {
   default as AdEmojiGlyph,
   type AdEmojiGlyphProps,
 } from './AdEmojiGlyph';
-export {
-  default as AdEmojiText,
-  type AdEmojiTextProps,
-} from './AdEmojiText';
+export { default as AdEmojiText, type AdEmojiTextProps } from './AdEmojiText';
 export { AD_COMPOSER_EMOJIS, AD_DEFAULT_EMOJIS } from './emojiPresets';
 export {
   EMOJI_CATEGORY_LABELS,

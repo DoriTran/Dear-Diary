@@ -11,8 +11,8 @@ import type { EnterKeyBehavior } from '@/store/settings/type';
 import { AdIcon } from '@/packages/base';
 
 import type { ComposerEditorRef } from '../../input/composer.types';
-import { useAutoGrowTextarea } from '../../input/useAutoGrowTextarea';
 
+import { useAutoGrowTextarea } from '../../input/useAutoGrowTextarea';
 import styles from './TextEditor.module.css';
 
 export type TextEditorProps = {
@@ -47,6 +47,8 @@ const TextEditor = forwardRef<ComposerEditorRef, TextEditorProps>(
     ref,
   ) => {
     const textareaRef = useRef<HTMLTextAreaElement>(null);
+    /** Preserve cursor across blur (emoji picker steals focus on mousedown). */
+    const selectionRef = useRef({ start: 0, end: 0 });
 
     useImperativeHandle(ref, () => ({
       insertAtCursor: (insertValue: string) => {
@@ -56,17 +58,28 @@ const TextEditor = forwardRef<ComposerEditorRef, TextEditorProps>(
           return;
         }
 
-        const start = textarea.selectionStart;
-        const end = textarea.selectionEnd;
+        // Prefer live DOM value; closed-over React `value` can lag behind typing.
+        const currentValue = textarea.value;
+        const hasDomSelection =
+          typeof textarea.selectionStart === 'number' &&
+          document.activeElement === textarea;
+        const start = hasDomSelection
+          ? textarea.selectionStart
+          : selectionRef.current.start;
+        const end = hasDomSelection
+          ? textarea.selectionEnd
+          : selectionRef.current.end;
         const nextValue =
-          value.slice(0, start) + insertValue + value.slice(end);
+          currentValue.slice(0, start) + insertValue + currentValue.slice(end);
 
         onChange(nextValue);
 
+        const cursor = start + insertValue.length;
+        selectionRef.current = { start: cursor, end: cursor };
+
         requestAnimationFrame(() => {
-          const cursor = start + insertValue.length;
-          textarea.setSelectionRange(cursor, cursor);
           textarea.focus();
+          textarea.setSelectionRange(cursor, cursor);
         });
       },
       focus: () => {
@@ -78,6 +91,27 @@ const TextEditor = forwardRef<ComposerEditorRef, TextEditorProps>(
 
     const handleFocus = () => {
       onFocus?.();
+    };
+
+    const handleBlur = () => {
+      const textarea = textareaRef.current;
+      if (textarea) {
+        selectionRef.current = {
+          start: textarea.selectionStart,
+          end: textarea.selectionEnd,
+        };
+      }
+      onBlur?.();
+    };
+
+    const handleSelect = () => {
+      const textarea = textareaRef.current;
+      if (textarea) {
+        selectionRef.current = {
+          start: textarea.selectionStart,
+          end: textarea.selectionEnd,
+        };
+      }
     };
 
     const handleKeyDown = (event: KeyboardEvent<HTMLTextAreaElement>) => {
@@ -103,9 +137,17 @@ const TextEditor = forwardRef<ComposerEditorRef, TextEditorProps>(
           placeholder={placeholder}
           rows={maxRows != null ? undefined : rows}
           aria-label={placeholder}
-          onChange={(event) => onChange(event.target.value)}
+          onChange={(event) => {
+            const next = event.target.value;
+            selectionRef.current = {
+              start: event.target.selectionStart,
+              end: event.target.selectionEnd,
+            };
+            onChange(next);
+          }}
           onFocus={handleFocus}
-          onBlur={onBlur}
+          onBlur={handleBlur}
+          onSelect={handleSelect}
           onKeyDown={handleKeyDown}
         />
         {showAiIcon ? (

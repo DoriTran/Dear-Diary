@@ -209,9 +209,21 @@
 .body {
   flex: 1;
   min-height: 0;
-  overflow: auto;
-  /* Padding lives on .bodyInner so the scrollbar sits outside the content inset */
+  /* Scroll is owned by AdVirtualList inside — keep body as a fixed-height frame. */
+  overflow: hidden;
   padding: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+/** Self-scrolling virtual list that fills `.body`. */
+.virtualBody {
+  flex: 1;
+  min-height: 0;
+  height: 100%;
+  /* Same insets as the old `.bodyInner`. */
+  padding: 0.5rem calc(0.65rem - var(--scrollbar-size, 6px)) 0.75rem 0.65rem;
+  box-sizing: border-box;
 }
 
 .bodyInner {
@@ -241,6 +253,21 @@
   letter-spacing: 0.01em;
 }
 
+/**
+ * Header row rendered inside the virtualized category list (fixed height,
+ * see HEADER_ROW_HEIGHT) — same look as `.sectionHeader` but sized to fit
+ * exactly within its allocated virtualizer row.
+ */
+.virtualSectionHeader {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 0.5rem;
+  height: 100%;
+  padding: 0 0.15rem 0.4rem;
+  box-sizing: border-box;
+}
+
 .sectionHeart {
   color: var(--secondary-dark, var(--primary));
   flex-shrink: 0;
@@ -249,12 +276,15 @@
 .favoriteHint {
   display: flex;
   flex-direction: column;
+  justify-content: center;
   gap: 0.15rem;
-  margin: 0 0 0.25rem;
+  margin: 0;
+  height: 100%;
   padding: 0 0.15rem;
   font-size: var(--font-2xs);
   color: var(--text-soft);
   line-height: 1.35;
+  box-sizing: border-box;
 }
 
 .favoriteHintTouch {
@@ -265,6 +295,26 @@
   display: grid;
   grid-template-columns: repeat(8, minmax(0, 1fr));
   gap: 0.35rem;
+}
+
+/**
+ * Single virtualized emoji row — same column track as `.grid`.
+ * Height is fixed by the virtualizer (see EMOJI_ROW_HEIGHT); tiles stretch to fill it
+ * instead of relying on `aspect-ratio`, so the rendered height always matches the
+ * space the virtualizer allocated (no dynamic remeasurement, no scroll jumps).
+ */
+.gridRow {
+  display: grid;
+  grid-template-columns: repeat(8, minmax(0, 1fr));
+  gap: 0.35rem;
+  height: 100%;
+  padding-bottom: 0.35rem;
+  box-sizing: border-box;
+}
+
+.gridRow .emojiTile {
+  aspect-ratio: auto;
+  height: 100%;
 }
 
 .emojiTile {
@@ -310,6 +360,7 @@
 
 .empty {
   margin: 1.5rem 0;
+  padding: 0 0.65rem;
   text-align: center;
   font-size: var(--font-sm);
   color: var(--text-soft);

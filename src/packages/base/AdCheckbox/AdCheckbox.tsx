@@ -6,6 +6,11 @@ import styles from './AdCheckbox.module.css';
 
 export type AdCheckboxProps = CheckboxProps;
 
+type CheckboxVarsResult = {
+  root?: Record<string, string>;
+  [key: string]: Record<string, string> | undefined;
+};
+
 const AdCheckbox: FC<AdCheckboxProps> = ({
   classNames,
   size = 'sm',
@@ -19,19 +24,21 @@ const AdCheckbox: FC<AdCheckboxProps> = ({
       size={size}
       radius={radius}
       variant={variant}
-      vars={(theme, props) => {
-        const base = {
+      vars={(theme, checkboxProps) => {
+        const base: CheckboxVarsResult = {
           root: {
             '--checkbox-color': 'var(--primary)',
             '--checkbox-icon-color':
-              props.variant === 'outline'
+              checkboxProps.variant === 'outline'
                 ? 'var(--primary)'
                 : 'var(--surface)',
           },
-        } as const;
+        };
 
         if (typeof vars === 'function') {
-          const extra = vars(theme, props);
+          const extra = vars(theme, checkboxProps) as
+            | CheckboxVarsResult
+            | undefined;
           return {
             ...base,
             ...extra,
@@ -39,10 +46,14 @@ const AdCheckbox: FC<AdCheckboxProps> = ({
           };
         }
 
+        const staticVars = (vars ?? undefined) as
+          | CheckboxVarsResult
+          | undefined;
+
         return {
           ...base,
-          ...vars,
-          root: { ...base.root, ...vars?.root },
+          ...staticVars,
+          root: { ...base.root, ...staticVars?.root },
         };
       }}
       classNames={{

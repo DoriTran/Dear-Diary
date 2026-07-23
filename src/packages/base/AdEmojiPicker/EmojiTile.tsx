@@ -77,11 +77,21 @@ const EmojiTile: FC<EmojiTileProps> = ({
     onSelect();
   };
 
+  /**
+   * Keep the composer textarea focused (and its selection intact) when pressing
+   * an emoji tile — otherwise mousedown blurs the input before click fires and
+   * insertAtCursor can no-op or insert at the wrong place.
+   */
+  const handleMouseDown = (event: MouseEvent<HTMLButtonElement>) => {
+    event.preventDefault();
+  };
+
   return (
     <button
       type="button"
       className={styles.emojiTile}
       aria-label={ariaLabel}
+      onMouseDown={handleMouseDown}
       onClick={handleClick}
       onContextMenu={handleContextMenu}
       onTouchStart={handleTouchStart}

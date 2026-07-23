@@ -65,13 +65,24 @@
   padding: 0.375rem 0.5rem;
 }
 
-.option[data-combobox-active]:not(.optionColorHover) {
+.optionPill {
+  display: flex;
+  align-items: center;
+  padding: 0.25rem 0.375rem;
+}
+
+.option[data-combobox-active]:not(.optionColorHover):not(.optionPill) {
   background: var(--field-bg-hover);
 }
 
-.option[data-combobox-selected]:not(.optionColorHover) {
+.option[data-combobox-selected]:not(.optionColorHover):not(.optionPill) {
   background: var(--field-bg-selected);
   color: var(--text);
+}
+
+.optionPill[data-combobox-active],
+.optionPill[data-combobox-selected] {
+  background: transparent;
 }
 
 .optionColorHover[data-combobox-active] {

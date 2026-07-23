@@ -1,4 +1,7 @@
-import { faListCheck, type IconDefinition } from '@fortawesome/free-solid-svg-icons';
+import {
+  faListCheck,
+  type IconDefinition,
+} from '@fortawesome/free-solid-svg-icons';
 import clsx from 'clsx';
 import { useState, type FC } from 'react';
 

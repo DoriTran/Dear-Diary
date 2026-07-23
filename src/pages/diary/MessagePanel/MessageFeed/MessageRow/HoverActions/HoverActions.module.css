@@ -6,11 +6,11 @@
 }
 
 .tagPopover {
-  padding: 0.5rem;
   min-width: 14rem;
 }
 
-/* Strip Mantine dropdown chrome so only the pill / picker card show */
+/* Strip Mantine dropdown chrome so only the field / pill / picker card show */
+.tagDropdown,
 .reactionDropdown {
   padding: 0 !important;
   border: none !important;

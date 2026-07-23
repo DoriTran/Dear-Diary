@@ -1,4 +1,9 @@
-import { useState, type CSSProperties, type FC, type ImgHTMLAttributes } from 'react';
+import {
+  useState,
+  type CSSProperties,
+  type FC,
+  type ImgHTMLAttributes,
+} from 'react';
 
 import {
   getCustomEmojiByShortcode,
@@ -38,6 +43,8 @@ const AdEmojiGlyph: FC<AdEmojiGlyphProps> = ({
         className={imgClassName ?? className}
         style={style}
         draggable={false}
+        loading="lazy"
+        decoding="async"
       />
     );
   }
@@ -52,6 +59,8 @@ const AdEmojiGlyph: FC<AdEmojiGlyphProps> = ({
         className={imgClassName ?? className}
         style={style}
         draggable={false}
+        loading="lazy"
+        decoding="async"
         onError={() => setTwemojiFailed(true)}
       />
     );

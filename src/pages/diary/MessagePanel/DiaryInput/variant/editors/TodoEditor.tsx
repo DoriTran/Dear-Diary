@@ -18,9 +18,9 @@ import type { EnterKeyBehavior } from '@/store/settings/type';
 import { AdCheckbox, AdDragDrop, AdIcon } from '@/packages/base';
 
 import type { DraftTodoItem } from '../../input/composer.types';
-import { useAutoGrowTextarea } from '../../input/useAutoGrowTextarea';
 
 import AttachmentCard from '../../attachment/AttachmentTray/AttachmentCard';
+import { useAutoGrowTextarea } from '../../input/useAutoGrowTextarea';
 import styles from './TodoEditor.module.css';
 
 const TODO_SORTABLE_GROUP = 'todo-composer-rows';
@@ -200,9 +200,7 @@ const SortableTodoRow: FC<SortableTodoRowProps> = ({
           aria-label={
             item.text ? `Mark ${item.text} complete` : 'Mark todo complete'
           }
-          onChange={() =>
-            onUpdateItem(item.id, { completed: !item.completed })
-          }
+          onChange={() => onUpdateItem(item.id, { completed: !item.completed })}
         />
 
         <div

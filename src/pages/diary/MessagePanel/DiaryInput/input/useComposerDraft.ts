@@ -83,7 +83,6 @@ export const useComposerDraft = (
       setDraft(createInitialDraft());
     }
     // Only re-hydrate when entering/leaving edit mode, not on every messages update.
-    // eslint-disable-next-line react-hooks/exhaustive-deps -- messages read intentionally on editMessageId change
   }, [editMessageId]);
 
   useEffect(() => {
@@ -489,7 +488,16 @@ export const useComposerDraft = (
   ]);
 
   const insertReactionIcon = useCallback((icon: string) => {
-    editorRef.current?.insertAtCursor(icon);
+    if (editorRef.current) {
+      editorRef.current.insertAtCursor(icon);
+      return;
+    }
+
+    // Fallback if the editor ref isn't mounted yet — still apply the glyph.
+    setDraft((current) => ({
+      ...current,
+      text: `${current.text}${icon}`,
+    }));
   }, []);
 
   const updateDraft = useCallback(

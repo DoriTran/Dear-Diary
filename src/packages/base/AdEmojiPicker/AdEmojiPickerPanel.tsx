@@ -24,6 +24,7 @@ import {
 import moodSticker from '@/assets/decoration/Emoji 1.png';
 import { useAppStore } from '@/store';
 
+import AdVirtualList, { type AdVirtualListHandle } from '../AdVirtualList';
 import styles from './AdEmojiPicker.module.css';
 import {
   AD_CUSTOM_EMOJIS,
@@ -60,6 +61,21 @@ export type AdEmojiPickerPanelProps = {
 export const DEFAULT_PICKER_WIDTH = 360;
 export const DEFAULT_PICKER_HEIGHT = 400;
 
+/** Columns in the emoji grid (matches `.grid` CSS). */
+const EMOJI_COLUMNS = 8;
+
+/**
+ * Fixed row height in px: square tile (~38px at default panel width) + 0.35rem gap.
+ * Rows render at exactly this height so the virtualizer never remeasures them.
+ */
+const EMOJI_ROW_HEIGHT = 44;
+
+/** Fixed height for virtualized section header rows. */
+const HEADER_ROW_HEIGHT = 30;
+
+/** Fixed height for the empty-favorites hint row. */
+const FAVORITE_HINT_HEIGHT = 40;
+
 type PrefTile =
   | { kind: 'native'; id: string; entry: EmojiEntry }
   | { kind: 'custom'; id: string; emoji: AdCustomEmoji };
@@ -85,6 +101,87 @@ const NAV_CATEGORIES: Array<{
   { id: 'flags', label: 'Flags', icon: <Flag size={16} /> },
 ];
 
+const chunkIntoRows = <T,>(items: T[], columns = EMOJI_COLUMNS): T[][] => {
+  if (items.length === 0) {
+    return [];
+  }
+
+  const rows: T[][] = [];
+  for (let i = 0; i < items.length; i += columns) {
+    rows.push(items.slice(i, i + columns));
+  }
+  return rows;
+};
+
+/**
+ * Flattened row model for a SINGLE self-scrolling virtualizer.
+ * Suggested/favorites/custom/standard all live in one list that owns its own
+ * scroll container — never shares scroll with an outer `.body`. Sharing an
+ * external scroll parent (via `scrollElementRef` + `scrollMargin`) was the
+ * root cause of the auto-scroll-to-top bug.
+ */
+type FlatRow =
+  | {
+      type: 'header';
+      key: string;
+      label: string;
+      /** Present when this header is a category-nav jump target. */
+      categoryId?: EmojiCategoryId;
+      showHeart?: boolean;
+    }
+  | { type: 'prefTiles'; key: string; tiles: PrefTile[] }
+  | { type: 'favoriteHint'; key: string }
+  | { type: 'customTiles'; key: string; tiles: AdCustomEmoji[] }
+  | { type: 'nativeTiles'; key: string; tiles: EmojiEntry[] };
+
+/** Static category rows (custom + standard) — prefs are prepended at render time. */
+const buildStaticCategoryRows = (): FlatRow[] => {
+  const rows: FlatRow[] = [];
+
+  rows.push({
+    type: 'header',
+    key: 'header-custom',
+    label: EMOJI_CATEGORY_LABELS.custom,
+    categoryId: 'custom',
+  });
+  chunkIntoRows(AD_CUSTOM_EMOJIS).forEach((tiles, index) => {
+    rows.push({ type: 'customTiles', key: `custom-row-${index}`, tiles });
+  });
+
+  for (const categoryId of EMOJI_CATEGORY_ORDER) {
+    rows.push({
+      type: 'header',
+      key: `header-${categoryId}`,
+      label: EMOJI_CATEGORY_LABELS[categoryId],
+      categoryId,
+    });
+    chunkIntoRows(getEmojisByCategory(categoryId)).forEach((tiles, index) => {
+      rows.push({
+        type: 'nativeTiles',
+        key: `${categoryId}-row-${index}`,
+        tiles,
+      });
+    });
+  }
+
+  return rows;
+};
+
+const STATIC_CATEGORY_ROWS = buildStaticCategoryRows();
+
+const estimateRowSize = (row: FlatRow | undefined): number => {
+  if (!row) {
+    return EMOJI_ROW_HEIGHT;
+  }
+  if (row.type === 'header') {
+    return HEADER_ROW_HEIGHT;
+  }
+  if (row.type === 'favoriteHint') {
+    return FAVORITE_HINT_HEIGHT;
+  }
+  return EMOJI_ROW_HEIGHT;
+};
+
 type NativeEmojiImgProps = {
   unified: string;
   native: string;
@@ -104,6 +201,8 @@ const NativeEmojiImg: FC<NativeEmojiImgProps> = ({ unified, native }) => {
       src={unifiedToTwemojiSrc(unified)}
       alt={native}
       draggable={false}
+      loading="lazy"
+      decoding="async"
       onError={() => setFailed(true)}
     />
   );
@@ -124,9 +223,7 @@ const resolvePrefId = (id: string): PrefTile | null => {
 };
 
 const resolvePrefIds = (ids: readonly string[]): PrefTile[] =>
-  ids
-    .map(resolvePrefId)
-    .filter((tile): tile is PrefTile => tile !== null);
+  ids.map(resolvePrefId).filter((tile): tile is PrefTile => tile !== null);
 
 const presetFrequentTiles = (): PrefTile[] =>
   resolvePrefIds(FREQUENT_EMOJI_UNIFIED);
@@ -147,10 +244,7 @@ const AdEmojiPickerPanel: FC<AdEmojiPickerPanelProps> = ({
   const [activeCategory, setActiveCategory] =
     useState<EmojiCategoryId>('suggested');
   const deferredQuery = useDeferredValue(query);
-  const bodyRef = useRef<HTMLDivElement>(null);
-  const sectionRefs = useRef<
-    Partial<Record<EmojiCategoryId, HTMLElement | null>>
-  >({});
+  const listRef = useRef<AdVirtualListHandle>(null);
 
   const frequentTiles = useMemo(() => {
     if (emojiPickerPrefs.frequent.length === 0) {
@@ -182,6 +276,89 @@ const AdEmojiPickerPanel: FC<AdEmojiPickerPanelProps> = ({
     return { standard, custom };
   }, [deferredQuery, isSearching]);
 
+  /** Browse-mode flat list: suggested + favorites + static categories. */
+  const browseRows = useMemo((): FlatRow[] => {
+    const rows: FlatRow[] = [];
+
+    rows.push({
+      type: 'header',
+      key: 'header-suggested',
+      label: EMOJI_CATEGORY_LABELS.suggested,
+      categoryId: 'suggested',
+    });
+    chunkIntoRows(frequentTiles).forEach((tiles, index) => {
+      rows.push({ type: 'prefTiles', key: `suggested-row-${index}`, tiles });
+    });
+
+    rows.push({
+      type: 'header',
+      key: 'header-favorites',
+      label: 'Favorites',
+      showHeart: true,
+    });
+    if (favoriteTiles.length === 0) {
+      rows.push({ type: 'favoriteHint', key: 'favorites-hint' });
+    } else {
+      chunkIntoRows(favoriteTiles).forEach((tiles, index) => {
+        rows.push({ type: 'prefTiles', key: `favorites-row-${index}`, tiles });
+      });
+    }
+
+    return [...rows, ...STATIC_CATEGORY_ROWS];
+  }, [frequentTiles, favoriteTiles]);
+
+  const browseHeaderIndex = useMemo(() => {
+    const map: Partial<Record<EmojiCategoryId, number>> = {};
+    browseRows.forEach((row, index) => {
+      if (row.type === 'header' && row.categoryId !== undefined) {
+        map[row.categoryId] = index;
+      }
+    });
+    return map;
+  }, [browseRows]);
+
+  const searchRows = useMemo((): FlatRow[] => {
+    if (!searchResults) {
+      return [];
+    }
+
+    const rows: FlatRow[] = [];
+
+    if (searchResults.custom.length > 0) {
+      rows.push({
+        type: 'header',
+        key: 'search-header-custom',
+        label: 'Custom Emojis',
+      });
+      chunkIntoRows(searchResults.custom).forEach((tiles, index) => {
+        rows.push({
+          type: 'customTiles',
+          key: `search-custom-${index}`,
+          tiles,
+        });
+      });
+    }
+
+    if (searchResults.standard.length > 0) {
+      rows.push({
+        type: 'header',
+        key: 'search-header-results',
+        label: 'Results',
+      });
+      chunkIntoRows(searchResults.standard).forEach((tiles, index) => {
+        rows.push({
+          type: 'nativeTiles',
+          key: `search-native-${index}`,
+          tiles,
+        });
+      });
+    }
+
+    return rows;
+  }, [searchResults]);
+
+  const activeRows = isSearching ? searchRows : browseRows;
+
   const handleSkinToneChange = (tone: SkinToneId) => {
     setSkinTone(tone);
     writeStoredSkinTone(tone);
@@ -189,19 +366,26 @@ const AdEmojiPickerPanel: FC<AdEmojiPickerPanelProps> = ({
 
   const scrollToCategory = (categoryId: EmojiCategoryId) => {
     setActiveCategory(categoryId);
-    const node = sectionRefs.current[categoryId];
-    node?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    const index = browseHeaderIndex[categoryId];
+    if (index !== undefined) {
+      listRef.current?.scrollToIndex(index, {
+        align: 'start',
+        behavior: 'smooth',
+      });
+    }
   };
 
   const handleNativeSelect = (entry: EmojiEntry) => {
-    addFrequentEmoji(entry.u);
+    // Insert first, then update prefs — prefs updates re-render the panel and
+    // must not run before the composer receives the emoji.
     onSelect(applySkinTone(entry, skinTone));
+    addFrequentEmoji(entry.u);
   };
 
   const handleCustomSelect = (emoji: AdCustomEmoji) => {
     const shortcode = toCustomEmojiShortcode(emoji);
-    addFrequentEmoji(shortcode);
     onSelect(shortcode);
+    addFrequentEmoji(shortcode);
   };
 
   const handleToggleNativeFavorite = (entry: EmojiEntry) => {
@@ -259,8 +443,87 @@ const AdEmojiPickerPanel: FC<AdEmojiPickerPanelProps> = ({
           src={tile.emoji.imgUrl}
           alt=""
           draggable={false}
+          loading="lazy"
+          decoding="async"
         />
       </EmojiTile>
+    );
+  };
+
+  const renderFlatRow = (index: number) => {
+    const row = activeRows[index];
+    if (!row) {
+      return null;
+    }
+
+    if (row.type === 'header') {
+      return (
+        <div className={styles.virtualSectionHeader}>
+          <p className={styles.sectionLabel}>{row.label}</p>
+          {row.showHeart ? (
+            <Heart size={12} className={styles.sectionHeart} aria-hidden />
+          ) : null}
+        </div>
+      );
+    }
+
+    if (row.type === 'favoriteHint') {
+      return (
+        <p className={styles.favoriteHint}>
+          Right-click an emoji to pin or unpin it here.
+          <span className={styles.favoriteHintTouch}>
+            On touch devices, press and hold.
+          </span>
+        </p>
+      );
+    }
+
+    if (row.type === 'prefTiles') {
+      return (
+        <div className={styles.gridRow}>{row.tiles.map(renderPrefTile)}</div>
+      );
+    }
+
+    if (row.type === 'customTiles') {
+      return (
+        <div className={styles.gridRow}>
+          {row.tiles.map((emoji) => (
+            <EmojiTile
+              key={emoji.id}
+              ariaLabel={emoji.names[0] ?? emoji.id}
+              onSelect={() => handleCustomSelect(emoji)}
+              onToggleFavorite={() => handleToggleCustomFavorite(emoji)}
+            >
+              <img
+                className={styles.customImg}
+                src={emoji.imgUrl}
+                alt=""
+                draggable={false}
+                loading="lazy"
+                decoding="async"
+              />
+            </EmojiTile>
+          ))}
+        </div>
+      );
+    }
+
+    return (
+      <div className={styles.gridRow}>
+        {row.tiles.map((entry) => (
+          <EmojiTile
+            key={entry.u}
+            ariaLabel={entry.n[entry.n.length - 1] ?? entry.u}
+            onSelect={() => handleNativeSelect(entry)}
+            onToggleFavorite={() => handleToggleNativeFavorite(entry)}
+          >
+            <NativeEmojiImg
+              unified={applySkinToneUnified(entry, skinTone)}
+              native={applySkinTone(entry, skinTone)}
+            />
+          </EmojiTile>
+        ))}
+      </div>
     );
   };
 
@@ -311,177 +574,25 @@ const AdEmojiPickerPanel: FC<AdEmojiPickerPanelProps> = ({
         ) : null}
       </div>
 
-      <div className={styles.body} ref={bodyRef}>
-        <div className={styles.bodyInner}>
-          {isSearching && searchResults ? (
-            <>
-              {searchResults.custom.length > 0 ? (
-                <section className={styles.section}>
-                  <div className={styles.sectionHeader}>
-                    <p className={styles.sectionLabel}>Custom Emojis</p>
-                  </div>
-                  <div className={styles.grid}>
-                    {searchResults.custom.map((emoji) => (
-                      <EmojiTile
-                        key={emoji.id}
-                        ariaLabel={emoji.names[0] ?? emoji.id}
-                        onSelect={() => handleCustomSelect(emoji)}
-                        onToggleFavorite={() =>
-                          handleToggleCustomFavorite(emoji)
-                        }
-                      >
-                        <img
-                          className={styles.customImg}
-                          src={emoji.imgUrl}
-                          alt=""
-                          draggable={false}
-                        />
-                      </EmojiTile>
-                    ))}
-                  </div>
-                </section>
-              ) : null}
-              {searchResults.standard.length > 0 ? (
-                <section className={styles.section}>
-                  <div className={styles.sectionHeader}>
-                    <p className={styles.sectionLabel}>Results</p>
-                  </div>
-                  <div className={styles.grid}>
-                    {searchResults.standard.map((entry) => (
-                      <EmojiTile
-                        key={entry.u}
-                        ariaLabel={entry.n[entry.n.length - 1] ?? entry.u}
-                        onSelect={() => handleNativeSelect(entry)}
-                        onToggleFavorite={() =>
-                          handleToggleNativeFavorite(entry)
-                        }
-                      >
-                        <NativeEmojiImg
-                          unified={applySkinToneUnified(entry, skinTone)}
-                          native={applySkinTone(entry, skinTone)}
-                        />
-                      </EmojiTile>
-                    ))}
-                  </div>
-                </section>
-              ) : null}
-              {searchResults.custom.length === 0 &&
-              searchResults.standard.length === 0 ? (
-                <p className={styles.empty}>No emojis found</p>
-              ) : null}
-            </>
-          ) : (
-            <>
-              <section
-                className={styles.section}
-                ref={(node) => {
-                  sectionRefs.current.suggested = node;
-                }}
-              >
-                <div className={styles.sectionHeader}>
-                  <p className={styles.sectionLabel}>
-                    {EMOJI_CATEGORY_LABELS.suggested}
-                  </p>
-                </div>
-                <div className={styles.grid}>
-                  {frequentTiles.map(renderPrefTile)}
-                </div>
-              </section>
-
-              <section className={styles.section}>
-                <div className={styles.sectionHeader}>
-                  <p className={styles.sectionLabel}>Favorites</p>
-                  <Heart
-                    size={12}
-                    className={styles.sectionHeart}
-                    aria-hidden
-                  />
-                </div>
-                {favoriteTiles.length === 0 ? (
-                  <p className={styles.favoriteHint}>
-                    Right-click an emoji to pin or unpin it here.
-                    <span className={styles.favoriteHintTouch}>
-                      On touch devices, press and hold.
-                    </span>
-                  </p>
-                ) : (
-                  <div className={styles.grid}>
-                    {favoriteTiles.map(renderPrefTile)}
-                  </div>
-                )}
-              </section>
-
-              <section
-                className={styles.section}
-                ref={(node) => {
-                  sectionRefs.current.custom = node;
-                }}
-              >
-                <div className={styles.sectionHeader}>
-                  <p className={styles.sectionLabel}>
-                    {EMOJI_CATEGORY_LABELS.custom}
-                  </p>
-                </div>
-                <div className={styles.grid}>
-                  {AD_CUSTOM_EMOJIS.map((emoji) => (
-                    <EmojiTile
-                      key={emoji.id}
-                      ariaLabel={emoji.names[0] ?? emoji.id}
-                      onSelect={() => handleCustomSelect(emoji)}
-                      onToggleFavorite={() =>
-                        handleToggleCustomFavorite(emoji)
-                      }
-                    >
-                      <img
-                        className={styles.customImg}
-                        src={emoji.imgUrl}
-                        alt=""
-                        draggable={false}
-                      />
-                    </EmojiTile>
-                  ))}
-                </div>
-              </section>
-
-              {EMOJI_CATEGORY_ORDER.map((categoryId) => {
-                const entries = getEmojisByCategory(categoryId);
-
-                return (
-                  <section
-                    key={categoryId}
-                    className={styles.section}
-                    ref={(node) => {
-                      sectionRefs.current[categoryId] = node;
-                    }}
-                  >
-                    <div className={styles.sectionHeader}>
-                      <p className={styles.sectionLabel}>
-                        {EMOJI_CATEGORY_LABELS[categoryId]}
-                      </p>
-                    </div>
-                    <div className={styles.grid}>
-                      {entries.map((entry) => (
-                        <EmojiTile
-                          key={entry.u}
-                          ariaLabel={entry.n[entry.n.length - 1] ?? entry.u}
-                          onSelect={() => handleNativeSelect(entry)}
-                          onToggleFavorite={() =>
-                            handleToggleNativeFavorite(entry)
-                          }
-                        >
-                          <NativeEmojiImg
-                            unified={applySkinToneUnified(entry, skinTone)}
-                            native={applySkinTone(entry, skinTone)}
-                          />
-                        </EmojiTile>
-                      ))}
-                    </div>
-                  </section>
-                );
-              })}
-            </>
-          )}
-        </div>
+      {/*
+        Body is NOT the scroll container. AdVirtualList fills it and owns scroll.
+        This avoids scrollMargin / external-scroll corrections that snapped scrollTop.
+      */}
+      <div className={styles.body}>
+        {isSearching && activeRows.length === 0 ? (
+          <p className={styles.empty}>No emojis found</p>
+        ) : (
+          <AdVirtualList
+            ref={listRef}
+            className={styles.virtualBody}
+            itemCount={activeRows.length}
+            estimateSize={(index) => estimateRowSize(activeRows[index])}
+            overscan={6}
+            dynamicSize={false}
+            getItemKey={(index) => activeRows[index]?.key ?? index}
+            renderItem={renderFlatRow}
+          />
+        )}
       </div>
 
       <div className={styles.footer} aria-hidden>

@@ -26,10 +26,7 @@ export const useAutoGrowTextarea = (
 
     if (maxRows != null) {
       const maxHeight = lineHeight * maxRows + paddingY;
-      const nextHeight = Math.min(
-        Math.max(scrollHeight, minHeight),
-        maxHeight,
-      );
+      const nextHeight = Math.min(Math.max(scrollHeight, minHeight), maxHeight);
 
       textarea.style.height = `${nextHeight}px`;
       textarea.style.overflowY = scrollHeight > maxHeight ? 'auto' : 'hidden';

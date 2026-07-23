@@ -85,6 +85,7 @@ const HoverActions: FC<HoverActionsProps> = ({
         onChange={setTagOpen}
         position="top"
         width={260}
+        classNames={{ dropdown: styles.tagDropdown }}
         anchor={
           <AdActionButton
             icon={faTags}
@@ -98,7 +99,6 @@ const HoverActions: FC<HoverActionsProps> = ({
         <div className={styles.tagPopover}>
           <AdSelect
             multiple
-            label="Tags"
             placeholder="Search or create tags..."
             data={tagOptions}
             value={message.tagIds}

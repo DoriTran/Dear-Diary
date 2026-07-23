@@ -21,10 +21,7 @@ export {
   type AdPopoverProps,
 } from './AdPopover/AdPopover';
 export { default as AdSwitch, type AdSwitchProps } from './AdSwitch/AdSwitch';
-export {
-  default as AdCheckbox,
-  type AdCheckboxProps,
-} from './AdCheckbox';
+export { default as AdCheckbox, type AdCheckboxProps } from './AdCheckbox';
 export {
   AdSegmentedControl,
   type AdSegmentedControlOption,
@@ -87,6 +84,12 @@ export {
   type AdEmojiPickerProps,
   type AdEmojiTextProps,
 } from './AdEmojiPicker';
+export {
+  default as AdVirtualList,
+  type AdVirtualListProps,
+  type AdVirtualListHandle,
+  type AdVirtualListScrollToOptions,
+} from './AdVirtualList';
 export {
   default as AdQuickReactionBar,
   type AdQuickReactionBarProps,

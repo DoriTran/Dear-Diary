@@ -169,7 +169,7 @@ const AdSelectMultiple: FC<AdSelectMultipleProps> = ({
         );
       }
 
-      return item.option.label;
+      return <AdChip label={item.option.label} colorId={item.option.colorId} />;
     },
     [],
   );
@@ -247,7 +247,11 @@ const AdSelectMultiple: FC<AdSelectMultipleProps> = ({
             <Combobox.Option
               key={option.value}
               value={option.value}
-              className={classNames?.option ?? styles.option}
+              className={clsx(
+                styles.option,
+                option.colorId && styles.optionPill,
+                classNames?.option,
+              )}
             >
               {renderOptionContent({
                 option,

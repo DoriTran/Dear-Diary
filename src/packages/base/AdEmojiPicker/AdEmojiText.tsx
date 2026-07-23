@@ -1,10 +1,10 @@
-import emojiRegex from 'emoji-regex';
 import type { FC, ReactNode } from 'react';
 
-import AdEmojiGlyph from './AdEmojiGlyph';
-import { CUSTOM_EMOJI_SHORTCODE_RE } from './customEmojis';
+import emojiRegex from 'emoji-regex';
 
+import AdEmojiGlyph from './AdEmojiGlyph';
 import styles from './AdEmojiText.module.css';
+import { CUSTOM_EMOJI_SHORTCODE_RE } from './customEmojis';
 
 export type AdEmojiTextProps = {
   text: string;
@@ -13,11 +13,13 @@ export type AdEmojiTextProps = {
 };
 
 /** Matches either a `:Shortcode:` custom emoji or a native unicode emoji sequence. */
-const buildEmojiPattern = (): RegExp =>
-  new RegExp(
-    `${CUSTOM_EMOJI_SHORTCODE_RE.source}|${emojiRegex().source}`,
-    'gu',
-  );
+const buildEmojiPattern = (): RegExp => {
+  // IMPORTANT: do NOT add the `u` flag. `emoji-regex`'s source is written for
+  // non-unicode-mode RegExp; reconstructing it with `u` makes matches like 🤩 fail,
+  // so AdEmojiText falls through to plain text and the OS (Microsoft) glyph shows.
+  const emojiSource = emojiRegex().source;
+  return new RegExp(`${CUSTOM_EMOJI_SHORTCODE_RE.source}|${emojiSource}`, 'g');
+};
 
 const renderEmojiText = (text: string, imgClassName: string): ReactNode[] => {
   const nodes: ReactNode[] = [];

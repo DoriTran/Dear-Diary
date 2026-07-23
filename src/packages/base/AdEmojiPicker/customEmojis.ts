@@ -40,9 +40,10 @@ export const getCustomEmojiByShortcode = (
   token: string,
 ): AdCustomEmoji | undefined => {
   const trimmed = token.trim();
-  const name = trimmed.startsWith(':') && trimmed.endsWith(':')
-    ? trimmed.slice(1, -1)
-    : trimmed;
+  const name =
+    trimmed.startsWith(':') && trimmed.endsWith(':')
+      ? trimmed.slice(1, -1)
+      : trimmed;
 
   if (!name) {
     return undefined;
