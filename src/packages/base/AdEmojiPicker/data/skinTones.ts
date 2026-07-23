@@ -97,19 +97,22 @@ export const writeStoredSkinTone = (tone: SkinToneId): void => {
   }
 };
 
-/** Resolve native emoji string with the active skin tone applied when possible. */
-export const applySkinTone = (entry: EmojiEntry, tone: SkinToneId): string => {
+/** Resolve the unified codepoint id with the active skin tone applied when possible. */
+export const applySkinToneUnified = (
+  entry: EmojiEntry,
+  tone: SkinToneId,
+): string => {
   if (tone === 'default' || !entry.v?.length) {
-    return unifiedToNative(entry.u);
+    return entry.u;
   }
 
   const matched =
     entry.v.find((unified) => unified.endsWith(`-${tone}`)) ??
     entry.v.find((unified) => unified.includes(`-${tone}`));
 
-  if (matched) {
-    return unifiedToNative(matched);
-  }
-
-  return unifiedToNative(entry.u);
+  return matched ?? entry.u;
 };
+
+/** Resolve native emoji string with the active skin tone applied when possible. */
+export const applySkinTone = (entry: EmojiEntry, tone: SkinToneId): string =>
+  unifiedToNative(applySkinToneUnified(entry, tone));

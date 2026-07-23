@@ -3,8 +3,8 @@ export const AD_DEFAULT_EMOJIS = [
   '❤️',
   '😀',
   '😢',
-  '🙏',
-  '👎',
+  '😮',
+  '🥰',
   '😠',
 ] as const;
 

@@ -1,5 +1,6 @@
 import type { FC } from 'react';
 
+import { AdEmojiText } from '@/packages/base';
 import { useDiaryStore } from '@/store';
 
 import {
@@ -37,7 +38,9 @@ const ForwardCard: FC<ForwardCardProps> = ({ sourceMessageId, onJump }) => {
       <p className={styles.chatbox}>
         {chatbox?.name ?? getMessageSenderLabel(source)}
       </p>
-      <p className={styles.preview}>{getMessagePreviewText(source)}</p>
+      <p className={styles.preview}>
+        <AdEmojiText text={getMessagePreviewText(source)} />
+      </p>
     </button>
   );
 };

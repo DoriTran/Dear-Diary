@@ -1,5 +1,6 @@
 import type { FC } from 'react';
 
+import AdEmojiGlyph from '../AdEmojiPicker/AdEmojiGlyph';
 import { AD_DEFAULT_EMOJIS } from '../AdEmojiPicker/emojiPresets';
 import styles from './AdQuickReactionBar.module.css';
 
@@ -26,7 +27,7 @@ const AdQuickReactionBar: FC<AdQuickReactionBarProps> = ({
           aria-label={`React with ${emoji}`}
           onClick={() => onSelect(emoji)}
         >
-          {emoji}
+          <AdEmojiGlyph value={emoji} imgClassName={styles.emojiGlyph} />
         </button>
       ))}
       {onExpand ? (

@@ -1,10 +1,8 @@
+import emojiRegex from 'emoji-regex';
 import type { FC, ReactNode } from 'react';
 
 import AdEmojiGlyph from './AdEmojiGlyph';
-import {
-  CUSTOM_EMOJI_SHORTCODE_RE,
-  getCustomEmojiByShortcode,
-} from './customEmojis';
+import { CUSTOM_EMOJI_SHORTCODE_RE } from './customEmojis';
 
 import styles from './AdEmojiText.module.css';
 
@@ -14,36 +12,36 @@ export type AdEmojiTextProps = {
   imgClassName?: string;
 };
 
-const renderEmojiText = (
-  text: string,
-  imgClassName: string,
-): ReactNode[] => {
+/** Matches either a `:Shortcode:` custom emoji or a native unicode emoji sequence. */
+const buildEmojiPattern = (): RegExp =>
+  new RegExp(
+    `${CUSTOM_EMOJI_SHORTCODE_RE.source}|${emojiRegex().source}`,
+    'gu',
+  );
+
+const renderEmojiText = (text: string, imgClassName: string): ReactNode[] => {
   const nodes: ReactNode[] = [];
-  const pattern = new RegExp(CUSTOM_EMOJI_SHORTCODE_RE.source, 'g');
+  const pattern = buildEmojiPattern();
   let lastIndex = 0;
   let match: RegExpExecArray | null;
   let key = 0;
 
   while ((match = pattern.exec(text)) !== null) {
-    const shortcode = match[0];
+    const token = match[0];
 
     if (match.index > lastIndex) {
       nodes.push(text.slice(lastIndex, match.index));
     }
 
-    if (getCustomEmojiByShortcode(shortcode)) {
-      nodes.push(
-        <AdEmojiGlyph
-          key={`emoji-${key++}`}
-          value={shortcode}
-          imgClassName={imgClassName}
-        />,
-      );
-    } else {
-      nodes.push(shortcode);
-    }
+    nodes.push(
+      <AdEmojiGlyph
+        key={`emoji-${key++}`}
+        value={token}
+        imgClassName={imgClassName}
+      />,
+    );
 
-    lastIndex = match.index + shortcode.length;
+    lastIndex = match.index + token.length;
   }
 
   if (lastIndex < text.length) {
@@ -53,16 +51,12 @@ const renderEmojiText = (
   return nodes;
 };
 
-/** Renders plain text with `:Angry:`-style custom emoji shortcodes as images. */
+/** Renders plain text with `:Angry:`-style custom emoji shortcodes and native unicode emoji as Twemoji/custom images. */
 const AdEmojiText: FC<AdEmojiTextProps> = ({
   text,
   className,
   imgClassName = styles.inlineImg,
 }) => {
-  if (!text.includes(':')) {
-    return <span className={className}>{text}</span>;
-  }
-
   return (
     <span className={className}>{renderEmojiText(text, imgClassName)}</span>
   );

@@ -4,7 +4,7 @@ import { faThumbtack } from '@fortawesome/free-solid-svg-icons';
 
 import type { Message } from '@/store/diary/type';
 
-import { AdIcon } from '@/packages/base';
+import { AdEmojiText, AdIcon } from '@/packages/base';
 
 import {
   formatChatboxTime,
@@ -45,7 +45,9 @@ const DetailMessagePreviewRow: FC<DetailMessagePreviewRowProps> = ({
       )}
       <span className={styles.body}>
         <span className={styles.titleRow}>
-          <span className={styles.title}>{title}</span>
+          <span className={styles.title}>
+            <AdEmojiText text={title} />
+          </span>
           {showPin ? (
             <span className={styles.pinIcon}>
               <AdIcon icon={faThumbtack} size={10} />
@@ -53,7 +55,9 @@ const DetailMessagePreviewRow: FC<DetailMessagePreviewRowProps> = ({
           ) : null}
         </span>
         {snippet !== title ? (
-          <span className={styles.snippet}>{snippet}</span>
+          <span className={styles.snippet}>
+            <AdEmojiText text={snippet} />
+          </span>
         ) : null}
         {tagLabels.length > 0 ? (
           <span className={styles.tags}>{tagLabels.join(' · ')}</span>

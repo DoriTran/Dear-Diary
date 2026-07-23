@@ -22,7 +22,11 @@ const ContentRenderer: FC<ContentRendererProps> = ({
   const align = message.sender === 'assistant' ? 'start' : 'end';
 
   if (mode === 'preview') {
-    return <p className={styles.text}>{getMessagePreviewText(message)}</p>;
+    return (
+      <p className={styles.text}>
+        <AdEmojiText text={getMessagePreviewText(message)} />
+      </p>
+    );
   }
 
   if (message.variant === 'todo') {

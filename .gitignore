@@ -12,6 +12,9 @@ dist
 dist-ssr
 *.local
 
+# Generated Twemoji SVG assets (see scripts/copy-twemoji-assets.mjs)
+public/twemoji
+
 # Editor directories and files
 .vscode/*
 !.vscode/extensions.json

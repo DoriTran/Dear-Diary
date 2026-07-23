@@ -31,6 +31,12 @@
   transform: scale(1.1);
 }
 
+.emojiGlyph {
+  width: 1.15rem;
+  height: 1.15rem;
+  object-fit: contain;
+}
+
 .expandBtn {
   display: inline-flex;
   align-items: center;

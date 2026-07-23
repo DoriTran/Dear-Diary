@@ -1,9 +1,10 @@
-import type { CSSProperties, FC, ImgHTMLAttributes } from 'react';
+import { useState, type CSSProperties, type FC, type ImgHTMLAttributes } from 'react';
 
 import {
   getCustomEmojiByShortcode,
   toCustomEmojiShortcode,
 } from './customEmojis';
+import { nativeToTwemojiSrc } from './twemoji';
 
 export type AdEmojiGlyphProps = {
   /** Native emoji or custom shortcode like `:Angry:`. */
@@ -14,7 +15,7 @@ export type AdEmojiGlyphProps = {
   imgProps?: Omit<ImgHTMLAttributes<HTMLImageElement>, 'src' | 'alt'>;
 };
 
-/** Renders a native emoji glyph or a custom image-based shortcode. */
+/** Renders a native emoji as a Twemoji SVG (with unicode text fallback) or a custom image-based shortcode. */
 const AdEmojiGlyph: FC<AdEmojiGlyphProps> = ({
   value,
   className,
@@ -22,6 +23,7 @@ const AdEmojiGlyph: FC<AdEmojiGlyphProps> = ({
   style,
   imgProps,
 }) => {
+  const [twemojiFailed, setTwemojiFailed] = useState(false);
   const custom = getCustomEmojiByShortcode(value);
 
   if (custom) {
@@ -36,6 +38,21 @@ const AdEmojiGlyph: FC<AdEmojiGlyphProps> = ({
         className={imgClassName ?? className}
         style={style}
         draggable={false}
+      />
+    );
+  }
+
+  if (!twemojiFailed) {
+    return (
+      <img
+        {...imgProps}
+        src={nativeToTwemojiSrc(value)}
+        alt={value}
+        title={value}
+        className={imgClassName ?? className}
+        style={style}
+        draggable={false}
+        onError={() => setTwemojiFailed(true)}
       />
     );
   }

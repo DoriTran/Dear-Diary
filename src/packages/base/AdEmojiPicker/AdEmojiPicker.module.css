@@ -292,11 +292,14 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
+  width: 1.35rem;
+  height: 1.35rem;
   font-family:
     'Segoe UI Emoji', 'Apple Color Emoji', 'Noto Color Emoji', emoji,
     sans-serif;
   font-size: 1.2rem;
   line-height: 1.2;
+  object-fit: contain;
 }
 
 .customImg {

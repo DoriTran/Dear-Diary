@@ -36,12 +36,12 @@ import {
   EMOJI_CATEGORY_ORDER,
   FREQUENT_EMOJI_UNIFIED,
   applySkinTone,
+  applySkinToneUnified,
   filterEmojisByQuery,
   getAllStandardEmojis,
   getEmojisByCategory,
   getStandardEmojiEntry,
   readStoredSkinTone,
-  unifiedToNative,
   writeStoredSkinTone,
   type EmojiCategoryId,
   type EmojiEntry,
@@ -49,6 +49,7 @@ import {
 } from './data';
 import EmojiTile from './EmojiTile';
 import SkinTonePicker from './SkinTonePicker';
+import { unifiedToTwemojiSrc } from './twemoji';
 
 export type AdEmojiPickerPanelProps = {
   onSelect: (value: string) => void;
@@ -83,6 +84,30 @@ const NAV_CATEGORIES: Array<{
   { id: 'symbols', label: 'Symbols', icon: <Music size={16} /> },
   { id: 'flags', label: 'Flags', icon: <Flag size={16} /> },
 ];
+
+type NativeEmojiImgProps = {
+  unified: string;
+  native: string;
+};
+
+/** Renders a Twemoji SVG for a unified codepoint id, falling back to the native glyph on error. */
+const NativeEmojiImg: FC<NativeEmojiImgProps> = ({ unified, native }) => {
+  const [failed, setFailed] = useState(false);
+
+  if (failed) {
+    return <span className={styles.emojiGlyph}>{native}</span>;
+  }
+
+  return (
+    <img
+      className={styles.emojiGlyph}
+      src={unifiedToTwemojiSrc(unified)}
+      alt={native}
+      draggable={false}
+      onError={() => setFailed(true)}
+    />
+  );
+};
 
 const resolvePrefId = (id: string): PrefTile | null => {
   const custom = getCustomEmojiByShortcode(id);
@@ -214,9 +239,10 @@ const AdEmojiPickerPanel: FC<AdEmojiPickerPanelProps> = ({
           onSelect={() => handlePrefSelect(tile)}
           onToggleFavorite={() => handlePrefToggleFavorite(tile)}
         >
-          <span className={styles.emojiGlyph}>
-            {applySkinTone(tile.entry, skinTone)}
-          </span>
+          <NativeEmojiImg
+            unified={applySkinToneUnified(tile.entry, skinTone)}
+            native={applySkinTone(tile.entry, skinTone)}
+          />
         </EmojiTile>
       );
     }
@@ -330,9 +356,10 @@ const AdEmojiPickerPanel: FC<AdEmojiPickerPanelProps> = ({
                           handleToggleNativeFavorite(entry)
                         }
                       >
-                        <span className={styles.emojiGlyph}>
-                          {unifiedToNative(entry.u)}
-                        </span>
+                        <NativeEmojiImg
+                          unified={applySkinToneUnified(entry, skinTone)}
+                          native={applySkinTone(entry, skinTone)}
+                        />
                       </EmojiTile>
                     ))}
                   </div>
@@ -442,9 +469,10 @@ const AdEmojiPickerPanel: FC<AdEmojiPickerPanelProps> = ({
                             handleToggleNativeFavorite(entry)
                           }
                         >
-                          <span className={styles.emojiGlyph}>
-                            {unifiedToNative(entry.u)}
-                          </span>
+                          <NativeEmojiImg
+                            unified={applySkinToneUnified(entry, skinTone)}
+                            native={applySkinTone(entry, skinTone)}
+                          />
                         </EmojiTile>
                       ))}
                     </div>

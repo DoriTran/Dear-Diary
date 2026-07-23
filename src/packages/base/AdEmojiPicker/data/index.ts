@@ -14,6 +14,7 @@ export {
   SKIN_TONE_STORAGE_KEY,
   SKIN_TONE_SWATCHES,
   applySkinTone,
+  applySkinToneUnified,
   getSkinToneOption,
   isSkinToneId,
   readStoredSkinTone,

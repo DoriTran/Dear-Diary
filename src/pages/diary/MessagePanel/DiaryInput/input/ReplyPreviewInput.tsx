@@ -1,7 +1,7 @@
 import { faReply, faXmark } from '@fortawesome/free-solid-svg-icons';
 import type { FC } from 'react';
 
-import { AdIcon } from '@/packages/base';
+import { AdEmojiText, AdIcon } from '@/packages/base';
 import { useDiaryStore } from '@/store';
 
 import {
@@ -44,7 +44,10 @@ const ReplyPreviewInput: FC<ReplyPreviewInputProps> = ({
             previewText
           ) : (
             <>
-              Replying to <span className={styles.quote}>"{previewText}"</span>
+              Replying to{' '}
+              <span className={styles.quote}>
+                "<AdEmojiText text={previewText} />"
+              </span>
             </>
           )}
         </span>
